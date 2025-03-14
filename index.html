@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>在线工具箱 - 一站式在线工具集合</title>
+    <title data-i18n="index.title">在线工具箱 - 一站式在线工具集合</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css">
+    <link rel="stylesheet" href="css/navigation.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="js/i18n.js"></script>
 </head>
 <body>
     <header class="header">
@@ -18,9 +20,9 @@
                     <i class="ri-menu-line"></i>
                 </button>
                 <ul class="nav-list" id="navList">
-                    <li><a href="#" class="active">首页</a></li>
-                    <li><a href="#tools">工具集</a></li>
-                    <li><a href="#about">关于我们</a></li>
+                    <li><a href="#" class="active" data-i18n="common.home">首页</a></li>
+                    <li><a href="#tools" data-i18n="common.tools">工具集</a></li>
+                    <li><a href="#about" data-i18n="common.about">关于我们</a></li>
                 </ul>
             </nav>
         </div>
@@ -29,16 +31,35 @@
     <section class="hero">
         <div class="container">
             <div class="hero-content">
-                <h2>一站式在线工具集合</h2>
-                <p>无需下载安装，直接在浏览器中使用各种实用工具</p>
-                <a href="#tools" class="btn btn-primary">立即使用</a>
+                <h2 data-i18n="index.heroTitle" class="typewriter">多功能在线工具箱</h2>
+                <p data-i18n="index.heroSubtitle">无需下载安装，直接在浏览器中使用各种实用工具</p>
+                <a href="#tools" class="btn btn-primary" data-i18n="index.exploreTools">立即使用</a>
             </div>
+        </div>
+        
+        <!-- 添加背景动画元素 -->
+        <div class="hero-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+        </div>
+        
+        <!-- 添加波浪效果 -->
+        <div class="wave-container">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+            </svg>
         </div>
     </section>
 
     <section class="tools-section" id="tools">
         <div class="container">
-            <h2 class="section-title">工具分类</h2>
+            <div class="section-intro">
+                <span class="tools-badge">多样化工具</span>
+                <h2 class="section-title" data-i18n="common.tools">工具分类</h2>
+                <p>我们提供丰富多样的在线工具，涵盖文档处理、图像编辑、视频处理等多个领域，满足您的各种需求。全部工具均在浏览器中运行，无需下载安装，简单高效。</p>
+            </div>
             
             <div class="category-grid">
                 <!-- 文档与文本工具 -->
@@ -129,9 +150,30 @@
 
     <section class="about" id="about">
         <div class="container">
-            <h2 class="section-title">关于我们</h2>
-            <p>工具箱Pro是一个完全免费的在线工具集合，旨在提供高效、易用的工具，帮助用户解决日常工作和生活中的各种需求。我们致力于让每一个工具都简单易用，不需要复杂的学习过程。</p>
-            <p>所有工具均在浏览器中运行，保护您的隐私和数据安全。</p>
+            <h2 class="section-title" data-i18n="common.about">关于我们</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>工具箱Pro是一个完全免费的在线工具集合，旨在提供高效、易用的工具，帮助用户解决日常工作和生活中的各种需求。我们致力于让每一个工具都简单易用，不需要复杂的学习过程。</p>
+                    <p>所有工具均在浏览器中运行，保护您的隐私和数据安全。我们不会存储您的任何数据，所有处理都在您的本地完成。</p>
+                    <div class="features">
+                        <div class="feature">
+                            <i class="ri-lock-line"></i>
+                            <h4>安全可靠</h4>
+                            <p>所有工具均在浏览器中运行，不会上传您的数据，保护您的隐私</p>
+                        </div>
+                        <div class="feature">
+                            <i class="ri-speed-line"></i>
+                            <h4>高效快捷</h4>
+                            <p>直接在浏览器中处理，无需下载安装，节省您的时间</p>
+                        </div>
+                        <div class="feature">
+                            <i class="ri-tools-line"></i>
+                            <h4>功能丰富</h4>
+                            <p>涵盖多个领域的各种工具，满足您的不同需求</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -139,23 +181,39 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-logo">
-                    <h3>工具箱<span>Pro</span></h3>
-                    <p>一站式在线工具集合</p>
+                    <h2>工具箱<span>Pro</span></h2>
+                    <p data-i18n="index.aboutDescription">工具箱Pro是一个为用户提供各种实用工具的平台，我们致力于开发简单易用的在线工具，帮助用户提高工作效率。</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="ri-github-fill"></i></a>
+                        <a href="#" class="social-link"><i class="ri-twitter-fill"></i></a>
+                        <a href="#" class="social-link"><i class="ri-mail-fill"></i></a>
+                    </div>
                 </div>
                 <div class="footer-links">
-                    <h4>快速链接</h4>
+                    <h3 data-i18n="common.tools">工具</h3>
                     <ul>
-                        <li><a href="#tools">所有工具</a></li>
-                        <li><a href="#about">关于我们</a></li>
+                        <li><a href="tools/image-editor.html">图片编辑</a></li>
+                        <li><a href="tools/pdf-tools.html">PDF工具</a></li>
+                        <li><a href="tools/code-formatter.html">代码格式化</a></li>
+                        <li><a href="tools/text-processing.html">文本处理</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h3 data-i18n="common.about">关于</h3>
+                    <ul>
+                        <li><a href="#tools" data-i18n="common.tools">工具</a></li>
+                        <li><a href="#about" data-i18n="common.about">关于</a></li>
+                        <li><a href="#" data-i18n="common.termsOfUse">使用条款</a></li>
+                        <li><a href="#" data-i18n="common.privacyPolicy">隐私政策</a></li>
                     </ul>
                 </div>
             </div>
             <div class="copyright">
-                <p>&copy; 2023 工具箱Pro. 保留所有权利。</p>
+                <p>&copy; 2024 工具箱Pro. <span data-i18n="common.allRightsReserved">版权所有</span>.</p>
             </div>
         </div>
     </footer>
 
     <script src="js/script.js"></script>
 </body>
-</html> i
+</html>

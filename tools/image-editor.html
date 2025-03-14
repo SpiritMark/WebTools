@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="imageEditor.title">图片编辑器 | 工具箱Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/navigation.css">
+    <link rel="stylesheet" href="../css/image-editor.css">
+    <script src="../js/i18n.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html"><h1>工具箱<span>Pro</span></h1></a>
+            </div>
+            <nav class="main-nav">
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="nav-list" id="navList">
+                    <li><a href="../index.html" data-i18n="common.home">首页</a></li>
+                    <li><a href="../index.html#tools" data-i18n="common.tools">工具</a></li>
+                    <li><a href="../index.html#about" data-i18n="common.about">关于</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="tool-container">
+        <div class="container">
+            <div class="tool-header">
+                <h1 class="tool-title" data-i18n="imageEditor.title">图片编辑工具</h1>
+                <p class="tool-description" data-i18n="imageEditor.description">轻松编辑您的图片，调整大小，添加滤镜和效果，完全在浏览器中处理</p>
+            </div>
+            
+            <div class="tool-content">
+                <div id="editor-container" class="editor-container">
+                    <!-- 图片上传区域 -->
+                    <div id="upload-container" class="upload-container">
+                        <div class="upload-area" id="upload-area">
+                            <i class="ri-image-add-line"></i>
+                            <p data-i18n="common.dragAndDrop">拖放图片到此处，或</p>
+                            <label for="image-upload" class="upload-btn" data-i18n="common.upload">选择图片</label>
+                            <input type="file" id="image-upload" accept="image/*" style="display: none;">
+                            <p class="upload-hint" data-i18n="common.supportedFormats">支持格式: JPG, PNG, GIF, BMP, WEBP</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 编辑区域 (初始隐藏) -->
+                    <div id="edit-container" class="edit-container" style="display: none;">
+                        <div class="editor-layout">
+                            <!-- 左侧工具区 -->
+                            <div class="editor-tools">
+                                <div class="tools-tabs">
+                                    <button class="tool-tab active" data-tool="adjustments">
+                                        <i class="ri-contrast-2-line"></i>
+                                        <span data-i18n="imageEditor.adjustments">调整</span>
+                                    </button>
+                                    <button class="tool-tab" data-tool="crop">
+                                        <i class="ri-crop-line"></i>
+                                        <span data-i18n="imageEditor.crop">裁剪</span>
+                                    </button>
+                                    <button class="tool-tab" data-tool="filters">
+                                        <i class="ri-filter-line"></i>
+                                        <span data-i18n="imageEditor.filters">滤镜</span>
+                                    </button>
+                                    <button class="tool-tab" data-tool="text">
+                                        <i class="ri-text"></i>
+                                        <span data-i18n="imageEditor.text">文本</span>
+                                    </button>
+                                    <button class="tool-tab" data-tool="draw">
+                                        <i class="ri-brush-line"></i>
+                                        <span data-i18n="imageEditor.draw">绘图</span>
+                                    </button>
+                                    <button class="tool-tab" data-tool="stickers">
+                                        <i class="ri-sticky-note-line"></i>
+                                        <span data-i18n="imageEditor.stickers">贴纸</span>
+                                    </button>
+                                </div>
+                                
+                                <!-- 调整面板 -->
+                                <div id="adjustments-panel" class="tool-panel active">
+                                    <div class="slider-control">
+                                        <label data-i18n="imageEditor.brightness">亮度</label>
+                                        <div class="range-container">
+                                            <input type="range" id="brightness" class="range-slider" min="-100" max="100" value="0">
+                                            <span class="range-value">0</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="slider-control">
+                                        <label data-i18n="imageEditor.contrast">对比度</label>
+                                        <div class="range-container">
+                                            <input type="range" id="contrast" class="range-slider" min="-100" max="100" value="0">
+                                            <span class="range-value">0</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="slider-control">
+                                        <label data-i18n="imageEditor.saturation">饱和度</label>
+                                        <div class="range-container">
+                                            <input type="range" id="saturation" class="range-slider" min="-100" max="100" value="0">
+                                            <span class="range-value">0</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="transform-buttons">
+                                        <button id="rotate-left" class="transform-btn" title="向左旋转">
+                                            <i class="ri-anticlockwise-line"></i>
+                                        </button>
+                                        <button id="rotate-right" class="transform-btn" title="向右旋转">
+                                            <i class="ri-clockwise-line"></i>
+                                        </button>
+                                        <button id="flip-h" class="transform-btn" title="水平翻转">
+                                            <i class="ri-swap-line"></i>
+                                        </button>
+                                        <button id="flip-v" class="transform-btn" title="垂直翻转">
+                                            <i class="ri-swap-line ri-rotate-90"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- 裁剪面板 -->
+                                <div id="crop-panel" class="tool-panel">
+                                    <div class="crop-presets">
+                                        <button class="crop-preset" data-ratio="free">自由</button>
+                                        <button class="crop-preset" data-ratio="1:1">1:1</button>
+                                        <button class="crop-preset" data-ratio="4:3">4:3</button>
+                                        <button class="crop-preset" data-ratio="16:9">16:9</button>
+                                        <button class="crop-preset" data-ratio="3:4">3:4</button>
+                                        <button class="crop-preset" data-ratio="9:16">9:16</button>
+                                    </div>
+                                    
+                                    <div class="crop-actions">
+                                        <button id="apply-crop" class="btn btn-primary" data-i18n="common.apply">应用</button>
+                                        <button id="cancel-crop" class="btn" data-i18n="common.cancel">取消</button>
+                                    </div>
+                                </div>
+                                
+                                <!-- 滤镜面板 -->
+                                <div id="filters-panel" class="tool-panel">
+                                    <div class="filter-grid" id="filter-grid">
+                                        <!-- 滤镜预览将通过JS动态生成 -->
+                                    </div>
+                                    
+                                    <div class="filter-intensity">
+                                        <label data-i18n="imageEditor.strength">强度</label>
+                                        <div class="range-container">
+                                            <input type="range" id="filter-strength" class="range-slider" min="0" max="100" value="100">
+                                            <span class="range-value">100%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 文本面板 -->
+                                <div id="text-panel" class="tool-panel">
+                                    <div class="text-input-group">
+                                        <textarea id="text-input" class="text-area" placeholder="输入文本" data-i18n="imageEditor.textPlaceholder"></textarea>
+                                    </div>
+                                    
+                                    <div class="text-controls">
+                                        <div class="control-group">
+                                            <label data-i18n="imageEditor.fontFamily">字体</label>
+                                            <select id="font-family">
+                                                <option value="Arial">Arial</option>
+                                                <option value="Verdana">Verdana</option>
+                                                <option value="Helvetica">Helvetica</option>
+                                                <option value="Times New Roman">Times New Roman</option>
+                                                <option value="Courier New">Courier New</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="control-group">
+                                            <label data-i18n="imageEditor.fontSize">字号</label>
+                                            <input type="number" id="font-size" min="8" max="72" value="24">
+                                        </div>
+                                        
+                                        <div class="control-group">
+                                            <label data-i18n="imageEditor.textColor">颜色</label>
+                                            <input type="color" id="text-color" value="#000000">
+                                        </div>
+                                        
+                                        <div class="style-buttons">
+                                            <button id="text-bold" class="style-btn" title="粗体">
+                                                <i class="ri-bold"></i>
+                                            </button>
+                                            <button id="text-italic" class="style-btn" title="斜体">
+                                                <i class="ri-italic"></i>
+                                            </button>
+                                            <button id="text-underline" class="style-btn" title="下划线">
+                                                <i class="ri-underline"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="text-actions">
+                                        <button id="add-text" class="btn btn-primary" data-i18n="imageEditor.addText">添加文本</button>
+                                    </div>
+                                </div>
+                                
+                                <!-- 绘图面板 -->
+                                <div id="draw-panel" class="tool-panel">
+                                    <div class="brush-controls">
+                                        <div class="brush-type-buttons">
+                                            <button class="brush-type active" data-type="brush">
+                                                <i class="ri-brush-line"></i>
+                                            </button>
+                                            <button class="brush-type" data-type="highlighter">
+                                                <i class="ri-mark-pen-line"></i>
+                                            </button>
+                                            <button class="brush-type" data-type="marker">
+                                                <i class="ri-edit-line"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="slider-control">
+                                            <label data-i18n="imageEditor.brushSize">画笔大小</label>
+                                            <div class="range-container small">
+                                                <input type="range" id="brush-size" class="range-slider" min="1" max="50" value="5">
+                                                <span class="range-value">5px</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="control-group">
+                                            <label data-i18n="imageEditor.brushColor">画笔颜色</label>
+                                            <input type="color" id="brush-color" value="#ff0000">
+                                        </div>
+                                        
+                                        <button id="clear-drawing" class="btn" data-i18n="imageEditor.clearDrawing">清除绘图</button>
+                                    </div>
+                                </div>
+                                
+                                <!-- 贴纸面板 -->
+                                <div id="stickers-panel" class="tool-panel">
+                                    <div class="stickers-grid" id="stickers-grid">
+                                        <!-- 贴纸将通过JS动态生成 -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 右侧预览区 -->
+                            <div class="editor-preview">
+                                <div class="preview-container">
+                                    <canvas id="image-canvas"></canvas>
+                                    <canvas id="drawing-layer" class="drawing-layer"></canvas>
+                                </div>
+                                
+                                <div class="image-info">
+                                    <span id="image-dimensions">0 x 0 px</span>
+                                </div>
+                                
+                                <div class="editor-actions">
+                                    <select id="image-format">
+                                        <option value="image/jpeg">JPEG</option>
+                                        <option value="image/png">PNG</option>
+                                        <option value="image/webp">WEBP</option>
+                                    </select>
+                                    
+                                    <div class="quality-control">
+                                        <label>质量:</label>
+                                        <input type="range" id="image-quality" min="0" max="100" value="90">
+                                        <span id="quality-value">90%</span>
+                                    </div>
+                                    
+                                    <div class="spacer"></div>
+                                    
+                                    <button id="download-btn" class="btn btn-primary" data-i18n="imageEditor.downloadImage">
+                                        <i class="ri-download-line"></i> 下载图片
+                                    </button>
+                                    <button id="reset-btn" class="btn" data-i18n="imageEditor.resetImage">
+                                        <i class="ri-refresh-line"></i> 重置图片
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2024 工具箱Pro. <span data-i18n="common.allRightsReserved">版权所有</span>.</p>
+            <div class="footer-links">
+                <a href="#" data-i18n="common.termsOfUse">使用条款</a>
+                <a href="#" data-i18n="common.privacyPolicy">隐私政策</a>
+                <a href="#" data-i18n="common.contactUs">联系我们</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/image-editor.js"></script>
+</body>
+</html> 

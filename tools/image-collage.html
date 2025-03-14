@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>照片拼图 | 工具箱Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/navigation.css">
+    <link rel="stylesheet" href="../css/image-collage.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html"><h1>工具箱<span>Pro</span></h1></a>
+            </div>
+            <nav class="main-nav">
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="nav-list" id="navList">
+                    <li><a href="../index.html">首页</a></li>
+                    <li><a href="../index.html#tools">工具</a></li>
+                    <li><a href="../index.html#about">关于</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="tool-container">
+            <div class="tool-header">
+                <h1>图片拼接</h1>
+                <p>将多张图片拼接成一张精美的拼图，支持多种布局和自定义设置</p>
+            </div>
+
+            <div class="tool-content">
+                <!-- 上传区域 -->
+                <div id="upload-container" class="upload-container">
+                    <div id="upload-area" class="upload-area">
+                        <i class="ri-upload-cloud-2-line"></i>
+                        <p>点击或拖拽图片到此处</p>
+                        <p class="upload-tip">支持多张图片上传</p>
+                        <input type="file" id="image-upload" accept="image/*" multiple hidden>
+                    </div>
+                </div>
+
+                <!-- 编辑区域 -->
+                <div id="editor-container" class="editor-container" style="display: none;">
+                    <div class="editor-layout">
+                        <!-- 左侧预览区 -->
+                        <div class="editor-preview">
+                            <div class="preview-container">
+                                <canvas id="image-canvas"></canvas>
+                            </div>
+                            <div class="preview-controls">
+                                <button id="zoom-in" class="control-btn">
+                                    <i class="ri-zoom-in-line"></i>
+                                </button>
+                                <button id="zoom-out" class="control-btn">
+                                    <i class="ri-zoom-out-line"></i>
+                                </button>
+                                <button id="reset-zoom" class="control-btn">
+                                    <i class="ri-refresh-line"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 右侧编辑区 -->
+                        <div class="editor-sidebar">
+                            <!-- 工具切换 -->
+                            <div class="tool-tabs">
+                                <button class="tool-tab active" data-tab="layout">布局</button>
+                                <button class="tool-tab" data-tab="style">样式</button>
+                                <button class="tool-tab" data-tab="adjust">调整</button>
+                            </div>
+
+                            <!-- 布局面板 -->
+                            <div id="layout-panel" class="tool-panel active">
+                                <div class="panel-header">
+                                    <h3>选择布局</h3>
+                                </div>
+                                <div class="panel-content">
+                                    <div class="layout-grid">
+                                        <button class="layout-item active" data-layout="1x1">
+                                            <div class="layout-preview">
+                                                <div class="preview-cell"></div>
+                                            </div>
+                                            <span>1x1</span>
+                                        </button>
+                                        <button class="layout-item" data-layout="1x2">
+                                            <div class="layout-preview">
+                                                <div class="preview-cell"></div>
+                                                <div class="preview-cell"></div>
+                                            </div>
+                                            <span>1x2</span>
+                                        </button>
+                                        <button class="layout-item" data-layout="2x1">
+                                            <div class="layout-preview">
+                                                <div class="preview-cell"></div>
+                                                <div class="preview-cell"></div>
+                                            </div>
+                                            <span>2x1</span>
+                                        </button>
+                                        <button class="layout-item" data-layout="2x2">
+                                            <div class="layout-preview">
+                                                <div class="preview-cell"></div>
+                                                <div class="preview-cell"></div>
+                                                <div class="preview-cell"></div>
+                                                <div class="preview-cell"></div>
+                                            </div>
+                                            <span>2x2</span>
+                                        </button>
+                                        <button class="layout-item" data-layout="3x1">
+                                            <div class="layout-preview">
+                                                <div class="preview-cell"></div>
+                                                <div class="preview-cell"></div>
+                                                <div class="preview-cell"></div>
+                                            </div>
+                                            <span>3x1</span>
+                                        </button>
+                                        <button class="layout-item" data-layout="1x3">
+                                            <div class="layout-preview">
+                                                <div class="preview-cell"></div>
+                                                <div class="preview-cell"></div>
+                                                <div class="preview-cell"></div>
+                                            </div>
+                                            <span>1x3</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 样式面板 -->
+                            <div id="style-panel" class="tool-panel">
+                                <div class="panel-header">
+                                    <h3>样式设置</h3>
+                                </div>
+                                <div class="panel-content">
+                                    <div class="form-group">
+                                        <label>图片间距</label>
+                                        <input type="range" id="spacing" min="0" max="50" value="10">
+                                        <span class="range-value">10px</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>圆角大小</label>
+                                        <input type="range" id="border-radius" min="0" max="50" value="0">
+                                        <span class="range-value">0px</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>背景颜色</label>
+                                        <div class="color-presets">
+                                            <button class="color-preset active" data-color="#FFFFFF" style="background-color: #FFFFFF;"></button>
+                                            <button class="color-preset" data-color="#F8F9FA" style="background-color: #F8F9FA;"></button>
+                                            <button class="color-preset" data-color="#E9ECEF" style="background-color: #E9ECEF;"></button>
+                                            <button class="color-preset" data-color="#DEE2E6" style="background-color: #DEE2E6;"></button>
+                                        </div>
+                                        <input type="color" id="custom-color" value="#FFFFFF">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 调整面板 -->
+                            <div id="adjust-panel" class="tool-panel">
+                                <div class="panel-header">
+                                    <h3>图片调整</h3>
+                                </div>
+                                <div class="panel-content">
+                                    <div class="image-list">
+                                        <!-- 图片列表将通过JavaScript动态生成 -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 操作按钮 -->
+                            <div class="editor-actions">
+                                <button id="download-btn" class="primary-btn">
+                                    <i class="ri-download-line"></i> 下载拼图
+                                </button>
+                                <button id="reset-btn" class="secondary-btn">
+                                    <i class="ri-refresh-line"></i> 重置
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2024 工具箱Pro. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">使用条款</a>
+                <a href="#">隐私政策</a>
+                <a href="#">联系我们</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/image-collage.js"></script>
+</body>
+</html> 

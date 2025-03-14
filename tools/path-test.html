@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript路径测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        h2 {
+            margin-top: 0;
+            color: #444;
+        }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-left: 3px solid #4CAF50;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+        #loaded-scripts {
+            list-style-type: none;
+            padding: 0;
+        }
+        #loaded-scripts li {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <h1>JavaScript路径测试工具</h1>
+    
+    <section>
+        <h2>当前页面信息</h2>
+        <div id="page-info"></div>
+    </section>
+    
+    <section>
+        <h2>测试脚本加载</h2>
+        <p>点击以下按钮测试不同相对路径的脚本加载:</p>
+        <div>
+            <button onclick="testScriptPath('./js/debug-poster.js')">测试 ./js/debug-poster.js</button>
+            <button onclick="testScriptPath('../js/debug-poster.js')">测试 ../js/debug-poster.js</button>
+            <button onclick="testScriptPath('/js/debug-poster.js')">测试 /js/debug-poster.js</button>
+            <button onclick="testScriptPath('js/debug-poster.js')">测试 js/debug-poster.js</button>
+        </div>
+        <div id="test-result" class="result">点击按钮开始测试</div>
+    </section>
+    
+    <section>
+        <h2>当前已加载的脚本</h2>
+        <ul id="loaded-scripts"></ul>
+    </section>
+    
+    <script>
+        // 显示当前页面信息
+        document.addEventListener('DOMContentLoaded', function() {
+            const pageInfo = document.getElementById('page-info');
+            pageInfo.innerHTML = `
+                <p><strong>页面URL:</strong> ${window.location.href}</p>
+                <p><strong>页面路径:</strong> ${window.location.pathname}</p>
+                <p><strong>域名:</strong> ${window.location.hostname}</p>
+                <p><strong>端口:</strong> ${window.location.port}</p>
+            `;
+            
+            // 列出当前加载的脚本
+            listLoadedScripts();
+        });
+        
+        // 列出所有已加载的脚本
+        function listLoadedScripts() {
+            const scriptsList = document.getElementById('loaded-scripts');
+            const scripts = document.querySelectorAll('script');
+            
+            scripts.forEach((script, index) => {
+                const li = document.createElement('li');
+                li.textContent = script.src || `内联脚本 #${index + 1}`;
+                scriptsList.appendChild(li);
+            });
+        }
+        
+        // 测试脚本路径
+        function testScriptPath(path) {
+            const resultDiv = document.getElementById('test-result');
+            resultDiv.innerHTML = `正在测试路径: <strong>${path}</strong>...`;
+            resultDiv.className = 'result';
+            
+            // 创建一个脚本元素
+            const script = document.createElement('script');
+            script.src = path;
+            
+            // 设置超时
+            const timeout = setTimeout(() => {
+                if (script.parentNode) {
+                    script.parentNode.removeChild(script);
+                }
+                resultDiv.innerHTML = `测试路径 <strong>${path}</strong>: <span class="error">加载超时!</span>`;
+            }, 5000);
+            
+            // 成功加载时
+            script.onload = function() {
+                clearTimeout(timeout);
+                if (script.parentNode) {
+                    script.parentNode.removeChild(script);
+                }
+                resultDiv.innerHTML = `测试路径 <strong>${path}</strong>: <span class="success">加载成功!</span>`;
+                
+                // 尝试调用一个来自该脚本的函数以进一步验证
+                if (typeof window.testPath === 'function') {
+                    resultDiv.innerHTML += `<br>脚本功能验证: <span class="success">函数 testPath 存在!</span>`;
+                } else {
+                    resultDiv.innerHTML += `<br>脚本功能验证: <span class="error">函数 testPath 不存在!</span>`;
+                }
+            };
+            
+            // 加载失败时
+            script.onerror = function() {
+                clearTimeout(timeout);
+                if (script.parentNode) {
+                    script.parentNode.removeChild(script);
+                }
+                resultDiv.innerHTML = `测试路径 <strong>${path}</strong>: <span class="error">加载失败!</span>`;
+            };
+            
+            // 添加到文档中
+            document.head.appendChild(script);
+        }
+    </script>
+</body>
+</html> 

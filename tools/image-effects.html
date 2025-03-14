@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片特效 | 工具箱Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/navigation.css">
+    <link rel="stylesheet" href="../css/image-effects.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html"><h1>工具箱<span>Pro</span></h1></a>
+            </div>
+            <nav class="main-nav">
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="nav-list" id="navList">
+                    <li><a href="../index.html">首页</a></li>
+                    <li><a href="../index.html#tools">工具</a></li>
+                    <li><a href="../index.html#about">关于</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="tool-container">
+            <div class="tool-header">
+                <h1>图片特效</h1>
+                <p>为图片添加各种精美的特效，让您的图片更具艺术感</p>
+            </div>
+
+            <div class="tool-content">
+                <!-- 上传区域 -->
+                <div id="upload-container" class="upload-container">
+                    <div id="upload-area" class="upload-area">
+                        <i class="ri-upload-cloud-2-line"></i>
+                        <p>点击或拖拽图片到此处</p>
+                        <input type="file" id="image-upload" accept="image/*" hidden>
+                    </div>
+                </div>
+
+                <!-- 编辑区域 -->
+                <div id="editor-container" class="editor-container" style="display: none;">
+                    <div class="editor-layout">
+                        <!-- 左侧预览区 -->
+                        <div class="editor-preview">
+                            <div class="preview-container">
+                                <canvas id="image-canvas"></canvas>
+                            </div>
+                            <div class="preview-controls">
+                                <button id="zoom-in" class="control-btn">
+                                    <i class="ri-zoom-in-line"></i>
+                                </button>
+                                <button id="zoom-out" class="control-btn">
+                                    <i class="ri-zoom-out-line"></i>
+                                </button>
+                                <button id="reset-zoom" class="control-btn">
+                                    <i class="ri-refresh-line"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 右侧编辑区 -->
+                        <div class="editor-sidebar">
+                            <!-- 工具切换 -->
+                            <div class="tool-tabs">
+                                <button class="tool-tab active" data-tab="effects">特效</button>
+                                <button class="tool-tab" data-tab="adjust">调整</button>
+                            </div>
+
+                            <!-- 特效面板 -->
+                            <div id="effects-panel" class="tool-panel active">
+                                <div class="panel-header">
+                                    <h3>选择特效</h3>
+                                </div>
+                                <div class="panel-content">
+                                    <div class="effects-grid">
+                                        <button class="effect-item" data-effect="vintage">
+                                            <div class="effect-preview">
+                                                <img src="../images/effects/vintage.jpg" alt="复古">
+                                            </div>
+                                            <span>复古</span>
+                                        </button>
+                                        <button class="effect-item" data-effect="blur">
+                                            <div class="effect-preview">
+                                                <img src="../images/effects/blur.jpg" alt="模糊">
+                                            </div>
+                                            <span>模糊</span>
+                                        </button>
+                                        <button class="effect-item" data-effect="sharpen">
+                                            <div class="effect-preview">
+                                                <img src="../images/effects/sharpen.jpg" alt="锐化">
+                                            </div>
+                                            <span>锐化</span>
+                                        </button>
+                                        <button class="effect-item" data-effect="emboss">
+                                            <div class="effect-preview">
+                                                <img src="../images/effects/emboss.jpg" alt="浮雕">
+                                            </div>
+                                            <span>浮雕</span>
+                                        </button>
+                                        <button class="effect-item" data-effect="edge">
+                                            <div class="effect-preview">
+                                                <img src="../images/effects/edge.jpg" alt="边缘">
+                                            </div>
+                                            <span>边缘</span>
+                                        </button>
+                                        <button class="effect-item" data-effect="pixelate">
+                                            <div class="effect-preview">
+                                                <img src="../images/effects/pixelate.jpg" alt="像素化">
+                                            </div>
+                                            <span>像素化</span>
+                                        </button>
+                                        <button class="effect-item" data-effect="noise">
+                                            <div class="effect-preview">
+                                                <img src="../images/effects/noise.jpg" alt="噪点">
+                                            </div>
+                                            <span>噪点</span>
+                                        </button>
+                                        <button class="effect-item" data-effect="sepia">
+                                            <div class="effect-preview">
+                                                <img src="../images/effects/sepia.jpg" alt="复古">
+                                            </div>
+                                            <span>复古</span>
+                                        </button>
+                                        <button class="effect-item" data-effect="grayscale">
+                                            <div class="effect-preview">
+                                                <img src="../images/effects/grayscale.jpg" alt="黑白">
+                                            </div>
+                                            <span>黑白</span>
+                                        </button>
+                                        <button class="effect-item" data-effect="invert">
+                                            <div class="effect-preview">
+                                                <img src="../images/effects/invert.jpg" alt="反色">
+                                            </div>
+                                            <span>反色</span>
+                                        </button>
+                                        <button class="effect-item" data-effect="posterize">
+                                            <div class="effect-preview">
+                                                <img src="../images/effects/posterize.jpg" alt="海报">
+                                            </div>
+                                            <span>海报</span>
+                                        </button>
+                                        <button class="effect-item" data-effect="solarize">
+                                            <div class="effect-preview">
+                                                <img src="../images/effects/solarize.jpg" alt="曝光">
+                                            </div>
+                                            <span>曝光</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 调整面板 -->
+                            <div id="adjust-panel" class="tool-panel">
+                                <div class="panel-header">
+                                    <h3>参数调整</h3>
+                                </div>
+                                <div class="panel-content">
+                                    <div class="form-group">
+                                        <label>强度</label>
+                                        <input type="range" id="effect-strength" min="0" max="100" value="50">
+                                        <span class="range-value">50%</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>亮度</label>
+                                        <input type="range" id="brightness" min="-100" max="100" value="0">
+                                        <span class="range-value">0</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>对比度</label>
+                                        <input type="range" id="contrast" min="-100" max="100" value="0">
+                                        <span class="range-value">0</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>饱和度</label>
+                                        <input type="range" id="saturation" min="-100" max="100" value="0">
+                                        <span class="range-value">0</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 操作按钮 -->
+                            <div class="editor-actions">
+                                <button id="download-btn" class="primary-btn">
+                                    <i class="ri-download-line"></i> 下载图片
+                                </button>
+                                <button id="reset-btn" class="secondary-btn">
+                                    <i class="ri-refresh-line"></i> 重置
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2024 工具箱Pro. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">使用条款</a>
+                <a href="#">隐私政策</a>
+                <a href="#">联系我们</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/image-effects.js"></script>
+</body>
+</html> 
