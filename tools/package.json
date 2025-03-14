@@ -1,0 +1,21 @@
+{
+  "name": "webpage-snapshot-tool",
+  "version": "1.0.0",
+  "description": "网页快照工具 - 捕获任何网页的高质量截图",
+  "main": "start-snapshot-server.js",
+  "scripts": {
+    "start": "node start-snapshot-server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "puppeteer": "^21.0.0",
+    "uuid": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "private": true,
+  "author": "",
+  "license": "MIT"
+} 

@@ -6,16 +6,16 @@
 // 翻译文本库
 const translations = {
     'zh-CN': {
-  common: {
-      home: '首页',
+        common: {
+            home: '首页',
             tools: '工具集',
             categories: '分类',
             about: '关于我们',
             language: '简体中文',
             allRightsReserved: '版权所有',
-      termsOfUse: '使用条款',
-      privacyPolicy: '隐私政策',
-      contactUs: '联系我们',
+            termsOfUse: '使用条款',
+            privacyPolicy: '隐私政策',
+            contactUs: '联系我们',
             downloadApp: '下载App',
             search: '搜索...',
             supportedFormats: '支持格式: JPG, PNG, GIF, BMP, WEBP'
@@ -35,8 +35,7 @@ const translations = {
             utility: '实用工具',
             design: '设计与创意',
             security: '安全与隐私',
-            development: '开发工具',
-            toolAvailable: '个工具可用'
+            development: '开发工具'
         },
         tools: {
             pdfTools: 'PDF工具',
@@ -56,20 +55,20 @@ const translations = {
     },
     'en': {
         common: {
-      home: 'Home',
-      tools: 'Tools',
+            home: 'Home',
+            tools: 'Tools',
             categories: 'Categories',
-      about: 'About',
+            about: 'About',
             language: 'English',
             allRightsReserved: 'All Rights Reserved',
-      termsOfUse: 'Terms of Use',
-      privacyPolicy: 'Privacy Policy',
-      contactUs: 'Contact Us',
+            termsOfUse: 'Terms of Use',
+            privacyPolicy: 'Privacy Policy',
+            contactUs: 'Contact Us',
             downloadApp: 'Download App',
             search: 'Search...',
             supportedFormats: 'Supported formats: JPG, PNG, GIF, BMP, WEBP'
         },
-  index: {
+        index: {
             title: 'Online Toolbox - All-in-One Online Tools Collection',
             heroTitle: 'Multi-functional Online Toolbox',
             heroSubtitle: 'Use various practical tools directly in your browser without downloading or installing',
@@ -84,8 +83,7 @@ const translations = {
             utility: 'Utility Tools',
             design: 'Design & Creative',
             security: 'Security & Privacy',
-            development: 'Developer Tools',
-            toolAvailable: 'tools available'
+            development: 'Developer Tools'
         },
         tools: {
             pdfTools: 'PDF Tools',
@@ -133,8 +131,7 @@ const translations = {
             utility: '実用ツール',
             design: 'デザインと創造',
             security: 'セキュリティとプライバシー',
-            development: '開発ツール',
-            toolAvailable: 'のツールが利用可能'
+            development: '開発ツール'
         },
         tools: {
             pdfTools: 'PDFツール',
@@ -215,7 +212,7 @@ function updateLanguageIndicator(lang) {
 
 // 翻译元素
 function translateElements(lang) {
-  const elements = document.querySelectorAll('[data-i18n]');
+    const elements = document.querySelectorAll('[data-i18n]');
     elements.forEach(el => {
         const key = el.getAttribute('data-i18n').split('.');
         const namespace = key[0];
@@ -225,10 +222,10 @@ function translateElements(lang) {
             if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
                 if (el.getAttribute('placeholder')) {
                     el.setAttribute('placeholder', translations[lang][namespace][term]);
-        } else {
+                } else {
                     el.value = translations[lang][namespace][term];
-        }
-        } else {
+                }
+            } else {
                 el.textContent = translations[lang][namespace][term];
             }
         }
@@ -251,8 +248,8 @@ function changeLanguage(lang) {
         // 更新页面元素
         translateElements(lang);
         updateLanguageIndicator(lang);
-  
-  // 更新页面标题
+        
+        // 更新页面标题
         const titleEl = document.querySelector('title');
         if (titleEl && titleEl.getAttribute('data-i18n')) {
             const key = titleEl.getAttribute('data-i18n').split('.');

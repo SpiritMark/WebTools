@@ -33,6 +33,120 @@ document.addEventListener('DOMContentLoaded', function() {
         // 当语言变更时，对于一些需要特殊处理的元素进行更新
         updateDynamicElements(lang);
     });
+
+    // 导航栏滚动效果
+    if (header) {
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+    }
+    
+    // 移动端菜单切换
+    const menuToggle = document.getElementById('menuToggle');
+    const navList = document.getElementById('navList');
+    
+    if (menuToggle && navList) {
+        menuToggle.addEventListener('click', function() {
+            navList.classList.toggle('active');
+            
+            // 切换菜单图标
+            const icon = menuToggle.querySelector('i');
+            if (icon) {
+                if (navList.classList.contains('active')) {
+                    icon.classList.remove('ri-menu-line');
+                    icon.classList.add('ri-close-line');
+                } else {
+                    icon.classList.remove('ri-close-line');
+                    icon.classList.add('ri-menu-line');
+                }
+            }
+        });
+        
+        // 点击导航链接后关闭移动菜单
+        const navLinks = navList.querySelectorAll('a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    navList.classList.remove('active');
+                    const icon = menuToggle.querySelector('i');
+                    if (icon) {
+                        icon.classList.remove('ri-close-line');
+                        icon.classList.add('ri-menu-line');
+                    }
+                }
+            });
+        });
+    }
+    
+    // 点击文档其他地方关闭移动菜单
+    document.addEventListener('click', function(event) {
+        if (navList && navList.classList.contains('active')) {
+            if (!navList.contains(event.target) && !menuToggle.contains(event.target)) {
+                navList.classList.remove('active');
+                const icon = menuToggle.querySelector('i');
+                if (icon) {
+                    icon.classList.remove('ri-close-line');
+                    icon.classList.add('ri-menu-line');
+                }
+            }
+        }
+    });
+    
+    // 导航项活动状态控制
+    const setActiveNavItem = () => {
+        const navLinks = document.querySelectorAll('.nav-list a');
+        const currentPath = window.location.pathname;
+        const currentHash = window.location.hash;
+        
+        // 简化路径比较 - 提取最后的文件名
+        const currentPage = currentPath.split('/').pop() || 'index.html';
+        
+        // 先移除所有活动状态
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+        });
+        
+        // 对于主页的特殊处理 - 放在前面确保优先级
+        if (currentPage === '' || currentPage === 'index.html' || currentPage === '/') {
+            const homeLink = document.querySelector('.nav-list a[href="index.html"]');
+            if (homeLink) {
+                homeLink.classList.add('active');
+                return; // 已经处理了首页，不需要继续执行
+            }
+        }
+        
+        // 处理其他页面和锚点链接
+        navLinks.forEach(link => {
+            const linkHref = link.getAttribute('href');
+            
+            // 提取链接的文件名部分
+            let linkPage = '';
+            if (linkHref.startsWith('#')) {
+                linkPage = 'index.html' + linkHref; // 主页上的锚点链接
+            } else {
+                linkPage = linkHref.split('/').pop() || 'index.html';
+            }
+            
+            // 设置活动状态的条件
+            const isCurrentPage = currentPage === linkPage;
+            const isIndexWithHash = currentPage === 'index.html' && linkHref === currentHash;
+            
+            // 如果是当前页面或特殊情况，添加活动状态
+            if (isCurrentPage || isIndexWithHash) {
+                link.classList.add('active');
+            }
+        });
+    };
+    
+    // 初始设置活动状态
+    setActiveNavItem();
+    
+    // 哈希改变时更新活动状态
+    window.addEventListener('hashchange', setActiveNavItem);
 });
 
 // 初始化移动端菜单
@@ -191,29 +305,32 @@ function initCardInteractions() {
         });
     });
     
-    // 为工具列表项添加动画效果
+    // 为工具列表项添加样式 - 修改这里使链接永远可见
     const toolItems = document.querySelectorAll('.tool-list li');
     toolItems.forEach((item, index) => {
-        item.style.opacity = '0';
-        item.style.transform = 'translateX(20px)';
+        // 链接默认可见，但添加淡入效果
+        item.style.opacity = '1';
+        item.style.transform = 'translateX(0)';
         item.style.transition = 'all 0.3s ease';
-        item.style.transitionDelay = `${index * 0.05}s`;
     });
     
+    // 修改卡片悬停时的链接交互效果
     cards.forEach(card => {
         card.addEventListener('mouseenter', function() {
             const items = this.querySelectorAll('.tool-list li');
-            items.forEach(item => {
-                item.style.opacity = '1';
-                item.style.transform = 'translateX(0)';
+            items.forEach((item, index) => {
+                // 悬停时链接有微小的动画效果，但不影响可见性
+                item.style.transform = 'translateX(5px)';
+                item.style.transitionDelay = `${index * 0.05}s`;
             });
         });
         
         card.addEventListener('mouseleave', function() {
             const items = this.querySelectorAll('.tool-list li');
-            items.forEach((item, index) => {
-                item.style.opacity = '0';
-                item.style.transform = 'translateX(20px)';
+            items.forEach((item) => {
+                // 离开时恢复原位，但保持可见
+                item.style.transform = 'translateX(0)';
+                item.style.transitionDelay = '0s';
             });
         });
     });
@@ -253,4 +370,17 @@ function getCurrentPageCategory() {
     }
     
     return 'common';
+}
+
+// 语言切换功能 (如果已有i18n.js，则与其集成)
+function switchLanguage(lang) {
+    if (typeof changeLanguage === 'function') {
+        // 如果存在i18n.js中的changeLanguage函数
+        changeLanguage(lang);
+    } else {
+        // 设置语言Cookie
+        document.cookie = `language=${lang};path=/;max-age=${60*60*24*30}`;
+        // 刷新页面应用新语言
+        window.location.reload();
+    }
 } 

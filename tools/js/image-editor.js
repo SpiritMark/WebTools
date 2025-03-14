@@ -28,9 +28,7 @@ class ImageEditor {
         this.adjustments = {
             brightness: 0,
             contrast: 0,
-            saturation: 0,
-            hue: 0,
-            blur: 0
+            saturation: 0
         };
         
         // 裁剪参数
@@ -132,29 +130,14 @@ class ImageEditor {
         // 确保所有元素都存在
         this.validateElements();
         
-        // 初始化事件监听
+        // 初始化所有事件监听器
         this.initializeEventListeners();
-        
-        // 初始化调整事件监听
         this.initializeAdjustmentListeners();
-        
-        // 初始化裁剪事件监听
         this.initializeCropListeners();
-        
-        // 初始化滤镜事件监听
         this.initializeFilterListeners();
-        
-        // 初始化文字事件监听
         this.initializeTextListeners();
-        
-        // 初始化绘画事件监听
         this.initializeDrawListeners();
-        
-        // 初始化贴纸事件监听
         this.initializeStickerListeners();
-        
-        // 初始化保存按钮
-        this.initializeSaveButton();
         
         console.log('图片编辑器初始化完成');
     }
@@ -208,9 +191,36 @@ class ImageEditor {
         // 工具切换处理
         document.querySelectorAll('.tool-tab').forEach(tab => {
             tab.addEventListener('click', () => {
-                this.switchTool(tab.dataset.tab);
+                const tool = tab.dataset.tool;
+                if (tool) {
+                    this.switchTool(tool);
+                }
             });
         });
+
+        // 下载按钮处理
+        const downloadBtn = document.getElementById('download-btn');
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', () => {
+                this.saveImage();
+            });
+        }
+
+        // 重置按钮处理
+        const resetBtn = document.getElementById('reset-btn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                if (this.originalImage) {
+                    this.currentImage = this.originalImage;
+                    this.adjustments = {
+                        brightness: 0,
+                        contrast: 0,
+                        saturation: 0
+                    };
+                    this.drawImage();
+                }
+            });
+        }
     }
     
     handleImageUpload(file) {
@@ -261,9 +271,9 @@ class ImageEditor {
     }
     
     setupCanvas(img) {
-        // 计算画布大小，保持图片比例
-        const maxWidth = this.canvas.parentElement.clientWidth || 800;
-        const maxHeight = this.canvas.parentElement.clientHeight || 600;
+        // 计算画布大小，保持图片比例，但增大尺寸
+        const maxWidth = Math.max(this.canvas.parentElement.clientWidth || 800, 1000);
+        const maxHeight = Math.max(this.canvas.parentElement.clientHeight || 600, 800);
         let width = img.width;
         let height = img.height;
         
@@ -271,7 +281,7 @@ class ImageEditor {
         this.originalWidth = width;
         this.originalHeight = height;
         
-        // 计算缩放比例
+        // 计算缩放比例，确保画布足够大
         const scale = Math.min(maxWidth / width, maxHeight / height);
         
         width = width * scale;
@@ -294,120 +304,164 @@ class ImageEditor {
     }
     
     drawImage() {
-        if (!this.currentImage) {
-            console.log("No current image to draw");
-            return;
-        }
-        
-        console.log("Drawing image to canvas");
+        if (!this.currentImage) return;
         
         // 清除画布
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // 绘制图片
         this.ctx.save();
         
-        // 应用变换
+        // 处理旋转和翻转
         this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
         this.ctx.rotate((this.rotation * Math.PI) / 180);
         this.ctx.scale(this.flipH ? -1 : 1, this.flipV ? -1 : 1);
         this.ctx.translate(-this.canvas.width / 2, -this.canvas.height / 2);
         
-        // 绘制图片
+        // 绘制当前图片
         this.ctx.drawImage(this.currentImage, 0, 0, this.canvas.width, this.canvas.height);
-        
-        // 绘制文字
-        this.texts.forEach(text => {
-            this.ctx.save();
-            
-            // 设置文字样式
-            this.ctx.font = `${text.bold ? 'bold' : ''} ${text.italic ? 'italic' : ''} ${text.fontSize}px ${text.fontFamily}`;
-            this.ctx.fillStyle = text.color;
-            
-            // 绘制文字
-            this.ctx.fillText(text.text, text.x, text.y);
-            
-            // 绘制下划线
-            if (text.underline) {
-                const metrics = this.ctx.measureText(text.text);
-                this.ctx.beginPath();
-                this.ctx.moveTo(text.x, text.y + 2);
-                this.ctx.lineTo(text.x + metrics.width, text.y + 2);
-                this.ctx.strokeStyle = text.color;
-                this.ctx.lineWidth = 1;
-                this.ctx.stroke();
-            }
-            
-            // 绘制选中框
-            if (text === this.selectedText) {
-                const metrics = this.ctx.measureText(text.text);
-                this.ctx.strokeStyle = '#00ff00';
-                this.ctx.lineWidth = 1;
-                this.ctx.strokeRect(
-                    text.x - 2,
-                    text.y - text.fontSize - 2,
-                    metrics.width + 4,
-                    text.fontSize + 4
-                );
-            }
             
             this.ctx.restore();
-        });
         
-        // 绘制贴纸
-        this.stickers.forEach(sticker => {
+        // 绘制所有贴纸
+        this.stickers.forEach((sticker, index) => {
             this.ctx.save();
             this.ctx.font = `${sticker.size}px Arial`;
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
-            this.ctx.fillText(sticker.icon, sticker.x, sticker.y);
             
-            // 绘制选中框
-            if (sticker === this.selectedSticker) {
+            // 如果是选中的贴纸，绘制边框
+            if (this.selectedSticker === sticker) {
+                const halfSize = sticker.size / 2;
                 this.ctx.strokeStyle = '#00ff00';
-                this.ctx.lineWidth = 1;
+                this.ctx.lineWidth = 2;
                 this.ctx.strokeRect(
-                    sticker.x - sticker.size/2 - 2,
-                    sticker.y - sticker.size/2 - 2,
-                    sticker.size + 4,
-                    sticker.size + 4
+                    sticker.x - halfSize,
+                    sticker.y - halfSize,
+                    sticker.size,
+                    sticker.size
                 );
             }
             
+            this.ctx.fillText(sticker.icon, sticker.x, sticker.y);
             this.ctx.restore();
         });
         
-        // 绘制裁剪框
-        if (this.currentTool === 'crop' && (this.cropWidth !== 0 || this.cropHeight !== 0)) {
-            const x = this.cropStartX + (this.cropWidth < 0 ? this.cropWidth : 0);
-            const y = this.cropStartY + (this.cropHeight < 0 ? this.cropHeight : 0);
-            const width = Math.abs(this.cropWidth);
-            const height = Math.abs(this.cropHeight);
+        // 绘制所有文字
+        this.texts.forEach((text, index) => {
+            this.ctx.save();
             
-            // 绘制半透明遮罩
-            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-            this.ctx.clearRect(x, y, width, height);
+            // 设置文字样式
+            let fontStyle = '';
+            if (text.bold) fontStyle += 'bold ';
+            if (text.italic) fontStyle += 'italic ';
+            this.ctx.font = `${fontStyle}${text.fontSize}px ${text.fontFamily}`;
+            this.ctx.fillStyle = text.color;
             
-            // 绘制裁剪框
-            this.ctx.strokeStyle = '#fff';
+            // 获取文字尺寸
+            const metrics = this.ctx.measureText(text.text);
+            const textWidth = metrics.width;
+            const textHeight = text.fontSize;
+            
+            // 添加text-hover类标记，用于CSS样式
+            if (text.isHovered) {
+                const textElement = document.createElement('div');
+                textElement.classList.add('text-hover');
+                textElement.style.position = 'absolute';
+                
+                // 获取canvas位置
+                const rect = this.canvas.getBoundingClientRect();
+                textElement.style.left = (rect.left + text.x) + 'px';
+                textElement.style.top = (rect.top + text.y - textHeight) + 'px';
+                textElement.style.width = textWidth + 'px';
+                textElement.style.height = textHeight + 'px';
+                textElement.style.pointerEvents = 'none';
+                
+                // 添加到DOM，但会在下一帧移除
+                document.body.appendChild(textElement);
+                setTimeout(() => {
+                    if (textElement.parentNode) {
+                        textElement.parentNode.removeChild(textElement);
+                    }
+                }, 100);
+            }
+            
+            // 如果是选中的文字，绘制边框和背景
+            if (this.selectedText === text) {
+                // 绘制半透明背景
+                this.ctx.fillStyle = 'rgba(46, 102, 231, 0.1)';
+                this.ctx.fillRect(
+                    text.x,
+                    text.y - textHeight,
+                    textWidth,
+                    textHeight
+                );
+                
+                // 绘制边框
+                this.ctx.strokeStyle = '#2e66e7';
             this.ctx.lineWidth = 2;
-            this.ctx.strokeRect(x, y, width, height);
+                this.ctx.strokeRect(
+                    text.x,
+                    text.y - textHeight,
+                    textWidth,
+                    textHeight
+                );
+                
+                // 绘制拖拽手柄提示
+                if (this.isDraggingText) {
+                    const handleSize = 6;
+                    this.ctx.fillStyle = '#2e66e7';
+                    
+                    // 左上角
+                    this.ctx.beginPath();
+                    this.ctx.arc(text.x, text.y - textHeight, handleSize/2, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    
+                    // 右上角
+                    this.ctx.beginPath();
+                    this.ctx.arc(text.x + textWidth, text.y - textHeight, handleSize/2, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    
+                    // 左下角
+                    this.ctx.beginPath();
+                    this.ctx.arc(text.x, text.y, handleSize/2, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    
+                    // 右下角
+                    this.ctx.beginPath();
+                    this.ctx.arc(text.x + textWidth, text.y, handleSize/2, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+            }
             
-            // 绘制控制点
-            this.ctx.fillStyle = '#fff';
-            const handleSize = 8;
-            this.ctx.fillRect(x - handleSize/2, y - handleSize/2, handleSize, handleSize);
-            this.ctx.fillRect(x + width - handleSize/2, y - handleSize/2, handleSize, handleSize);
-            this.ctx.fillRect(x - handleSize/2, y + height - handleSize/2, handleSize, handleSize);
-            this.ctx.fillRect(x + width - handleSize/2, y + height - handleSize/2, handleSize, handleSize);
+            // 恢复文字颜色并绘制文字
+            this.ctx.fillStyle = text.color;
+            this.ctx.fillText(text.text, text.x, text.y);
+            
+            // 绘制下划线
+            if (text.underline) {
+                this.ctx.beginPath();
+                this.ctx.moveTo(text.x, text.y + 2);
+                this.ctx.lineTo(text.x + textWidth, text.y + 2);
+                this.ctx.strokeStyle = text.color;
+                this.ctx.lineWidth = 1;
+                this.ctx.stroke();
         }
         
         this.ctx.restore();
+        });
     }
     
     showEditor() {
         console.log('显示编辑器');
         this.uploadContainer.style.display = 'none';
         this.editContainer.style.display = 'block';
+        
+        // 给Canvas添加container类
+        const canvasParent = this.canvas.parentElement;
+        if (canvasParent && !canvasParent.classList.contains('canvas-container')) {
+            canvasParent.classList.add('canvas-container');
+        }
         
         // 设置初始工具
         this.switchTool('adjust');
@@ -436,7 +490,7 @@ class ImageEditor {
         // 更新UI
         document.querySelectorAll('.tool-tab').forEach(tab => {
             tab.classList.remove('active');
-            if (tab.dataset.tab === tool) {
+            if (tab.dataset.tool === tool) {
                 tab.classList.add('active');
             }
         });
@@ -452,64 +506,67 @@ class ImageEditor {
     initializeAdjustmentListeners() {
         // 亮度调整
         const brightnessSlider = document.getElementById('brightness');
+        if (brightnessSlider) {
         brightnessSlider.addEventListener('input', (e) => {
             this.adjustments.brightness = parseInt(e.target.value);
             this.updateAdjustments();
             this.updateRangeValue('brightness', e.target.value);
         });
+        }
         
         // 对比度调整
         const contrastSlider = document.getElementById('contrast');
+        if (contrastSlider) {
         contrastSlider.addEventListener('input', (e) => {
             this.adjustments.contrast = parseInt(e.target.value);
             this.updateAdjustments();
             this.updateRangeValue('contrast', e.target.value);
         });
+        }
         
         // 饱和度调整
         const saturationSlider = document.getElementById('saturation');
+        if (saturationSlider) {
         saturationSlider.addEventListener('input', (e) => {
             this.adjustments.saturation = parseInt(e.target.value);
             this.updateAdjustments();
             this.updateRangeValue('saturation', e.target.value);
         });
-        
-        // 色调调整
-        const hueSlider = document.getElementById('hue');
-        hueSlider.addEventListener('input', (e) => {
-            this.adjustments.hue = parseInt(e.target.value);
-            this.updateAdjustments();
-            this.updateRangeValue('hue', e.target.value);
-        });
-        
-        // 模糊调整
-        const blurSlider = document.getElementById('blur');
-        blurSlider.addEventListener('input', (e) => {
-            this.adjustments.blur = parseInt(e.target.value);
-            this.updateAdjustments();
-            this.updateRangeValue('blur', e.target.value);
-        });
+        }
         
         // 旋转和翻转按钮
-        document.getElementById('rotate-left').addEventListener('click', () => {
+        const rotateLeft = document.getElementById('rotate-left');
+        const rotateRight = document.getElementById('rotate-right');
+        const flipH = document.getElementById('flip-h');
+        const flipV = document.getElementById('flip-v');
+        
+        if (rotateLeft) {
+            rotateLeft.addEventListener('click', () => {
             this.rotation = (this.rotation - 90) % 360;
             this.drawImage();
         });
+        }
         
-        document.getElementById('rotate-right').addEventListener('click', () => {
+        if (rotateRight) {
+            rotateRight.addEventListener('click', () => {
             this.rotation = (this.rotation + 90) % 360;
             this.drawImage();
         });
+        }
         
-        document.getElementById('flip-h').addEventListener('click', () => {
+        if (flipH) {
+            flipH.addEventListener('click', () => {
             this.flipH = !this.flipH;
             this.drawImage();
         });
+        }
         
-        document.getElementById('flip-v').addEventListener('click', () => {
+        if (flipV) {
+            flipV.addEventListener('click', () => {
             this.flipV = !this.flipV;
             this.drawImage();
         });
+        }
     }
     
     initializeCropListeners() {
@@ -664,39 +721,74 @@ class ImageEditor {
     
     initializeTextListeners() {
         // 添加文字按钮
-        document.getElementById('add-text').addEventListener('click', () => {
-            this.addText();
-        });
-        
-        // 文字样式控制
+        const addTextBtn = document.getElementById('add-text');
+        const textInput = document.getElementById('text-input');
         const fontFamily = document.getElementById('font-family');
         const fontSize = document.getElementById('font-size');
-        const fontColor = document.getElementById('font-color');
+        const fontColor = document.getElementById('text-color');
         const textBold = document.getElementById('text-bold');
         const textItalic = document.getElementById('text-italic');
         const textUnderline = document.getElementById('text-underline');
         
+        if (addTextBtn && textInput) {
+            addTextBtn.addEventListener('click', () => {
+                const text = textInput.value.trim();
+                if (!text) return;
+
+                const textObj = {
+                    text: text,
+                    x: this.canvas.width / 2,
+                    y: this.canvas.height / 2,
+                    fontFamily: fontFamily ? fontFamily.value : 'Arial',
+                    fontSize: fontSize ? parseInt(fontSize.value) : 24,
+                    color: fontColor ? fontColor.value : '#000000',
+                    bold: false,
+                    italic: false,
+                    underline: false
+                };
+
+                this.texts.push(textObj);
+                this.selectedText = textObj;
+                textInput.value = '';
+
+                // 更新UI
+                if (textBold) textBold.classList.remove('active');
+                if (textItalic) textItalic.classList.remove('active');
+                if (textUnderline) textUnderline.classList.remove('active');
+
+                this.drawImage();
+            });
+        }
+
+        // 文字样式控制
+        if (fontFamily) {
         fontFamily.addEventListener('change', () => {
             if (this.selectedText) {
                 this.selectedText.fontFamily = fontFamily.value;
                 this.drawImage();
             }
         });
+        }
         
+        if (fontSize) {
         fontSize.addEventListener('change', () => {
             if (this.selectedText) {
                 this.selectedText.fontSize = parseInt(fontSize.value);
                 this.drawImage();
             }
         });
+        }
         
+        if (fontColor) {
         fontColor.addEventListener('input', () => {
             if (this.selectedText) {
                 this.selectedText.color = fontColor.value;
                 this.drawImage();
             }
         });
+        }
         
+        if (textBold) {
         textBold.addEventListener('click', () => {
             if (this.selectedText) {
                 this.selectedText.bold = !this.selectedText.bold;
@@ -704,7 +796,9 @@ class ImageEditor {
                 this.drawImage();
             }
         });
+        }
         
+        if (textItalic) {
         textItalic.addEventListener('click', () => {
             if (this.selectedText) {
                 this.selectedText.italic = !this.selectedText.italic;
@@ -712,7 +806,9 @@ class ImageEditor {
                 this.drawImage();
             }
         });
+        }
         
+        if (textUnderline) {
         textUnderline.addEventListener('click', () => {
             if (this.selectedText) {
                 this.selectedText.underline = !this.selectedText.underline;
@@ -720,25 +816,325 @@ class ImageEditor {
                 this.drawImage();
             }
         });
-        
-        // 画布鼠标事件
+        }
+
+        // 创建拖拽辅助元素
+        this.createDragHelpers();
+
+        // 文字拖拽功能 - 完全重写
+        // 鼠标按下事件 - 检测并选择文字
         this.canvas.addEventListener('mousedown', (e) => {
-            if (this.currentTool === 'text') {
-                this.handleTextMouseDown(e);
+            if (this.isDraggingSticker) return; // 如果正在拖动贴纸，不处理文字
+            
+            const rect = this.canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // 检查是否点击了文字
+            let clickedText = null;
+            for (let i = this.texts.length - 1; i >= 0; i--) {
+                const text = this.texts[i];
+                
+                this.ctx.save();
+                let fontStyle = '';
+                if (text.bold) fontStyle += 'bold ';
+                if (text.italic) fontStyle += 'italic ';
+                this.ctx.font = `${fontStyle}${text.fontSize}px ${text.fontFamily}`;
+                
+                const metrics = this.ctx.measureText(text.text);
+                const textWidth = metrics.width;
+                const textHeight = text.fontSize;
+                this.ctx.restore();
+                
+                // 扩大检测区域，使文字更容易选中
+                const padding = 10;
+                if (x >= text.x - padding && 
+                    x <= text.x + textWidth + padding &&
+                    y >= text.y - textHeight - padding && 
+                    y <= text.y + padding) {
+                    clickedText = text;
+                    break;
+                }
+            }
+            
+            if (clickedText) {
+                console.log('选中文字并开始拖动:', clickedText.text);
+                // 选中文字并开始拖动
+                this.selectedText = clickedText;
+                this.isDraggingText = true;
+                this.dragStartX = x - clickedText.x;
+                this.dragStartY = y - clickedText.y;
+                
+                // 设置鼠标样式
+                this.canvas.style.cursor = 'grabbing';
+                
+                // 添加拖拽状态类
+                const canvasParent = this.canvas.parentElement;
+                if (canvasParent) {
+                    canvasParent.classList.add('canvas-is-dragging');
+                }
+                
+                // 显示拖拽指示器
+                this.showTextDragIndicator(clickedText);
+                
+                // 强制重绘以显示选中状态
+                this.drawImage();
+                
+                // 阻止默认行为和事件冒泡
+                e.preventDefault();
+                e.stopPropagation();
+            } else if (e.target === this.canvas && !this.isDraggingText) {
+                // 点击画布空白处，取消选中
+                this.selectedText = null;
+                this.hideTextDragIndicator();
+                this.drawImage();
             }
         });
         
+        // 鼠标移动事件 - 处理文字拖动
+        document.addEventListener('mousemove', (e) => {
+            if (!this.isDraggingText || !this.selectedText) return;
+            
+            const rect = this.canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // 计算新位置
+            const newX = x - this.dragStartX;
+            const newY = y - this.dragStartY;
+            
+            // 直接更新文字位置
+            this.selectedText.x = newX;
+            this.selectedText.y = newY;
+            
+            // 更新拖拽指示器位置
+            this.updateTextDragIndicator(newX, newY);
+            
+            // 重绘画布
+            this.drawImage();
+            
+            // 阻止默认行为和事件冒泡，确保不会干扰拖动
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        
+        // 鼠标抬起事件 - 结束拖动
+        document.addEventListener('mouseup', (e) => {
+            if (this.isDraggingText) {
+                console.log('结束拖动文字');
+                this.isDraggingText = false;
+                this.canvas.style.cursor = 'default';
+                
+                // 移除拖拽状态类
+                const canvasParent = this.canvas.parentElement;
+                if (canvasParent) {
+                    canvasParent.classList.remove('canvas-is-dragging');
+                }
+                
+                // 隐藏拖拽指示器
+                this.hideTextDragGuides();
+                
+                // 阻止事件冒泡，确保不触发其他事件
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
+        
+        // 鼠标悬停事件 - 改变鼠标样式
         this.canvas.addEventListener('mousemove', (e) => {
-            if (this.currentTool === 'text' && this.isDraggingText) {
-                this.handleTextMouseMove(e);
+            if (this.isDraggingText) return; // 如果正在拖动，不改变样式
+            
+            const rect = this.canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // 检查鼠标是否在文字上
+            let isOverText = false;
+            let hoveredText = null;
+            
+            for (let i = this.texts.length - 1; i >= 0; i--) {
+                const text = this.texts[i];
+                
+                this.ctx.save();
+                let fontStyle = '';
+                if (text.bold) fontStyle += 'bold ';
+                if (text.italic) fontStyle += 'italic ';
+                this.ctx.font = `${fontStyle}${text.fontSize}px ${text.fontFamily}`;
+                
+                const metrics = this.ctx.measureText(text.text);
+                const textWidth = metrics.width;
+                const textHeight = text.fontSize;
+                this.ctx.restore();
+                
+                // 检测区域
+                const padding = 10;
+                if (x >= text.x - padding && 
+                    x <= text.x + textWidth + padding &&
+                    y >= text.y - textHeight - padding && 
+                    y <= text.y + padding) {
+                    isOverText = true;
+                    hoveredText = text;
+                    
+                    // 为当前文本添加hover类标记
+                    text.isHovered = true;
+                    break;
+                } else {
+                    text.isHovered = false;
+                }
+            }
+            
+            // 设置鼠标样式
+            this.canvas.style.cursor = isOverText ? 'grab' : 'default';
+            
+            // 显示或隐藏文本拖拽提示
+            if (isOverText && hoveredText) {
+                this.showTextDragHandle(hoveredText);
+            } else {
+                this.hideTextDragHandle();
             }
         });
+    }
+    
+    // 创建拖拽辅助元素
+    createDragHelpers() {
+        // 文本拖动指示器
+        this.textDragIndicator = document.createElement('div');
+        this.textDragIndicator.className = 'text-position-indicator';
+        this.textDragIndicator.style.display = 'none';
+        document.querySelector('.editor-preview').appendChild(this.textDragIndicator);
         
-        this.canvas.addEventListener('mouseup', () => {
-            if (this.currentTool === 'text' && this.isDraggingText) {
-                this.handleTextMouseUp();
-            }
-        });
+        // 文本拖动辅助线
+        this.dragGuides = document.createElement('div');
+        this.dragGuides.className = 'drag-guides';
+        this.dragGuides.style.display = 'none';
+        
+        // 水平辅助线
+        this.horizontalGuide = document.createElement('div');
+        this.horizontalGuide.className = 'drag-guide-horizontal';
+        this.dragGuides.appendChild(this.horizontalGuide);
+        
+        // 垂直辅助线
+        this.verticalGuide = document.createElement('div');
+        this.verticalGuide.className = 'drag-guide-vertical';
+        this.dragGuides.appendChild(this.verticalGuide);
+        
+        document.querySelector('.editor-preview').appendChild(this.dragGuides);
+        
+        // 文本拖动手柄
+        this.textDragHandle = document.createElement('div');
+        this.textDragHandle.className = 'text-drag-handle';
+        this.textDragHandle.innerHTML = '<span style="margin-right:4px;">✋</span> 拖动文字';
+        this.textDragHandle.style.display = 'none';
+        document.querySelector('.editor-preview').appendChild(this.textDragHandle);
+    }
+    
+    // 显示文本拖动手柄
+    showTextDragHandle(text) {
+        if (!this.textDragHandle) return;
+        
+        const rect = this.canvas.getBoundingClientRect();
+        this.ctx.save();
+        let fontStyle = '';
+        if (text.bold) fontStyle += 'bold ';
+        if (text.italic) fontStyle += 'italic ';
+        this.ctx.font = `${fontStyle}${text.fontSize}px ${text.fontFamily}`;
+        
+        const metrics = this.ctx.measureText(text.text);
+        const textWidth = metrics.width;
+        this.ctx.restore();
+        
+        // 设置手柄位置
+        const handleX = rect.left + text.x + textWidth/2;
+        const handleY = rect.top + text.y - text.fontSize - 10;
+        
+        this.textDragHandle.style.left = `${handleX}px`;
+        this.textDragHandle.style.top = `${handleY}px`;
+        this.textDragHandle.style.display = 'block';
+    }
+    
+    // 隐藏文本拖动手柄
+    hideTextDragHandle() {
+        if (this.textDragHandle) {
+            this.textDragHandle.style.display = 'none';
+        }
+    }
+    
+    // 显示文本拖动指示器
+    showTextDragIndicator(text) {
+        if (!this.textDragIndicator || !this.dragGuides) return;
+        
+        const rect = this.canvas.getBoundingClientRect();
+        this.ctx.save();
+        let fontStyle = '';
+        if (text.bold) fontStyle += 'bold ';
+        if (text.italic) fontStyle += 'italic ';
+        this.ctx.font = `${fontStyle}${text.fontSize}px ${text.fontFamily}`;
+        
+        const metrics = this.ctx.measureText(text.text);
+        const textWidth = metrics.width;
+        this.ctx.restore();
+        
+        // 设置指示器位置
+        const indicatorX = rect.left + text.x + textWidth/2;
+        const indicatorY = rect.top + text.y - text.fontSize - 25;
+        
+        this.textDragIndicator.style.left = `${indicatorX}px`;
+        this.textDragIndicator.style.top = `${indicatorY}px`;
+        this.textDragIndicator.textContent = `X: ${Math.round(text.x)}, Y: ${Math.round(text.y)}`;
+        this.textDragIndicator.style.display = 'block';
+        
+        // 设置辅助线位置
+        this.dragGuides.style.display = 'block';
+        this.dragGuides.style.left = `${rect.left}px`;
+        this.dragGuides.style.top = `${rect.top}px`;
+        this.dragGuides.style.width = `${this.canvas.width}px`;
+        this.dragGuides.style.height = `${this.canvas.height}px`;
+        
+        this.horizontalGuide.style.top = `${text.y}px`;
+        this.verticalGuide.style.left = `${text.x + textWidth/2}px`;
+    }
+    
+    // 更新文本拖动指示器
+    updateTextDragIndicator(x, y) {
+        if (!this.textDragIndicator || !this.dragGuides) return;
+        
+        const rect = this.canvas.getBoundingClientRect();
+        this.ctx.save();
+        let fontStyle = '';
+        if (this.selectedText.bold) fontStyle += 'bold ';
+        if (this.selectedText.italic) fontStyle += 'italic ';
+        this.ctx.font = `${fontStyle}${this.selectedText.fontSize}px ${this.selectedText.fontFamily}`;
+        
+        const metrics = this.ctx.measureText(this.selectedText.text);
+        const textWidth = metrics.width;
+        this.ctx.restore();
+        
+        // 更新指示器位置
+        const indicatorX = rect.left + x + textWidth/2;
+        const indicatorY = rect.top + y - this.selectedText.fontSize - 25;
+        
+        this.textDragIndicator.style.left = `${indicatorX}px`;
+        this.textDragIndicator.style.top = `${indicatorY}px`;
+        this.textDragIndicator.textContent = `X: ${Math.round(x)}, Y: ${Math.round(y)}`;
+        
+        // 更新辅助线位置
+        this.horizontalGuide.style.top = `${y}px`;
+        this.verticalGuide.style.left = `${x + textWidth/2}px`;
+    }
+    
+    // 隐藏文本拖动指示器
+    hideTextDragIndicator() {
+        if (this.textDragIndicator) {
+            this.textDragIndicator.style.display = 'none';
+        }
+    }
+    
+    // 隐藏文本拖动辅助线
+    hideTextDragGuides() {
+        if (this.dragGuides) {
+            this.dragGuides.style.display = 'none';
+        }
+        this.hideTextDragIndicator();
     }
     
     initializeDrawListeners() {
@@ -796,6 +1192,8 @@ class ImageEditor {
     initializeStickerListeners() {
         // 初始化贴纸网格
         const stickersGrid = document.querySelector('.stickers-grid');
+        if (!stickersGrid) return;
+        
         this.stickerList.forEach(sticker => {
             const stickerElement = document.createElement('div');
             stickerElement.className = 'sticker-item';
@@ -811,21 +1209,19 @@ class ImageEditor {
         
         // 画布鼠标事件
         this.canvas.addEventListener('mousedown', (e) => {
-            if (this.currentTool === 'stickers') {
                 this.handleStickerMouseDown(e);
-            }
         });
         
         this.canvas.addEventListener('mousemove', (e) => {
-            if (this.currentTool === 'stickers' && this.isDraggingSticker) {
                 this.handleStickerMouseMove(e);
-            }
         });
         
         this.canvas.addEventListener('mouseup', () => {
-            if (this.currentTool === 'stickers' && this.isDraggingSticker) {
                 this.handleStickerMouseUp();
-            }
+        });
+        
+        this.canvas.addEventListener('mouseleave', () => {
+            this.handleStickerMouseUp();
         });
     }
     
@@ -1009,24 +1405,6 @@ class ImageEditor {
                 data[i + 1] = gray + (data[i + 1] - gray) * (1 + this.adjustments.saturation / 100);
                 data[i + 2] = gray + (data[i + 2] - gray) * (1 + this.adjustments.saturation / 100);
             }
-            
-            // 色调
-            if (this.adjustments.hue !== 0) {
-                const hsv = this.rgbToHsv(data[i], data[i + 1], data[i + 2]);
-                hsv[0] = (hsv[0] + this.adjustments.hue) % 360;
-                const rgb = this.hsvToRgb(hsv[0], hsv[1], hsv[2]);
-                data[i] = rgb[0];
-                data[i + 1] = rgb[1];
-                data[i + 2] = rgb[2];
-            }
-        }
-        
-        // 应用模糊
-        if (this.adjustments.blur > 0) {
-            tempCtx.putImageData(imageData, 0, 0);
-            tempCtx.filter = `blur(${this.adjustments.blur}px)`;
-            tempCtx.drawImage(tempCanvas, 0, 0);
-            imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
         }
         
         // 更新当前图片
@@ -1202,79 +1580,6 @@ class ImageEditor {
         this.drawImage();
     }
     
-    addText() {
-        const textInput = document.getElementById('text-input');
-        const text = textInput.value.trim();
-        
-        if (!text) return;
-        
-        const textObj = {
-            text: text,
-            x: this.canvas.width / 2,
-            y: this.canvas.height / 2,
-            fontFamily: document.getElementById('font-family').value,
-            fontSize: parseInt(document.getElementById('font-size').value),
-            color: document.getElementById('font-color').value,
-            bold: false,
-            italic: false,
-            underline: false
-        };
-        
-        this.texts.push(textObj);
-        this.selectedText = textObj;
-        textInput.value = '';
-        
-        // 更新UI
-        document.getElementById('text-bold').classList.remove('active');
-        document.getElementById('text-italic').classList.remove('active');
-        document.getElementById('text-underline').classList.remove('active');
-        
-        this.drawImage();
-    }
-    
-    handleTextMouseDown(e) {
-        const rect = this.canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        // 检查是否点击了文字
-        this.selectedText = null;
-        for (let i = this.texts.length - 1; i >= 0; i--) {
-            const text = this.texts[i];
-            const metrics = this.ctx.measureText(text.text);
-            const textWidth = metrics.width;
-            const textHeight = text.fontSize;
-            
-            if (x >= text.x && x <= text.x + textWidth &&
-                y >= text.y - textHeight && y <= text.y) {
-                this.selectedText = text;
-                this.isDraggingText = true;
-                this.dragStartX = x - text.x;
-                this.dragStartY = y - text.y;
-                break;
-            }
-        }
-        
-        this.drawImage();
-    }
-    
-    handleTextMouseMove(e) {
-        if (!this.selectedText || !this.isDraggingText) return;
-        
-        const rect = this.canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        this.selectedText.x = x - this.dragStartX;
-        this.selectedText.y = y - this.dragStartY;
-        
-        this.drawImage();
-    }
-    
-    handleTextMouseUp() {
-        this.isDraggingText = false;
-    }
-    
     setBrushType(type) {
         this.brushType = type;
         
@@ -1368,6 +1673,12 @@ class ImageEditor {
     }
     
     handleStickerMouseDown(e) {
+        // 如果正在拖动文字，不处理贴纸
+        if (this.isDraggingText) return;
+        
+        // 只有在贴纸工具激活时才处理贴纸
+        if (this.currentTool !== 'stickers') return;
+        
         const rect = this.canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
@@ -1376,10 +1687,14 @@ class ImageEditor {
         this.selectedSticker = null;
         for (let i = this.stickers.length - 1; i >= 0; i--) {
             const sticker = this.stickers[i];
-            const stickerSize = sticker.size;
+            const halfSize = sticker.size / 2;
             
-            if (x >= sticker.x - stickerSize/2 && x <= sticker.x + stickerSize/2 &&
-                y >= sticker.y - stickerSize/2 && y <= sticker.y + stickerSize/2) {
+            // 扩大点击检测区域
+            const padding = 10;
+            if (x >= sticker.x - halfSize - padding && 
+                x <= sticker.x + halfSize + padding &&
+                y >= sticker.y - halfSize - padding && 
+                y <= sticker.y + halfSize + padding) {
                 this.selectedSticker = sticker;
                 this.isDraggingSticker = true;
                 this.dragStartX = x - sticker.x;
@@ -1398,8 +1713,10 @@ class ImageEditor {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         
-        this.selectedSticker.x = x - this.dragStartX;
-        this.selectedSticker.y = y - this.dragStartY;
+        // 限制贴纸在画布范围内
+        const halfSize = this.selectedSticker.size / 2;
+        this.selectedSticker.x = Math.max(halfSize, Math.min(x - this.dragStartX, this.canvas.width - halfSize));
+        this.selectedSticker.y = Math.max(halfSize, Math.min(y - this.dragStartY, this.canvas.height - halfSize));
         
         this.drawImage();
     }

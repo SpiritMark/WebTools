@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="webpageSnapshot.title">网页快照工具 | 工具箱Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/navigation.css">
+    <link rel="stylesheet" href="../css/webpage-snapshot.css">
+    <script src="../js/i18n.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html"><h1>工具箱<span>Pro</span></h1></a>
+            </div>
+            <nav class="main-nav">
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="nav-list" id="navList">
+                    <li><a href="../index.html" data-i18n="common.home">首页</a></li>
+                    <li><a href="../index.html#tools" data-i18n="common.tools">工具</a></li>
+                    <li><a href="../index.html#about" data-i18n="common.about">关于</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="tool-container">
+        <div class="container">
+            <div class="tool-header">
+                <h1 class="tool-title" data-i18n="webpageSnapshot.title">网页快照工具</h1>
+                <p class="tool-description" data-i18n="webpageSnapshot.description">快速捕获网页的完整快照，保存为图片或PDF格式</p>
+            </div>
+            
+            <div class="tool-content">
+                <div class="snapshot-container">
+                    <!-- URL输入区域 -->
+                    <div class="input-section">
+                        <div class="url-input-container">
+                            <input type="url" id="urlInput" class="url-input" placeholder="请输入网页URL (https://...)" required>
+                            <button id="captureBtn" class="capture-btn">
+                                <i class="ri-camera-line"></i> 捕获快照
+                            </button>
+                        </div>
+                        
+                        <div class="example-urls">
+                            <span>示例: </span>
+                            <a href="#" class="example-url" data-url="https://www.baidu.com">百度</a>
+                            <a href="#" class="example-url" data-url="https://www.zhihu.com">知乎</a>
+                            <a href="#" class="example-url" data-url="https://www.bilibili.com">哔哩哔哩</a>
+                        </div>
+                    </div>
+                    
+                    <!-- 选项设置区域 -->
+                    <div class="options-section">
+                        <div class="options-header">
+                            <h3>快照选项</h3>
+                            <button id="toggleOptions" class="toggle-options">
+                                <i class="ri-settings-3-line"></i> 显示更多选项
+                            </button>
+                        </div>
+                        
+                        <div class="options-content" id="optionsContent">
+                            <div class="option-group">
+                                <label for="deviceSelect">设备类型:</label>
+                                <select id="deviceSelect" class="option-select">
+                                    <option value="desktop">桌面电脑</option>
+                                    <option value="tablet">平板电脑</option>
+                                    <option value="mobile">手机</option>
+                                    <option value="custom">自定义尺寸</option>
+                                </select>
+                            </div>
+                            
+                            <div class="option-group custom-dimensions" id="customDimensions" style="display: none;">
+                                <div class="dimension-input">
+                                    <label for="widthInput">宽度 (px):</label>
+                                    <input type="number" id="widthInput" min="320" max="3840" value="1920">
+                                </div>
+                                <div class="dimension-input">
+                                    <label for="heightInput">高度 (px):</label>
+                                    <input type="number" id="heightInput" min="320" max="2160" value="1080">
+                                </div>
+                            </div>
+                            
+                            <div class="option-group">
+                                <label for="formatSelect">输出格式:</label>
+                                <select id="formatSelect" class="option-select">
+                                    <option value="png">PNG图片</option>
+                                    <option value="jpg">JPG图片</option>
+                                    <option value="pdf">PDF文档</option>
+                                </select>
+                            </div>
+                            
+                            <div class="option-group">
+                                <label for="fullPageCheckbox" class="checkbox-label">
+                                    <input type="checkbox" id="fullPageCheckbox">
+                                    <span>捕获完整页面</span>
+                                </label>
+                            </div>
+                            
+                            <div class="option-group">
+                                <label for="delaySelect">加载延迟:</label>
+                                <select id="delaySelect" class="option-select">
+                                    <option value="0">无延迟</option>
+                                    <option value="1">1秒</option>
+                                    <option value="3" selected>3秒</option>
+                                    <option value="5">5秒</option>
+                                    <option value="10">10秒</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 处理状态区域 -->
+                    <div class="status-section" id="statusSection" style="display: none;">
+                        <div class="status-spinner">
+                            <i class="ri-loader-4-line"></i>
+                        </div>
+                        <div class="status-message" id="statusMessage">正在加载网页...</div>
+                        <div class="progress-container">
+                            <div class="progress-bar" id="progressBar"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 结果展示区域 -->
+                    <div class="result-section" id="resultSection" style="display: none;">
+                        <div class="result-header">
+                            <h3>快照结果</h3>
+                            <div class="result-actions">
+                                <button id="downloadBtn" class="result-action-btn">
+                                    <i class="ri-download-line"></i> 下载
+                                </button>
+                                <button id="copyBtn" class="result-action-btn">
+                                    <i class="ri-clipboard-line"></i> 复制
+                                </button>
+                                <button id="shareBtn" class="result-action-btn">
+                                    <i class="ri-share-line"></i> 分享
+                                </button>
+                                <button id="newCaptureBtn" class="result-action-btn">
+                                    <i class="ri-add-line"></i> 新建快照
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="result-preview" id="resultPreview">
+                            <img id="resultImage" alt="网页快照预览">
+                        </div>
+                        
+                        <div class="result-info">
+                            <div class="info-item">
+                                <span class="info-label">捕获URL:</span>
+                                <span class="info-value" id="capturedUrl"></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">捕获时间:</span>
+                                <span class="info-value" id="captureTime"></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">图片尺寸:</span>
+                                <span class="info-value" id="imageSize"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 历史记录区域 -->
+                    <div class="history-section">
+                        <div class="history-header">
+                            <h3>历史记录</h3>
+                            <button id="clearHistory" class="clear-history-btn">
+                                <i class="ri-delete-bin-line"></i> 清空历史
+                            </button>
+                        </div>
+                        
+                        <div class="history-items" id="historyItems">
+                            <!-- 历史记录项将通过JavaScript动态添加 -->
+                            <div class="empty-history">暂无历史记录</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2024 工具箱Pro. <span data-i18n="common.allRightsReserved">版权所有</span>.</p>
+            <div class="footer-links">
+                <a href="#" data-i18n="common.termsOfUse">使用条款</a>
+                <a href="#" data-i18n="common.privacyPolicy">隐私政策</a>
+                <a href="#" data-i18n="common.contactUs">联系我们</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="./js/webpage-snapshot.js"></script>
+</body>
+</html> 

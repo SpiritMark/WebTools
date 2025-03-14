@@ -1,40 +1,63 @@
 /* 导航样式 */
 .header {
-    background-color: #fff;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+    padding: 15px 0;
     position: sticky;
     top: 0;
+    transition: all 0.3s ease;
     z-index: 1000;
-    transition: box-shadow 0.3s ease;
-    height: 70px;
-    display: flex;
-    align-items: center;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* 缩小状态下的导航栏（滚动后） */
+.header.scrolled {
+    padding: 10px 0;
+    background-color: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
 }
 
 .header .container {
+    align-items: center;
     display: flex;
     justify-content: space-between;
-    align-items: center;
 }
 
 .logo {
-    display: flex;
-    align-items: center;
-}
-
-.logo a {
-    text-decoration: none;
-    color: #333;
+    transition: all 0.3s ease;
 }
 
 .logo h1 {
     font-size: 24px;
     font-weight: 700;
     margin: 0;
+    color: #333;
+    position: relative;
+    display: inline-block;
+}
+
+.logo h1::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #4c6ef5, #15aabf);
+    transition: width 0.3s ease;
+}
+
+.logo:hover h1::after {
+    width: 100%;
 }
 
 .logo span {
-    color: #5e5cc7;
+    background: linear-gradient(135deg, #4c6ef5, #15aabf);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 800;
 }
 
 .main-nav {
@@ -44,90 +67,341 @@
 
 .nav-list {
     display: flex;
+    gap: 8px;
+    list-style: none;
     margin: 0;
     padding: 0;
-    list-style: none;
+    transition: all 0.3s ease;
 }
 
 .nav-list li {
-    margin: 0 15px;
+    position: relative;
 }
 
 .nav-list a {
-    text-decoration: none;
     color: #555;
-    font-weight: 500;
+    display: block;
     font-size: 16px;
-    padding: 8px 0;
+    font-weight: 500;
+    padding: 10px 16px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-radius: 30px;
     position: relative;
-    transition: color 0.3s ease;
+    z-index: 1;
 }
 
-.nav-list a:hover,
-.nav-list a.active {
-    color: #5e5cc7;
-}
-
-.nav-list a::after {
+.nav-list a::before {
     content: '';
     position: absolute;
-    bottom: 0;
+    top: 0;
     left: 0;
-    width: 0;
-    height: 2px;
-    background-color: #5e5cc7;
-    transition: width 0.3s ease;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(76, 110, 245, 0.1), rgba(21, 170, 191, 0.1));
+    border-radius: 30px;
+    z-index: -1;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 0.3s ease;
 }
 
-.nav-list a:hover::after,
+.nav-list a:hover {
+    color: #4c6ef5;
+}
+
+.nav-list a:hover::before {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.nav-list a.active {
+    color: #fff;
+    font-weight: 600;
+    position: relative;
+}
+
+.nav-list a.active::before {
+    background: linear-gradient(135deg, #4c6ef5, #15aabf);
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 4px 15px rgba(76, 110, 245, 0.3);
+}
+
+/* 移除选中项的额外指示器和动画 */
 .nav-list a.active::after {
+    display: none;
+}
+
+/* 移除高亮动画效果 */
+.nav-list a.highlight-active::before {
+    animation: none;
+}
+
+/* 二级菜单样式 */
+.nav-list .submenu {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    display: none;
+    left: 0;
+    min-width: 200px;
+    opacity: 0;
+    padding: 10px;
+    position: absolute;
+    top: 100%;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+.nav-list li:hover .submenu {
+    display: block;
+    opacity: 1;
+    transform: translateY(5px);
+}
+
+.submenu li {
+    margin: 0;
     width: 100%;
 }
 
-.mobile-menu-btn {
-    display: none;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 24px;
-    color: #333;
+.submenu a {
+    border-radius: 8px;
+    color: #555;
+    font-size: 14px;
+    padding: 10px 15px;
+    transition: all 0.2s ease;
 }
 
-/* 移动端样式 */
+.submenu a:hover {
+    background-color: rgba(76, 110, 245, 0.08);
+    color: #4c6ef5;
+}
+
+/* 移动菜单按钮 */
+.mobile-menu-btn {
+    background: none;
+    border: none;
+    color: #333;
+    cursor: pointer;
+    display: none;
+    font-size: 24px;
+    padding: 5px;
+    transition: all 0.3s ease;
+}
+
+.mobile-menu-btn:hover {
+    color: #4c6ef5;
+}
+
+/* 语言选择器 */
+.language-selector {
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+    position: relative;
+}
+
+.language-selector-btn {
+    align-items: center;
+    background: linear-gradient(135deg, #4c6ef5, #15aabf);
+    border: none;
+    border-radius: 30px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    font-size: 14px;
+    font-weight: 500;
+    gap: 5px;
+    padding: 8px 15px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(76, 110, 245, 0.3);
+}
+
+.language-selector-btn:hover {
+    background: linear-gradient(135deg, #3a5bd9, #129aad);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(76, 110, 245, 0.4);
+}
+
+.language-selector-btn i {
+    font-size: 16px;
+}
+
+.language-dropdown {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    display: none;
+    min-width: 180px;
+    padding: 10px;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 10px);
+    z-index: 100;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    opacity: 0;
+}
+
+.language-selector:hover .language-dropdown {
+    display: block;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.language-item {
+    align-items: center;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    gap: 12px;
+    padding: 10px 15px;
+    transition: all 0.2s ease;
+    margin-bottom: 5px;
+}
+
+.language-item:hover {
+    background-color: rgba(76, 110, 245, 0.08);
+}
+
+.language-item.active {
+    background: linear-gradient(135deg, rgba(76, 110, 245, 0.15), rgba(21, 170, 191, 0.15));
+    color: #4c6ef5;
+    font-weight: 500;
+    position: relative;
+}
+
+.language-item.active::after {
+    content: '\ea3c';  /* 使用Remix图标中的对勾图标 */
+    font-family: 'remixicon';
+    position: absolute;
+    right: 15px;
+    color: #4c6ef5;
+}
+
+.language-flag {
+    height: 16px;
+    width: 24px;
+    object-fit: cover;
+    border-radius: 2px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* 响应式设计 */
+@media (max-width: 992px) {
+    .header .container {
+        padding: 0 20px;
+    }
+    
+    .nav-list {
+        gap: 5px;
+    }
+    
+    .nav-list a {
+        font-size: 15px;
+        padding: 8px 12px;
+    }
+}
+
 @media (max-width: 768px) {
     .mobile-menu-btn {
         display: block;
     }
-
+    
     .nav-list {
-        position: absolute;
-        top: 70px;
-        left: 0;
-        width: 100%;
-        flex-direction: column;
-        background-color: #fff;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        padding: 20px 0;
+        background: white;
+        border-radius: 0 0 20px 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         display: none;
-        z-index: 999;
+        flex-direction: column;
+        left: 0;
+        padding: 20px;
+        position: absolute;
+        right: 0;
+        top: 100%;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+        z-index: 99;
     }
-
+    
     .nav-list.active {
         display: flex;
+        transform: translateY(0);
+        animation: slideDown 0.4s ease forwards;
     }
-
+    
+    @keyframes slideDown {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
     .nav-list li {
-        margin: 10px 0;
-        text-align: center;
+        width: 100%;
     }
-
+    
     .nav-list a {
-        padding: 10px 20px;
-        display: block;
+        padding: 12px 15px;
+        width: 100%;
     }
-
-    .nav-list a::after {
+    
+    /* 移动端菜单中活动状态样式也简化 */
+    .nav-list a.active {
+        color: #fff;
+        font-weight: 600;
+    }
+    
+    .nav-list a.active::before {
+        opacity: 1;
+        transform: scale(1);
+    }
+    
+    .nav-list a.active::after {
         display: none;
+    }
+    
+    .nav-list .submenu {
+        background: rgba(248, 249, 250, 0.8);
+        border-radius: 10px;
+        box-shadow: none;
+        position: static;
+        width: 100%;
+        padding: 0;
+        padding-left: 15px;
+        transform: none;
+        display: none;
+    }
+    
+    .nav-list li:hover .submenu {
+        display: none;
+    }
+    
+    .submenu a {
+        padding: 10px 15px;
+    }
+    
+    /* 调整语言选择器在移动端的显示 */
+    .language-selector {
+        width: 100%;
+        margin: 15px 0 0;
+    }
+    
+    .language-selector-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .language-dropdown {
+        width: 100%;
+        left: 0;
+        right: 0;
     }
 }
 
@@ -226,4 +500,21 @@
     .footer-logo {
         grid-column: span 1;
     }
+}
+
+/* 为新加载的页面添加导航选中效果的动画 */
+@keyframes activeNavFadeIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 页面加载时的动画效果 - 移除动画 */
+.nav-list a.active {
+    animation: none;
 } 

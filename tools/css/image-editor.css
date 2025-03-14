@@ -454,32 +454,30 @@
 
 /* 图片预览区域 */
 .editor-preview {
+    flex: 1;
     padding: 20px;
     display: flex;
     flex-direction: column;
-    height: 500px;
+    min-width: 70%;
 }
 
 .preview-container {
-    flex-grow: 1;
+    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #f8f9fa;
-    background-image: linear-gradient(45deg, #eee 25%, transparent 25%), 
-                      linear-gradient(-45deg, #eee 25%, transparent 25%), 
-                      linear-gradient(45deg, transparent 75%, #eee 75%), 
-                      linear-gradient(-45deg, transparent 75%, #eee 75%);
-    background-size: 20px 20px;
-    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    overflow: auto;
     position: relative;
-    overflow: hidden;
+    min-height: 600px;
 }
 
 #image-canvas {
     max-width: 100%;
     max-height: 100%;
-    display: block;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
 }
 
 .drawing-layer,
@@ -619,4 +617,125 @@
         width: 100%;
         margin-top: 10px;
     }
+}
+
+/* 文字拖拽样式 */
+.draggable-text {
+    cursor: grab !important;
+    transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.draggable-text:hover {
+    box-shadow: 0 0 0 2px rgba(46, 102, 231, 0.3);
+}
+
+.dragging-text {
+    cursor: grabbing !important;
+    transform: scale(1.02);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2) !important;
+    z-index: 100;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+.text-drag-handle {
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #2e66e7;
+    color: white;
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 12px;
+    opacity: 0;
+    transform: translateX(-50%) translateY(5px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    white-space: nowrap;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    font-weight: 500;
+}
+
+.text-drag-handle:before {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #2e66e7;
+}
+
+.canvas-container:hover .text-hover .text-drag-handle {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* 自定义文本选择显示 */
+.text-selection-indicator {
+    position: absolute;
+    border: 2px dashed rgba(46, 102, 231, 0.7);
+    background-color: rgba(46, 102, 231, 0.05);
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 5;
+}
+
+/* 拖拽时的辅助线 */
+.drag-guides {
+    position: absolute;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.drag-guide-horizontal {
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background-color: rgba(46, 102, 231, 0.6);
+    box-shadow: 0 0 4px rgba(46, 102, 231, 0.6);
+    animation: pulse 2s infinite;
+}
+
+.drag-guide-vertical {
+    position: absolute;
+    width: 1px;
+    height: 100%;
+    background-color: rgba(46, 102, 231, 0.6);
+    box-shadow: 0 0 4px rgba(46, 102, 231, 0.6);
+    animation: pulse 2s infinite;
+}
+
+/* 文本拖拽指示 */
+.text-position-indicator {
+    position: absolute;
+    background-color: rgba(46, 102, 231, 0.9);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 200;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.15s ease, left 0.1s ease, top 0.1s ease;
+    transform: translateX(-50%);
+    font-weight: 500;
+}
+
+/* 拖拽状态下的样式 */
+.canvas-is-dragging {
+    cursor: grabbing !important;
+}
+
+.canvas-is-dragging * {
+    cursor: grabbing !important;
 } 

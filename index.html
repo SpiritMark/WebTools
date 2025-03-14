@@ -13,16 +13,47 @@
     <header class="header">
         <div class="container">
             <div class="logo">
-                <h1>工具箱<span>Pro</span></h1>
+                <a href="index.html"><h1>工具箱<span>Pro</span></h1></a>
             </div>
             <nav class="main-nav">
                 <button class="mobile-menu-btn" id="menuToggle">
                     <i class="ri-menu-line"></i>
                 </button>
                 <ul class="nav-list" id="navList">
-                    <li><a href="#" class="active" data-i18n="common.home">首页</a></li>
+                    <li><a href="index.html" class="active" data-i18n="common.home">首页</a></li>
                     <li><a href="#tools" data-i18n="common.tools">工具集</a></li>
+                    <li>
+                        <a href="#" data-i18n="common.categories">分类 <i class="ri-arrow-down-s-line"></i></a>
+                        <ul class="submenu">
+                            <li><a href="#tools"><i class="ri-file-text-line"></i> 文档与文本</a></li>
+                            <li><a href="#tools"><i class="ri-image-line"></i> 图像处理</a></li>
+                            <li><a href="#tools"><i class="ri-video-line"></i> 视频与音频</a></li>
+                            <li><a href="#tools"><i class="ri-database-2-line"></i> 数据处理</a></li>
+                            <li><a href="#tools"><i class="ri-tools-line"></i> 实用工具</a></li>
+                            <li><a href="#tools"><i class="ri-palette-line"></i> 设计与创意</a></li>
+                        </ul>
+                    </li>
                     <li><a href="#about" data-i18n="common.about">关于我们</a></li>
+                    <li class="language-selector">
+                        <button class="language-selector-btn">
+                            <i class="ri-global-line"></i>
+                            <span data-i18n="common.language">简体中文</span>
+                        </button>
+                        <div class="language-dropdown">
+                            <div class="language-item active" onclick="switchLanguage('zh-CN')">
+                                <img src="img/flags/cn.png" alt="简体中文" class="language-flag">
+                                <span>简体中文</span>
+                            </div>
+                            <div class="language-item" onclick="switchLanguage('en')">
+                                <img src="img/flags/us.png" alt="English" class="language-flag">
+                                <span>English</span>
+                            </div>
+                            <div class="language-item" onclick="switchLanguage('ja')">
+                                <img src="img/flags/jp.png" alt="日本語" class="language-flag">
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </li>
                 </ul>
             </nav>
         </div>
@@ -66,6 +97,7 @@
                 <div class="category-card">
                     <div class="category-icon"><i class="ri-file-text-line"></i></div>
                     <h3>文档与文本工具</h3>
+                    <div class="tool-count"><span>6</span> <span data-i18n="categories.toolAvailable">个工具可用</span></div>
                     <ul class="tool-list">
                         <li><a href="tools/pdf-tools.html">PDF工具</a></li>
                         <li><a href="tools/text-processing.html">文本处理</a></li>
@@ -80,6 +112,7 @@
                 <div class="category-card">
                     <div class="category-icon"><i class="ri-image-line"></i></div>
                     <h3>图像处理</h3>
+                    <div class="tool-count"><span>6</span> <span data-i18n="categories.toolAvailable">个工具可用</span></div>
                     <ul class="tool-list">
                         <li><a href="tools/image-editor.html">图片编辑</a></li>
                         <li><a href="tools/id-photo.html">证件照制作</a></li>
@@ -94,6 +127,7 @@
                 <div class="category-card">
                     <div class="category-icon"><i class="ri-video-line"></i></div>
                     <h3>视频与音频</h3>
+                    <div class="tool-count"><span>5</span> <span data-i18n="categories.toolAvailable">个工具可用</span></div>
                     <ul class="tool-list">
                         <li><a href="tools/video-edit.html">视频剪辑</a></li>
                         <li><a href="tools/video-subtitle.html">视频添加字幕</a></li>
@@ -107,6 +141,7 @@
                 <div class="category-card">
                     <div class="category-icon"><i class="ri-database-2-line"></i></div>
                     <h3>数据处理</h3>
+                    <div class="tool-count"><span>4</span> <span data-i18n="categories.toolAvailable">个工具可用</span></div>
                     <ul class="tool-list">
                         <li><a href="tools/json-formatter.html">JSON/XML/CSV格式化</a></li>
                         <li><a href="tools/data-visualization.html">数据可视化</a></li>
