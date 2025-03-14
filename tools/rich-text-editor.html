@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>富文本编辑器 - 工具箱Pro</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/tool.css">
+    <link rel="stylesheet" href="css/rich-text-editor.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html"><h1>工具箱<span>Pro</span></h1></a>
+            </div>
+            <nav class="main-nav">
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="nav-list" id="navList">
+                    <li><a href="../index.html">首页</a></li>
+                    <li><a href="../index.html#tools">工具集</a></li>
+                    <li><a href="../index.html#about">关于我们</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="tool-container">
+        <div class="container">
+            <div class="tool-header">
+                <h1 class="tool-title">富文本编辑器</h1>
+                <p class="tool-description">强大的所见即所得编辑器，支持多种文本格式和媒体插入</p>
+            </div>
+            
+            <div class="tool-content">
+                <div class="editor-container">
+                    <div class="editor-toolbar">
+                        <div class="toolbar-group">
+                            <button class="tool-btn" data-command="undo" title="撤销">
+                                <i class="ri-arrow-go-back-line"></i>
+                            </button>
+                            <button class="tool-btn" data-command="redo" title="重做">
+                                <i class="ri-arrow-go-forward-line"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="toolbar-divider"></div>
+                        
+                        <div class="toolbar-group">
+                            <select class="format-select" id="format-block">
+                                <option value="p">段落</option>
+                                <option value="h1">标题 1</option>
+                                <option value="h2">标题 2</option>
+                                <option value="h3">标题 3</option>
+                                <option value="h4">标题 4</option>
+                                <option value="h5">标题 5</option>
+                                <option value="h6">标题 6</option>
+                                <option value="pre">预格式化</option>
+                                <option value="blockquote">引用块</option>
+                            </select>
+                            
+                            <select class="format-select" id="font-name">
+                                <option value="">字体</option>
+                                <option value="Arial">Arial</option>
+                                <option value="Helvetica">Helvetica</option>
+                                <option value="Times New Roman">Times New Roman</option>
+                                <option value="SimSun">宋体</option>
+                                <option value="Microsoft YaHei">微软雅黑</option>
+                                <option value="KaiTi">楷体</option>
+                                <option value="SimHei">黑体</option>
+                                <option value="monospace">等宽字体</option>
+                            </select>
+                            
+                            <select class="format-select" id="font-size">
+                                <option value="">字号</option>
+                                <option value="1">极小</option>
+                                <option value="2">较小</option>
+                                <option value="3">正常</option>
+                                <option value="4">较大</option>
+                                <option value="5">大</option>
+                                <option value="6">更大</option>
+                                <option value="7">最大</option>
+                            </select>
+                        </div>
+                        
+                        <div class="toolbar-divider"></div>
+                        
+                        <div class="toolbar-group">
+                            <button class="tool-btn" data-command="bold" title="粗体">
+                                <i class="ri-bold"></i>
+                            </button>
+                            <button class="tool-btn" data-command="italic" title="斜体">
+                                <i class="ri-italic"></i>
+                            </button>
+                            <button class="tool-btn" data-command="underline" title="下划线">
+                                <i class="ri-underline"></i>
+                            </button>
+                            <button class="tool-btn" data-command="strikeThrough" title="删除线">
+                                <i class="ri-strikethrough"></i>
+                            </button>
+                            
+                            <button class="tool-btn color-btn" id="text-color" title="文字颜色">
+                                <i class="ri-font-color"></i>
+                                <input type="color" id="text-color-picker" class="color-picker">
+                            </button>
+                            
+                            <button class="tool-btn color-btn" id="bg-color" title="背景颜色">
+                                <i class="ri-paint-fill"></i>
+                                <input type="color" id="bg-color-picker" class="color-picker">
+                            </button>
+                        </div>
+                        
+                        <div class="toolbar-divider"></div>
+                        
+                        <div class="toolbar-group">
+                            <button class="tool-btn" data-command="justifyLeft" title="左对齐">
+                                <i class="ri-align-left"></i>
+                            </button>
+                            <button class="tool-btn" data-command="justifyCenter" title="居中对齐">
+                                <i class="ri-align-center"></i>
+                            </button>
+                            <button class="tool-btn" data-command="justifyRight" title="右对齐">
+                                <i class="ri-align-right"></i>
+                            </button>
+                            <button class="tool-btn" data-command="justifyFull" title="两端对齐">
+                                <i class="ri-align-justify"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="toolbar-divider"></div>
+                        
+                        <div class="toolbar-group">
+                            <button class="tool-btn" data-command="insertOrderedList" title="有序列表">
+                                <i class="ri-list-ordered"></i>
+                            </button>
+                            <button class="tool-btn" data-command="insertUnorderedList" title="无序列表">
+                                <i class="ri-list-unordered"></i>
+                            </button>
+                            <button class="tool-btn" data-command="outdent" title="减少缩进">
+                                <i class="ri-indent-decrease"></i>
+                            </button>
+                            <button class="tool-btn" data-command="indent" title="增加缩进">
+                                <i class="ri-indent-increase"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="toolbar-divider"></div>
+                        
+                        <div class="toolbar-group">
+                            <button class="tool-btn" id="insert-link" title="插入链接">
+                                <i class="ri-link"></i>
+                            </button>
+                            <button class="tool-btn" id="insert-image" title="插入图片">
+                                <i class="ri-image-line"></i>
+                            </button>
+                            <button class="tool-btn" id="insert-table" title="插入表格">
+                                <i class="ri-table-line"></i>
+                            </button>
+                            <button class="tool-btn" data-command="insertHorizontalRule" title="插入水平线">
+                                <i class="ri-separator"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="toolbar-divider"></div>
+                        
+                        <div class="toolbar-group">
+                            <button class="tool-btn" id="clear-format" title="清除格式">
+                                <i class="ri-format-clear"></i>
+                            </button>
+                            <button class="tool-btn" id="source-code" title="源代码">
+                                <i class="ri-code-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="editor-content-container">
+                        <div class="editor-content" id="editor" contenteditable="true"></div>
+                        <textarea class="source-view" id="source-view" style="display: none;"></textarea>
+                    </div>
+                    
+                    <div class="editor-statusbar">
+                        <div class="word-count">字数: <span id="word-count">0</span></div>
+                    </div>
+                </div>
+                
+                <div class="editor-actions">
+                    <button class="tool-btn" id="new-document">
+                        <i class="ri-file-add-line"></i> 新建
+                    </button>
+                    <button class="tool-btn" id="save-document">
+                        <i class="ri-save-line"></i> 保存
+                    </button>
+                    <div class="dropdown">
+                        <button class="tool-btn dropdown-toggle" id="export-btn">
+                            <i class="ri-download-line"></i> 导出
+                            <i class="ri-arrow-down-s-line"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <button class="dropdown-item" id="export-html">
+                                <i class="ri-html5-line"></i> HTML文件
+                            </button>
+                            <button class="dropdown-item" id="export-text">
+                                <i class="ri-file-text-line"></i> 纯文本
+                            </button>
+                            <button class="dropdown-item" id="export-pdf">
+                                <i class="ri-file-pdf-line"></i> PDF文档
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 对话框 -->
+                <div class="dialog" id="link-dialog">
+                    <div class="dialog-content">
+                        <h3 class="dialog-title">插入链接</h3>
+                        <div class="dialog-body">
+                            <div class="form-group">
+                                <label for="link-text">链接文字</label>
+                                <input type="text" id="link-text" class="form-control" placeholder="显示的文字">
+                            </div>
+                            <div class="form-group">
+                                <label for="link-url">链接地址</label>
+                                <input type="text" id="link-url" class="form-control" placeholder="https://example.com">
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" id="link-new-tab" checked>
+                                <label for="link-new-tab">在新标签页中打开</label>
+                            </div>
+                        </div>
+                        <div class="dialog-footer">
+                            <button class="tool-btn secondary" id="link-cancel">取消</button>
+                            <button class="tool-btn" id="link-insert">插入</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dialog" id="image-dialog">
+                    <div class="dialog-content">
+                        <h3 class="dialog-title">插入图片</h3>
+                        <div class="dialog-body">
+                            <div class="tab-container">
+                                <div class="tab-header">
+                                    <div class="tab active" data-tab="url-tab">网络图片</div>
+                                    <div class="tab" data-tab="upload-tab">本地上传</div>
+                                </div>
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="url-tab">
+                                        <div class="form-group">
+                                            <label for="image-url">图片地址</label>
+                                            <input type="text" id="image-url" class="form-control" placeholder="https://example.com/image.jpg">
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane" id="upload-tab">
+                                        <div class="form-group">
+                                            <label for="image-file">选择图片</label>
+                                            <input type="file" id="image-file" accept="image/*" class="form-control">
+                                        </div>
+                                        <div id="image-preview" class="image-preview"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="image-alt">替代文本</label>
+                                <input type="text" id="image-alt" class="form-control" placeholder="图片描述">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group half">
+                                    <label for="image-width">宽度</label>
+                                    <input type="number" id="image-width" class="form-control" placeholder="自动">
+                                </div>
+                                <div class="form-group half">
+                                    <label for="image-height">高度</label>
+                                    <input type="number" id="image-height" class="form-control" placeholder="自动">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dialog-footer">
+                            <button class="tool-btn secondary" id="image-cancel">取消</button>
+                            <button class="tool-btn" id="image-insert">插入</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dialog" id="table-dialog">
+                    <div class="dialog-content">
+                        <h3 class="dialog-title">插入表格</h3>
+                        <div class="dialog-body">
+                            <div class="form-row">
+                                <div class="form-group half">
+                                    <label for="table-rows">行数</label>
+                                    <input type="number" id="table-rows" class="form-control" value="3" min="1" max="20">
+                                </div>
+                                <div class="form-group half">
+                                    <label for="table-cols">列数</label>
+                                    <input type="number" id="table-cols" class="form-control" value="3" min="1" max="10">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="table-width">表格宽度</label>
+                                <select id="table-width" class="form-control">
+                                    <option value="100%">100% (自动填充)</option>
+                                    <option value="75%">75%</option>
+                                    <option value="50%">50%</option>
+                                    <option value="25%">25%</option>
+                                    <option value="auto">自动 (根据内容)</option>
+                                </select>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" id="table-header" checked>
+                                <label for="table-header">包含表头</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" id="table-border" checked>
+                                <label for="table-border">显示边框</label>
+                            </div>
+                        </div>
+                        <div class="dialog-footer">
+                            <button class="tool-btn secondary" id="table-cancel">取消</button>
+                            <button class="tool-btn" id="table-insert">插入</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 保存的文档列表 -->
+                <div class="saved-documents">
+                    <h3>已保存的文档</h3>
+                    <div class="document-list" id="document-list"></div>
+                    <button class="tool-btn secondary" id="clear-documents">
+                        <i class="ri-delete-bin-line"></i> 清空所有文档
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3>工具箱<span>Pro</span></h3>
+                    <p>一站式在线工具集合</p>
+                </div>
+                <div class="footer-links">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../index.html#tools">所有工具</a></li>
+                        <li><a href="../index.html#about">关于我们</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 工具箱Pro. 保留所有权利。</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 引入必要的JavaScript库 -->
+    <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="js/rich-text-editor.js"></script>
+</body>
+</html> 

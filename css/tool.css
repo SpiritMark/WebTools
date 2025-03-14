@@ -1,0 +1,224 @@
+/* 工具页面通用样式 */
+.tool-container {
+    padding: 60px 0;
+    min-height: calc(100vh - 300px);
+    background-color: var(--background-color);
+    position: relative;
+}
+
+.tool-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(rgba(74, 108, 247, 0.05) 2px, transparent 2px);
+    background-size: 30px 30px;
+    z-index: 0;
+}
+
+.tool-header {
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+    z-index: 1;
+}
+
+.tool-title {
+    font-size: 2.2rem;
+    color: var(--header-color);
+    margin-bottom: 15px;
+    position: relative;
+    display: inline-block;
+}
+
+.tool-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #4a6cf7, #6a3ef7);
+    border-radius: 2px;
+}
+
+.tool-description {
+    max-width: 700px;
+    margin: 0 auto;
+    color: var(--text-color);
+    font-size: 1.1rem;
+}
+
+.tool-content {
+    background-color: var(--card-bg);
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    padding: 30px;
+    margin-bottom: 40px;
+    position: relative;
+    z-index: 1;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+/* 按钮样式 */
+.tool-btn {
+    display: inline-block;
+    padding: 10px 25px;
+    background: linear-gradient(135deg, #4a6cf7, #6a3ef7);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.tool-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(74, 108, 247, 0.3);
+}
+
+.tool-btn:active {
+    transform: translateY(0);
+}
+
+.tool-btn.secondary {
+    background: #f0f4ff;
+    color: var(--primary-color);
+    border: 1px solid rgba(74, 108, 247, 0.2);
+}
+
+.tool-btn.secondary:hover {
+    background: #e5ebff;
+    box-shadow: 0 5px 15px rgba(74, 108, 247, 0.1);
+}
+
+/* 表单元素样式 */
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--header-color);
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.15);
+}
+
+textarea.form-control {
+    min-height: 150px;
+    resize: vertical;
+}
+
+/* 工具页面的卡片 */
+.tool-card {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+}
+
+.tool-card-title {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: var(--header-color);
+    display: flex;
+    align-items: center;
+}
+
+.tool-card-title i {
+    margin-right: 10px;
+    color: var(--primary-color);
+}
+
+/* 结果区域 */
+.result-container {
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 1px solid var(--border-color);
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.result-title {
+    font-size: 1.3rem;
+    color: var(--header-color);
+}
+
+.result-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* 工具选项卡 */
+.tool-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 25px;
+}
+
+.tool-tab {
+    padding: 12px 25px;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text-color);
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.tool-tab.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.tool-tab-content {
+    display: none;
+}
+
+.tool-tab-content.active {
+    display: block;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .tool-title {
+        font-size: 1.8rem;
+    }
+    
+    .tool-content {
+        padding: 20px;
+    }
+    
+    .tool-tabs {
+        flex-wrap: wrap;
+    }
+    
+    .tool-tab {
+        padding: 10px 15px;
+    }
+} 

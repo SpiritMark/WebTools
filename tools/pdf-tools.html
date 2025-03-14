@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF工具 - 工具箱Pro</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/tool.css">
+    <link rel="stylesheet" href="css/pdf-tools.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html"><h1>工具箱<span>Pro</span></h1></a>
+            </div>
+            <nav class="main-nav">
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="nav-list" id="navList">
+                    <li><a href="../index.html">首页</a></li>
+                    <li><a href="../index.html#tools">工具集</a></li>
+                    <li><a href="../index.html#about">关于我们</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="tool-container">
+        <div class="container">
+            <div class="tool-header">
+                <h1 class="tool-title">PDF工具</h1>
+                <p class="tool-description">合并、拆分、转换PDF文件，完全在浏览器中处理，无需上传，保护您的隐私。</p>
+            </div>
+            
+            <div class="tool-content">
+                <div class="tool-tabs">
+                    <div class="tool-tab active" data-tab="merge">合并PDF</div>
+                    <div class="tool-tab" data-tab="split">拆分PDF</div>
+                    <div class="tool-tab" data-tab="convert">图片转PDF</div>
+                    <div class="tool-tab" data-tab="compress">PDF压缩</div>
+                    <div class="tool-tab" data-tab="extract">提取图片</div>
+                </div>
+                
+                <!-- 合并PDF选项卡 -->
+                <div class="tool-tab-content active" id="merge">
+                    <div class="drop-area" id="merge-drop-area">
+                        <i class="ri-file-pdf-line"></i>
+                        <p>拖放PDF文件到此处，或</p>
+                        <label class="tool-btn" for="merge-file-input">选择文件</label>
+                        <input type="file" id="merge-file-input" accept=".pdf" multiple style="display: none;">
+                    </div>
+                    
+                    <div class="pdf-list-container">
+                        <h3>待合并文件 <small>拖拽调整顺序</small></h3>
+                        <ul id="merge-file-list" class="pdf-list sortable"></ul>
+                        
+                        <div class="file-actions">
+                            <button class="tool-btn" id="merge-btn" disabled><i class="ri-file-copy-line"></i> 合并PDF</button>
+                            <button class="tool-btn secondary" id="clear-merge-list" disabled><i class="ri-delete-bin-line"></i> 清空列表</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 拆分PDF选项卡 -->
+                <div class="tool-tab-content" id="split">
+                    <div class="drop-area" id="split-drop-area">
+                        <i class="ri-file-pdf-line"></i>
+                        <p>拖放一个PDF文件到此处，或</p>
+                        <label class="tool-btn" for="split-file-input">选择文件</label>
+                        <input type="file" id="split-file-input" accept=".pdf" style="display: none;">
+                    </div>
+                    
+                    <div class="pdf-info" id="split-pdf-info" style="display: none;">
+                        <div class="pdf-preview">
+                            <h3>文件预览</h3>
+                            <div id="pdf-preview-container"></div>
+                            <div id="pdf-page-controls">
+                                <button id="prev-page" class="tool-btn secondary"><i class="ri-arrow-left-line"></i></button>
+                                <span id="page-num"></span> / <span id="page-count"></span>
+                                <button id="next-page" class="tool-btn secondary"><i class="ri-arrow-right-line"></i></button>
+                            </div>
+                        </div>
+                        
+                        <div class="split-options">
+                            <h3>拆分选项</h3>
+                            <div class="option-group">
+                                <label class="form-label">拆分方式</label>
+                                <select class="form-control" id="split-type">
+                                    <option value="range">按页码范围</option>
+                                    <option value="single">提取单页</option>
+                                    <option value="all">每页生成PDF</option>
+                                </select>
+                            </div>
+                            
+                            <div id="range-options">
+                                <div class="option-group">
+                                    <label class="form-label" for="page-ranges">页码范围</label>
+                                    <input type="text" class="form-control" id="page-ranges" 
+                                           placeholder="例如: 1-3, 5, 7-9">
+                                    <small>使用逗号分隔多个范围，如 1-3, 5, 7-9</small>
+                                </div>
+                            </div>
+                            
+                            <div id="single-page-options" style="display: none;">
+                                <div class="option-group">
+                                    <label class="form-label" for="single-page">页码</label>
+                                    <input type="number" class="form-control" id="single-page" min="1" value="1">
+                                </div>
+                            </div>
+                            
+                            <div class="file-actions">
+                                <button class="tool-btn" id="split-btn"><i class="ri-scissors-line"></i> 提取页面</button>
+                                <button class="tool-btn secondary" id="clear-split"><i class="ri-delete-bin-line"></i> 清除</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 图片转PDF选项卡 -->
+                <div class="tool-tab-content" id="convert">
+                    <div class="drop-area" id="convert-drop-area">
+                        <i class="ri-image-line"></i>
+                        <p>拖放图片文件到此处，或</p>
+                        <label class="tool-btn" for="convert-file-input">选择图片</label>
+                        <input type="file" id="convert-file-input" accept="image/*" multiple style="display: none;">
+                    </div>
+                    
+                    <div class="pdf-list-container">
+                        <h3>待转换图片 <small>拖拽调整顺序</small></h3>
+                        <ul id="image-list" class="pdf-list sortable"></ul>
+                        
+                        <div class="convert-options">
+                            <div class="option-group">
+                                <label class="form-label">纸张大小</label>
+                                <select class="form-control" id="page-size">
+                                    <option value="a4">A4 (210×297mm)</option>
+                                    <option value="a5">A5 (148×210mm)</option>
+                                    <option value="letter">信纸 (215.9×279.4mm)</option>
+                                    <option value="legal">法律纸 (215.9×355.6mm)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="option-group">
+                                <label class="form-label">方向</label>
+                                <select class="form-control" id="page-orientation">
+                                    <option value="portrait">纵向</option>
+                                    <option value="landscape">横向</option>
+                                    <option value="auto">自动（根据图片）</option>
+                                </select>
+                            </div>
+                            
+                            <div class="option-group">
+                                <label class="form-label">图片布局</label>
+                                <select class="form-control" id="image-layout">
+                                    <option value="fit">适合页面</option>
+                                    <option value="fill">填充页面</option>
+                                    <option value="original">原始大小</option>
+                                </select>
+                            </div>
+                            
+                            <div class="option-group">
+                                <label class="form-check">
+                                    <input type="checkbox" id="add-margin" checked>
+                                    添加页边距
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="file-actions">
+                            <button class="tool-btn" id="convert-btn" disabled><i class="ri-file-pdf-line"></i> 转换为PDF</button>
+                            <button class="tool-btn secondary" id="clear-image-list" disabled><i class="ri-delete-bin-line"></i> 清空列表</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- PDF压缩选项卡 -->
+                <div class="tool-tab-content" id="compress">
+                    <div class="drop-area" id="compress-drop-area">
+                        <i class="ri-file-reduce-line"></i>
+                        <p>拖放一个PDF文件到此处，或</p>
+                        <label class="tool-btn" for="compress-file-input">选择文件</label>
+                        <input type="file" id="compress-file-input" accept=".pdf" style="display: none;">
+                    </div>
+                    
+                    <div class="pdf-info" id="compress-pdf-info" style="display: none;">
+                        <div class="pdf-details">
+                            <h3>文件信息</h3>
+                            <div class="pdf-detail-item">
+                                <span>文件名:</span>
+                                <span id="compress-filename"></span>
+                            </div>
+                            <div class="pdf-detail-item">
+                                <span>当前大小:</span>
+                                <span id="compress-filesize"></span>
+                            </div>
+                            <div class="pdf-detail-item">
+                                <span>页数:</span>
+                                <span id="compress-page-count"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="compress-options">
+                            <h3>压缩选项</h3>
+                            <div class="option-group">
+                                <label class="form-label">压缩级别</label>
+                                <select class="form-control" id="compress-level">
+                                    <option value="high">高压缩率（低品质）</option>
+                                    <option value="medium" selected>中等压缩率（推荐）</option>
+                                    <option value="low">低压缩率（高品质）</option>
+                                </select>
+                            </div>
+                            
+                            <div class="option-group">
+                                <label class="form-check">
+                                    <input type="checkbox" id="compress-images" checked>
+                                    压缩图片
+                                </label>
+                            </div>
+                            
+                            <div class="option-group">
+                                <label class="form-check">
+                                    <input type="checkbox" id="remove-metadata" checked>
+                                    移除元数据
+                                </label>
+                            </div>
+                            
+                            <div class="file-actions">
+                                <button class="tool-btn" id="compress-btn"><i class="ri-compress-line"></i> 压缩PDF</button>
+                                <button class="tool-btn secondary" id="clear-compress"><i class="ri-delete-bin-line"></i> 清除</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 提取图片选项卡 -->
+                <div class="tool-tab-content" id="extract">
+                    <div class="drop-area" id="extract-drop-area">
+                        <i class="ri-image-line"></i>
+                        <p>拖放一个PDF文件到此处，或</p>
+                        <label class="tool-btn" for="extract-file-input">选择文件</label>
+                        <input type="file" id="extract-file-input" accept=".pdf" style="display: none;">
+                    </div>
+                    
+                    <div class="pdf-info" id="extract-pdf-info" style="display: none;">
+                        <h3>文件预览</h3>
+                        <div id="extract-preview-container" class="pdf-preview"></div>
+                        
+                        <div class="extract-options">
+                            <h3>提取选项</h3>
+                            <div class="option-group">
+                                <label class="form-label">图片格式</label>
+                                <select class="form-control" id="image-format">
+                                    <option value="png">PNG (无损)</option>
+                                    <option value="jpeg">JPEG (有损)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="option-group" id="quality-option">
+                                <label class="form-label">JPEG质量</label>
+                                <input type="range" min="1" max="100" value="85" class="form-range" id="jpeg-quality">
+                                <div class="range-labels">
+                                    <span>低</span>
+                                    <span>中</span>
+                                    <span>高</span>
+                                </div>
+                            </div>
+                            
+                            <div class="option-group">
+                                <label class="form-check">
+                                    <input type="checkbox" id="extract-all-pages" checked>
+                                    提取所有页面
+                                </label>
+                            </div>
+                            
+                            <div class="option-group" id="page-range-option" style="display: none;">
+                                <label class="form-label" for="extract-page-ranges">页码范围</label>
+                                <input type="text" class="form-control" id="extract-page-ranges" 
+                                       placeholder="例如: 1-3, 5, 7-9">
+                            </div>
+                            
+                            <div class="file-actions">
+                                <button class="tool-btn" id="extract-btn"><i class="ri-image-line"></i> 提取图片</button>
+                                <button class="tool-btn secondary" id="clear-extract"><i class="ri-delete-bin-line"></i> 清除</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 处理中提示 -->
+                <div id="processing-overlay" class="processing-overlay" style="display: none;">
+                    <div class="processing-content">
+                        <div class="spinner"></div>
+                        <p id="processing-text">处理中，请稍候...</p>
+                        <p id="processing-info" class="processing-info"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3>工具箱<span>Pro</span></h3>
+                    <p>一站式在线工具集合</p>
+                </div>
+                <div class="footer-links">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../index.html#tools">所有工具</a></li>
+                        <li><a href="../index.html#about">关于我们</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 工具箱Pro. 保留所有权利。</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 引入需要的库 -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.15.349/build/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.7.1/dist/jszip.min.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="js/pdf-tools.js"></script>
+</body>
+</html> 

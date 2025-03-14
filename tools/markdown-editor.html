@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown编辑器 - 工具箱Pro</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/tool.css">
+    <link rel="stylesheet" href="css/markdown-editor.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css">
+    <!-- 引入Highlight.js用于代码高亮 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/styles/github.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html"><h1>工具箱<span>Pro</span></h1></a>
+            </div>
+            <nav class="main-nav">
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="nav-list" id="navList">
+                    <li><a href="../index.html">首页</a></li>
+                    <li><a href="../index.html#tools">工具集</a></li>
+                    <li><a href="../index.html#about">关于我们</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="tool-container">
+        <div class="container">
+            <div class="tool-header">
+                <h1 class="tool-title">Markdown编辑器</h1>
+                <p class="tool-description">实时编辑和预览Markdown文档，支持导出为HTML或PDF格式。</p>
+            </div>
+            
+            <div class="tool-content">
+                <div class="markdown-actions">
+                    <div class="format-actions">
+                        <button class="md-btn" data-action="heading" title="标题"><i class="ri-heading"></i></button>
+                        <button class="md-btn" data-action="bold" title="粗体"><i class="ri-bold"></i></button>
+                        <button class="md-btn" data-action="italic" title="斜体"><i class="ri-italic"></i></button>
+                        <button class="md-btn" data-action="strikethrough" title="删除线"><i class="ri-strikethrough"></i></button>
+                        <button class="md-btn" data-action="link" title="链接"><i class="ri-link"></i></button>
+                        <button class="md-btn" data-action="image" title="图片"><i class="ri-image-line"></i></button>
+                        <button class="md-btn" data-action="code" title="代码"><i class="ri-code-line"></i></button>
+                        <button class="md-btn" data-action="codeblock" title="代码块"><i class="ri-code-box-line"></i></button>
+                        <button class="md-btn" data-action="quote" title="引用"><i class="ri-double-quotes-l"></i></button>
+                        <button class="md-btn" data-action="ul" title="无序列表"><i class="ri-list-unordered"></i></button>
+                        <button class="md-btn" data-action="ol" title="有序列表"><i class="ri-list-ordered"></i></button>
+                        <button class="md-btn" data-action="checklist" title="任务列表"><i class="ri-checkbox-line"></i></button>
+                        <button class="md-btn" data-action="table" title="表格"><i class="ri-table-line"></i></button>
+                        <button class="md-btn" data-action="hr" title="分隔线"><i class="ri-separator"></i></button>
+                    </div>
+                    <div class="file-actions">
+                        <button class="tool-btn secondary" id="new-document"><i class="ri-file-add-line"></i> 新建</button>
+                        <button class="tool-btn secondary" id="save-document"><i class="ri-save-line"></i> 保存</button>
+                        <div class="dropdown">
+                            <button class="tool-btn" id="export-btn"><i class="ri-download-line"></i> 导出</button>
+                            <div class="dropdown-content">
+                                <a href="#" id="export-html">导出HTML</a>
+                                <a href="#" id="export-pdf">导出PDF</a>
+                                <a href="#" id="export-md">导出Markdown</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="markdown-container">
+                    <div class="editor-section">
+                        <div class="section-header">
+                            <h3>编辑</h3>
+                            <div class="section-actions">
+                                <button class="section-btn" id="fullscreen-edit" title="全屏编辑"><i class="ri-fullscreen-line"></i></button>
+                            </div>
+                        </div>
+                        <textarea id="markdown-input" class="markdown-editor" placeholder="在此输入Markdown内容..."></textarea>
+                    </div>
+                    <div class="preview-section">
+                        <div class="section-header">
+                            <h3>预览</h3>
+                            <div class="section-actions">
+                                <button class="section-btn" id="fullscreen-preview" title="全屏预览"><i class="ri-fullscreen-line"></i></button>
+                            </div>
+                        </div>
+                        <div id="markdown-preview" class="markdown-preview"></div>
+                    </div>
+                </div>
+                
+                <div class="markdown-status">
+                    <div class="status-info">
+                        <span id="char-count">0</span> 字符 | 
+                        <span id="word-count">0</span> 单词 | 
+                        <span id="line-count">0</span> 行
+                    </div>
+                    <div class="status-actions">
+                        <label for="auto-save" class="auto-save-label">
+                            <input type="checkbox" id="auto-save" checked>
+                            自动保存
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 本地保存的文档列表 -->
+                <div class="saved-documents">
+                    <div class="saved-header">
+                        <h3>已保存的文档</h3>
+                        <button class="tool-btn secondary" id="clear-storage"><i class="ri-delete-bin-line"></i> 清空</button>
+                    </div>
+                    <div id="document-list" class="document-list">
+                        <!-- JavaScript将动态填充此区域 -->
+                        <div class="empty-state">
+                            <i class="ri-file-list-3-line"></i>
+                            <p>没有已保存的文档</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3>工具箱<span>Pro</span></h3>
+                    <p>一站式在线工具集合</p>
+                </div>
+                <div class="footer-links">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../index.html#tools">所有工具</a></li>
+                        <li><a href="../index.html#about">关于我们</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 工具箱Pro. 保留所有权利。</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 导入必要的JavaScript库 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@4.0.0/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/lib/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="js/markdown-editor.js"></script>
+</body>
+</html> 

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文本加密解密工具 - 工具箱Pro</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/tool.css">
+    <link rel="stylesheet" href="css/encryption-tool.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html"><h1>工具箱<span>Pro</span></h1></a>
+            </div>
+            <nav class="main-nav">
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="nav-list" id="navList">
+                    <li><a href="../index.html">首页</a></li>
+                    <li><a href="../index.html#tools">工具集</a></li>
+                    <li><a href="../index.html#about">关于我们</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="tool-container">
+        <div class="container">
+            <div class="tool-header">
+                <h1 class="tool-title">文本加密解密工具</h1>
+                <p class="tool-description">使用多种加密算法对文本进行加密和解密，保障您的数据安全。</p>
+            </div>
+            
+            <div class="tool-content">
+                <div class="tool-tabs">
+                    <div class="tool-tab active" data-tab="encrypt">加密</div>
+                    <div class="tool-tab" data-tab="decrypt">解密</div>
+                    <div class="tool-tab" data-tab="hash">哈希计算</div>
+                </div>
+                
+                <!-- 加密选项卡 -->
+                <div class="tool-tab-content active" id="encrypt">
+                    <div class="encryption-container">
+                        <div class="options-panel">
+                            <div class="option-group">
+                                <label class="form-label">加密算法</label>
+                                <select class="form-control" id="encrypt-algorithm">
+                                    <option value="aes">AES</option>
+                                    <option value="des">DES</option>
+                                    <option value="rabbit">Rabbit</option>
+                                    <option value="rc4">RC4</option>
+                                    <option value="base64">Base64</option>
+                                    <option value="caesar">凯撒密码</option>
+                                </select>
+                            </div>
+                            
+                            <div class="option-group" id="encrypt-key-container">
+                                <label class="form-label" for="encrypt-key">密钥</label>
+                                <input type="text" class="form-control" id="encrypt-key" placeholder="请输入加密密钥">
+                                <button class="tool-btn secondary" id="generate-key"><i class="ri-key-2-line"></i> 生成密钥</button>
+                            </div>
+                            
+                            <div class="option-group" id="caesar-shift-container" style="display: none;">
+                                <label class="form-label" for="caesar-shift">位移量(1-25)</label>
+                                <input type="number" class="form-control" id="caesar-shift" min="1" max="25" value="3">
+                            </div>
+                            
+                            <div class="action-buttons">
+                                <button class="tool-btn" id="encrypt-btn"><i class="ri-lock-line"></i> 加密</button>
+                                <button class="tool-btn secondary" id="clear-encrypt"><i class="ri-delete-bin-line"></i> 清空</button>
+                            </div>
+                        </div>
+                        
+                        <div class="text-panel">
+                            <div class="form-group">
+                                <label class="form-label" for="plaintext">原文</label>
+                                <textarea class="form-control" id="plaintext" placeholder="请输入需要加密的文本..."></textarea>
+                            </div>
+                            
+                            <div class="form-group result-container">
+                                <div class="result-header">
+                                    <label class="form-label" for="encrypted-result">加密结果</label>
+                                    <div class="result-actions">
+                                        <button class="tool-btn secondary" id="copy-encrypted-result"><i class="ri-file-copy-line"></i> 复制</button>
+                                    </div>
+                                </div>
+                                <textarea class="form-control" id="encrypted-result" readonly></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 解密选项卡 -->
+                <div class="tool-tab-content" id="decrypt">
+                    <div class="encryption-container">
+                        <div class="options-panel">
+                            <div class="option-group">
+                                <label class="form-label">解密算法</label>
+                                <select class="form-control" id="decrypt-algorithm">
+                                    <option value="aes">AES</option>
+                                    <option value="des">DES</option>
+                                    <option value="rabbit">Rabbit</option>
+                                    <option value="rc4">RC4</option>
+                                    <option value="base64">Base64</option>
+                                    <option value="caesar">凯撒密码</option>
+                                </select>
+                            </div>
+                            
+                            <div class="option-group" id="decrypt-key-container">
+                                <label class="form-label" for="decrypt-key">密钥</label>
+                                <input type="text" class="form-control" id="decrypt-key" placeholder="请输入解密密钥">
+                            </div>
+                            
+                            <div class="option-group" id="decrypt-caesar-shift-container" style="display: none;">
+                                <label class="form-label" for="decrypt-caesar-shift">位移量(1-25)</label>
+                                <input type="number" class="form-control" id="decrypt-caesar-shift" min="1" max="25" value="3">
+                            </div>
+                            
+                            <div class="action-buttons">
+                                <button class="tool-btn" id="decrypt-btn"><i class="ri-lock-unlock-line"></i> 解密</button>
+                                <button class="tool-btn secondary" id="clear-decrypt"><i class="ri-delete-bin-line"></i> 清空</button>
+                            </div>
+                        </div>
+                        
+                        <div class="text-panel">
+                            <div class="form-group">
+                                <label class="form-label" for="ciphertext">密文</label>
+                                <textarea class="form-control" id="ciphertext" placeholder="请输入需要解密的文本..."></textarea>
+                            </div>
+                            
+                            <div class="form-group result-container">
+                                <div class="result-header">
+                                    <label class="form-label" for="decrypted-result">解密结果</label>
+                                    <div class="result-actions">
+                                        <button class="tool-btn secondary" id="copy-decrypted-result"><i class="ri-file-copy-line"></i> 复制</button>
+                                    </div>
+                                </div>
+                                <textarea class="form-control" id="decrypted-result" readonly></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 哈希计算选项卡 -->
+                <div class="tool-tab-content" id="hash">
+                    <div class="form-group">
+                        <label class="form-label" for="hash-input">输入文本</label>
+                        <textarea class="form-control" id="hash-input" placeholder="请输入需要计算哈希值的文本..."></textarea>
+                    </div>
+                    
+                    <div class="hash-options">
+                        <div class="option-group">
+                            <label class="form-label">哈希算法</label>
+                            <select class="form-control" id="hash-algorithm">
+                                <option value="md5">MD5</option>
+                                <option value="sha1">SHA-1</option>
+                                <option value="sha256">SHA-256</option>
+                                <option value="sha512">SHA-512</option>
+                                <option value="sha3">SHA-3</option>
+                                <option value="ripemd160">RIPEMD-160</option>
+                            </select>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button class="tool-btn" id="hash-btn"><i class="ri-fingerprint-line"></i> 计算哈希</button>
+                            <button class="tool-btn secondary" id="clear-hash"><i class="ri-delete-bin-line"></i> 清空</button>
+                        </div>
+                    </div>
+                    
+                    <div class="hash-results">
+                        <div class="hash-result-group">
+                            <div class="result-header">
+                                <label class="form-label" id="hash-result-label">MD5 哈希值</label>
+                                <button class="tool-btn secondary" id="copy-hash-result"><i class="ri-file-copy-line"></i> 复制</button>
+                            </div>
+                            <div class="hash-result-box" id="hash-result"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3>工具箱<span>Pro</span></h3>
+                    <p>一站式在线工具集合</p>
+                </div>
+                <div class="footer-links">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../index.html#tools">所有工具</a></li>
+                        <li><a href="../index.html#about">关于我们</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 工具箱Pro. 保留所有权利。</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 引入CryptoJS库 -->
+    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="js/encryption-tool.js"></script>
+</body>
+</html> 

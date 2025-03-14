@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>海报/Banner设计工具 - 工具箱Pro</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="css/poster-maker.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="../index.html" class="logo">工具箱<span>Pro</span></a>
+                <ul class="nav-links">
+                    <li><a href="../index.html#tools">工具</a></li>
+                    <li><a href="../index.html#about">关于</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="page-header">
+        <div class="container">
+            <h1>海报/Banner设计工具</h1>
+            <p>快速创建精美海报和Banner，支持多种尺寸和模板</p>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <div class="poster-tool-container">
+                <!-- 工具栏 -->
+                <div class="toolbar">
+                    <div class="tool-section">
+                        <h3>模板选择</h3>
+                        <div class="template-selector">
+                            <div class="template-option active" data-template="social-media">
+                                <div class="template-preview social-media-preview"></div>
+                                <span>社交媒体</span>
+                            </div>
+                            <div class="template-option" data-template="web-banner">
+                                <div class="template-preview web-banner-preview"></div>
+                                <span>网页横幅</span>
+                            </div>
+                            <div class="template-option" data-template="presentation">
+                                <div class="template-preview presentation-preview"></div>
+                                <span>演示幻灯片</span>
+                            </div>
+                            <div class="template-option" data-template="ad">
+                                <div class="template-preview ad-preview"></div>
+                                <span>广告设计</span>
+                            </div>
+                            <div class="template-option" data-template="event">
+                                <div class="template-preview event-preview"></div>
+                                <span>活动海报</span>
+                            </div>
+                            <div class="template-option" data-template="custom">
+                                <div class="template-preview custom-preview"></div>
+                                <span>自定义</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tool-section">
+                        <h3>尺寸设置</h3>
+                        <div class="size-presets">
+                            <select id="size-preset">
+                                <option value="instagram">Instagram帖子 (1080x1080)</option>
+                                <option value="facebook">Facebook封面 (851x315)</option>
+                                <option value="twitter">Twitter头图 (1500x500)</option>
+                                <option value="youtube">Youtube缩略图 (1280x720)</option>
+                                <option value="weibo">微博横幅 (560x260)</option>
+                                <option value="wechat">微信公众号 (900x500)</option>
+                                <option value="custom">自定义尺寸</option>
+                            </select>
+                        </div>
+                        <div class="custom-size" id="custom-size-inputs" style="display: none;">
+                            <div class="size-input">
+                                <label for="width">宽度 (px)</label>
+                                <input type="number" id="width" value="1080" min="100" max="3000">
+                            </div>
+                            <div class="size-input">
+                                <label for="height">高度 (px)</label>
+                                <input type="number" id="height" value="1080" min="100" max="3000">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tool-section">
+                        <h3>背景设置</h3>
+                        <div class="background-options">
+                            <div class="option-group">
+                                <label>背景类型</label>
+                                <div class="option-tabs">
+                                    <button class="option-tab active" data-bg-type="color">纯色</button>
+                                    <button class="option-tab" data-bg-type="gradient">渐变</button>
+                                    <button class="option-tab" data-bg-type="image">图片</button>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-type-panel" id="bg-color-panel">
+                                <div class="color-picker">
+                                    <input type="color" id="bg-color" value="#ffffff">
+                                    <label for="bg-color">背景颜色</label>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-type-panel" id="bg-gradient-panel" style="display: none;">
+                                <div class="gradient-controls">
+                                    <div class="color-picker">
+                                        <input type="color" id="gradient-color-1" value="#4169E1">
+                                        <label for="gradient-color-1">颜色 1</label>
+                                    </div>
+                                    <div class="color-picker">
+                                        <input type="color" id="gradient-color-2" value="#FF6B6B">
+                                        <label for="gradient-color-2">颜色 2</label>
+                                    </div>
+                                    <div class="gradient-direction">
+                                        <label>渐变方向</label>
+                                        <select id="gradient-direction">
+                                            <option value="to right">从左到右</option>
+                                            <option value="to bottom">从上到下</option>
+                                            <option value="to bottom right">对角线</option>
+                                            <option value="to top">从下到上</option>
+                                            <option value="to left">从右到左</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-type-panel" id="bg-image-panel" style="display: none;">
+                                <div class="image-upload">
+                                    <input type="file" id="bg-image-upload" accept="image/*">
+                                    <label for="bg-image-upload" class="upload-btn">
+                                        <i class="ri-image-add-line"></i> 上传背景图片
+                                    </label>
+                                </div>
+                                <div class="image-options">
+                                    <select id="bg-image-fit">
+                                        <option value="cover">填充 (cover)</option>
+                                        <option value="contain">适应 (contain)</option>
+                                        <option value="repeat">平铺 (repeat)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tool-section">
+                        <h3>文本工具</h3>
+                        <div class="text-tools">
+                            <button id="add-heading" class="tool-btn">
+                                <i class="ri-heading"></i> 添加标题
+                            </button>
+                            <button id="add-subheading" class="tool-btn">
+                                <i class="ri-text"></i> 添加副标题
+                            </button>
+                            <button id="add-body-text" class="tool-btn">
+                                <i class="ri-paragraph"></i> 添加正文
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="tool-section">
+                        <h3>元素工具</h3>
+                        <div class="element-tools">
+                            <button id="add-shape" class="tool-btn">
+                                <i class="ri-shape-line"></i> 添加形状
+                            </button>
+                            <button id="add-image" class="tool-btn">
+                                <i class="ri-image-add-line"></i> 添加图片
+                            </button>
+                            <button id="add-icon" class="tool-btn">
+                                <i class="ri-gallery-line"></i> 添加图标
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button id="reset-poster" class="tool-btn secondary">
+                            <i class="ri-refresh-line"></i> 重置设计
+                        </button>
+                        <button id="download-poster" class="tool-btn">
+                            <i class="ri-download-2-line"></i> 下载设计
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 设计工作区 -->
+                <div class="design-workspace">
+                    <div class="canvas-container">
+                        <div id="poster-canvas" class="poster-canvas">
+                            <!-- 动态生成的海报内容 -->
+                            <div class="empty-canvas-message">
+                                <i class="ri-layout-4-line"></i>
+                                <p>选择模板和尺寸开始设计</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 元素编辑面板 -->
+                    <div class="element-editor" id="element-editor" style="display: none;">
+                        <div class="editor-header">
+                            <h3>元素编辑</h3>
+                            <button class="close-editor"><i class="ri-close-line"></i></button>
+                        </div>
+                        <div class="editor-content">
+                            <!-- 文本编辑 -->
+                            <div class="editor-panel" id="text-editor">
+                                <div class="editor-field">
+                                    <label for="text-content">文本内容</label>
+                                    <textarea id="text-content"></textarea>
+                                </div>
+                                <div class="editor-field">
+                                    <label for="text-color">文本颜色</label>
+                                    <input type="color" id="text-color" value="#000000">
+                                </div>
+                                <div class="editor-field">
+                                    <label for="text-size">文本大小</label>
+                                    <input type="range" id="text-size" min="10" max="100" value="24">
+                                    <span id="text-size-value">24px</span>
+                                </div>
+                                <div class="editor-field">
+                                    <label for="text-align">对齐方式</label>
+                                    <div class="align-buttons">
+                                        <button class="align-btn active" data-align="left">
+                                            <i class="ri-align-left"></i>
+                                        </button>
+                                        <button class="align-btn" data-align="center">
+                                            <i class="ri-align-center"></i>
+                                        </button>
+                                        <button class="align-btn" data-align="right">
+                                            <i class="ri-align-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="editor-field">
+                                    <label for="text-font">字体</label>
+                                    <select id="text-font">
+                                        <option value="Arial, sans-serif">Arial</option>
+                                        <option value="'Microsoft YaHei', sans-serif">微软雅黑</option>
+                                        <option value="'SimSun', serif">宋体</option>
+                                        <option value="'SimHei', sans-serif">黑体</option>
+                                        <option value="'KaiTi', serif">楷体</option>
+                                        <option value="'FangSong', serif">仿宋</option>
+                                        <option value="Georgia, serif">Georgia</option>
+                                        <option value="'Times New Roman', serif">Times New Roman</option>
+                                    </select>
+                                </div>
+                                <div class="editor-field">
+                                    <label>字体样式</label>
+                                    <div class="style-buttons">
+                                        <button class="style-btn" data-style="bold">
+                                            <i class="ri-bold"></i>
+                                        </button>
+                                        <button class="style-btn" data-style="italic">
+                                            <i class="ri-italic"></i>
+                                        </button>
+                                        <button class="style-btn" data-style="underline">
+                                            <i class="ri-underline"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 形状编辑 -->
+                            <div class="editor-panel" id="shape-editor" style="display: none;">
+                                <div class="editor-field">
+                                    <label for="shape-color">形状颜色</label>
+                                    <input type="color" id="shape-color" value="#4169E1">
+                                </div>
+                                <div class="editor-field">
+                                    <label for="shape-opacity">不透明度</label>
+                                    <input type="range" id="shape-opacity" min="0" max="100" value="100">
+                                    <span id="shape-opacity-value">100%</span>
+                                </div>
+                                <div class="editor-field">
+                                    <label for="shape-border-width">边框宽度</label>
+                                    <input type="range" id="shape-border-width" min="0" max="20" value="0">
+                                    <span id="shape-border-width-value">0px</span>
+                                </div>
+                                <div class="editor-field">
+                                    <label for="shape-border-color">边框颜色</label>
+                                    <input type="color" id="shape-border-color" value="#000000">
+                                </div>
+                                <div class="editor-field">
+                                    <label for="shape-border-radius">圆角</label>
+                                    <input type="range" id="shape-border-radius" min="0" max="100" value="0">
+                                    <span id="shape-border-radius-value">0px</span>
+                                </div>
+                            </div>
+                            
+                            <!-- 图片编辑 -->
+                            <div class="editor-panel" id="image-editor" style="display: none;">
+                                <div class="editor-field">
+                                    <label for="image-opacity">不透明度</label>
+                                    <input type="range" id="image-opacity" min="0" max="100" value="100">
+                                    <span id="image-opacity-value">100%</span>
+                                </div>
+                                <div class="editor-field">
+                                    <label for="image-border-width">边框宽度</label>
+                                    <input type="range" id="image-border-width" min="0" max="20" value="0">
+                                    <span id="image-border-width-value">0px</span>
+                                </div>
+                                <div class="editor-field">
+                                    <label for="image-border-color">边框颜色</label>
+                                    <input type="color" id="image-border-color" value="#000000">
+                                </div>
+                                <div class="editor-field">
+                                    <label for="image-border-radius">圆角</label>
+                                    <input type="range" id="image-border-radius" min="0" max="100" value="0">
+                                    <span id="image-border-radius-value">0px</span>
+                                </div>
+                                <div class="editor-field">
+                                    <label>替换图片</label>
+                                    <input type="file" id="replace-image" accept="image/*">
+                                    <label for="replace-image" class="upload-btn">
+                                        <i class="ri-image-add-line"></i> 上传新图片
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="editor-actions">
+                                <button id="delete-element" class="tool-btn secondary">
+                                    <i class="ri-delete-bin-line"></i> 删除元素
+                                </button>
+                                <button id="duplicate-element" class="tool-btn">
+                                    <i class="ri-file-copy-line"></i> 复制元素
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3>工具箱<span>Pro</span></h3>
+                    <p>一站式在线工具集合</p>
+                </div>
+                <div class="footer-links">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../index.html#tools">所有工具</a></li>
+                        <li><a href="../index.html#about">关于我们</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 工具箱Pro. 保留所有权利。</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 形状选择模态框 -->
+    <div id="shape-selector-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>选择形状</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="shape-grid">
+                    <div class="shape-item" data-shape="rectangle">
+                        <div class="shape-preview"><div class="shape-rectangle"></div></div>
+                        <span>矩形</span>
+                    </div>
+                    <div class="shape-item" data-shape="circle">
+                        <div class="shape-preview"><div class="shape-circle"></div></div>
+                        <span>圆形</span>
+                    </div>
+                    <div class="shape-item" data-shape="triangle">
+                        <div class="shape-preview"><div class="shape-triangle"></div></div>
+                        <span>三角形</span>
+                    </div>
+                    <div class="shape-item" data-shape="star">
+                        <div class="shape-preview"><div class="shape-star"></div></div>
+                        <span>星形</span>
+                    </div>
+                    <div class="shape-item" data-shape="hexagon">
+                        <div class="shape-preview"><div class="shape-hexagon"></div></div>
+                        <span>六边形</span>
+                    </div>
+                    <div class="shape-item" data-shape="heart">
+                        <div class="shape-preview"><div class="shape-heart"></div></div>
+                        <span>心形</span>
+                    </div>
+                    <div class="shape-item" data-shape="speech-bubble">
+                        <div class="shape-preview"><div class="shape-speech-bubble"></div></div>
+                        <span>对话框</span>
+                    </div>
+                    <div class="shape-item" data-shape="arrow">
+                        <div class="shape-preview"><div class="shape-arrow"></div></div>
+                        <span>箭头</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 图标选择模态框 -->
+    <div id="icon-selector-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>选择图标</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="icon-search">
+                    <input type="text" id="icon-search-input" placeholder="搜索图标...">
+                </div>
+                <div class="icon-categories">
+                    <button class="category-btn active" data-category="all">全部</button>
+                    <button class="category-btn" data-category="business">商务</button>
+                    <button class="category-btn" data-category="communication">通讯</button>
+                    <button class="category-btn" data-category="weather">天气</button>
+                    <button class="category-btn" data-category="social">社交</button>
+                    <button class="category-btn" data-category="technology">科技</button>
+                </div>
+                <div class="icon-grid" id="icon-grid">
+                    <!-- 图标将通过JS动态加载 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 下载选项模态框 -->
+    <div id="download-options-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>下载选项</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="download-options">
+                    <div class="option-field">
+                        <label for="download-format">文件格式</label>
+                        <select id="download-format">
+                            <option value="png">PNG图片</option>
+                            <option value="jpeg">JPEG图片</option>
+                            <option value="svg">SVG矢量图</option>
+                        </select>
+                    </div>
+                    <div class="option-field">
+                        <label for="download-quality">图片质量</label>
+                        <input type="range" id="download-quality" min="1" max="10" value="8">
+                        <span id="download-quality-value">8/10</span>
+                    </div>
+                    <div class="option-field">
+                        <label for="download-filename">文件名</label>
+                        <input type="text" id="download-filename" value="海报设计">
+                    </div>
+                </div>
+                <div class="download-actions">
+                    <button id="confirm-download" class="tool-btn">
+                        <i class="ri-download-2-line"></i> 确认下载
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script src="js/poster-maker.js"></script>
+</body>
+</html> 

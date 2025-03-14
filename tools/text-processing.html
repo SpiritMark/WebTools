@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文本处理工具 - 工具箱Pro</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/tool.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html"><h1>工具箱<span>Pro</span></h1></a>
+            </div>
+            <nav class="main-nav">
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="nav-list" id="navList">
+                    <li><a href="../index.html">首页</a></li>
+                    <li><a href="../index.html#tools">工具集</a></li>
+                    <li><a href="../index.html#about">关于我们</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="tool-container">
+        <div class="container">
+            <div class="tool-header">
+                <h1 class="tool-title">文本处理工具</h1>
+                <p class="tool-description">对文本进行各种处理操作，包括文本比较、去重、排序、统计等功能。</p>
+            </div>
+            
+            <div class="tool-content">
+                <div class="tool-tabs">
+                    <div class="tool-tab active" data-tab="text-transform">文本转换</div>
+                    <div class="tool-tab" data-tab="text-sort">排序去重</div>
+                    <div class="tool-tab" data-tab="text-compare">文本比较</div>
+                    <div class="tool-tab" data-tab="text-stats">文本统计</div>
+                </div>
+                
+                <!-- 文本转换 -->
+                <div class="tool-tab-content active" id="text-transform">
+                    <div class="form-group">
+                        <label class="form-label" for="input-text">输入文本</label>
+                        <textarea class="form-control" id="input-text" placeholder="请输入需要处理的文本..."></textarea>
+                    </div>
+                    
+                    <div class="transform-actions">
+                        <button class="tool-btn" data-action="uppercase">转为大写</button>
+                        <button class="tool-btn" data-action="lowercase">转为小写</button>
+                        <button class="tool-btn" data-action="capitalize">首字母大写</button>
+                        <button class="tool-btn" data-action="reverse">反转文本</button>
+                        <button class="tool-btn" data-action="trim">去除空格</button>
+                        <button class="tool-btn secondary" data-action="clear">清空输入</button>
+                    </div>
+                    
+                    <div class="result-container">
+                        <div class="result-header">
+                            <h3 class="result-title">处理结果</h3>
+                            <div class="result-actions">
+                                <button class="tool-btn secondary" id="copy-transform">复制结果</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="form-control" id="transform-result" placeholder="处理后的文本将显示在这里..." readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 排序去重 -->
+                <div class="tool-tab-content" id="text-sort">
+                    <div class="form-group">
+                        <label class="form-label" for="sort-input">输入文本 (每行一项)</label>
+                        <textarea class="form-control" id="sort-input" placeholder="请输入需要排序或去重的文本，每行一项..."></textarea>
+                    </div>
+                    
+                    <div class="sort-options">
+                        <div class="form-check">
+                            <input type="checkbox" id="sort-ascending" checked>
+                            <label for="sort-ascending">升序排序</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" id="remove-duplicates" checked>
+                            <label for="remove-duplicates">去除重复行</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" id="trim-lines">
+                            <label for="trim-lines">去除每行首尾空白</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" id="ignore-case">
+                            <label for="ignore-case">忽略大小写</label>
+                        </div>
+                    </div>
+                    
+                    <div class="sort-actions">
+                        <button class="tool-btn" id="process-sort">处理文本</button>
+                        <button class="tool-btn secondary" id="clear-sort">清空输入</button>
+                    </div>
+                    
+                    <div class="result-container">
+                        <div class="result-header">
+                            <h3 class="result-title">处理结果</h3>
+                            <div class="result-actions">
+                                <button class="tool-btn secondary" id="copy-sort">复制结果</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="form-control" id="sort-result" placeholder="处理后的文本将显示在这里..." readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 文本比较 -->
+                <div class="tool-tab-content" id="text-compare">
+                    <div class="compare-container">
+                        <div class="compare-text">
+                            <div class="form-group">
+                                <label class="form-label" for="compare-text-1">文本 1</label>
+                                <textarea class="form-control" id="compare-text-1" placeholder="请输入第一段文本..."></textarea>
+                            </div>
+                        </div>
+                        <div class="compare-text">
+                            <div class="form-group">
+                                <label class="form-label" for="compare-text-2">文本 2</label>
+                                <textarea class="form-control" id="compare-text-2" placeholder="请输入第二段文本..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="compare-options">
+                        <div class="form-check">
+                            <input type="checkbox" id="ignore-case-compare">
+                            <label for="ignore-case-compare">忽略大小写</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" id="ignore-whitespace">
+                            <label for="ignore-whitespace">忽略空白</label>
+                        </div>
+                    </div>
+                    
+                    <div class="compare-actions">
+                        <button class="tool-btn" id="compare-text">比较文本</button>
+                        <button class="tool-btn secondary" id="clear-compare">清空输入</button>
+                    </div>
+                    
+                    <div class="result-container">
+                        <div class="result-header">
+                            <h3 class="result-title">比较结果</h3>
+                        </div>
+                        <div class="compare-result">
+                            <div id="comparison-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">相似度:</span>
+                                    <span class="stat-value" id="similarity-percentage">-</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">相同字符:</span>
+                                    <span class="stat-value" id="same-chars">-</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">不同字符:</span>
+                                    <span class="stat-value" id="diff-chars">-</span>
+                                </div>
+                            </div>
+                            <div id="comparison-diff"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 文本统计 -->
+                <div class="tool-tab-content" id="text-stats">
+                    <div class="form-group">
+                        <label class="form-label" for="stats-input">输入文本</label>
+                        <textarea class="form-control" id="stats-input" placeholder="请输入需要统计的文本..."></textarea>
+                    </div>
+                    
+                    <div class="stats-actions">
+                        <button class="tool-btn" id="calculate-stats">统计文本</button>
+                        <button class="tool-btn secondary" id="clear-stats">清空输入</button>
+                    </div>
+                    
+                    <div class="result-container">
+                        <div class="result-header">
+                            <h3 class="result-title">统计结果</h3>
+                        </div>
+                        <div class="stats-results">
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-icon"><i class="ri-text-wrap"></i></div>
+                                    <div class="stat-info">
+                                        <div class="stat-value" id="char-count">0</div>
+                                        <div class="stat-label">字符数</div>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon"><i class="ri-text"></i></div>
+                                    <div class="stat-info">
+                                        <div class="stat-value" id="char-no-spaces">0</div>
+                                        <div class="stat-label">不含空格字符数</div>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon"><i class="ri-file-word-line"></i></div>
+                                    <div class="stat-info">
+                                        <div class="stat-value" id="word-count">0</div>
+                                        <div class="stat-label">单词数</div>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon"><i class="ri-file-list-line"></i></div>
+                                    <div class="stat-info">
+                                        <div class="stat-value" id="line-count">0</div>
+                                        <div class="stat-label">行数</div>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon"><i class="ri-paragraph"></i></div>
+                                    <div class="stat-info">
+                                        <div class="stat-value" id="paragraph-count">0</div>
+                                        <div class="stat-label">段落数</div>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon"><i class="ri-time-line"></i></div>
+                                    <div class="stat-info">
+                                        <div class="stat-value" id="read-time">0</div>
+                                        <div class="stat-label">阅读时间(分钟)</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="frequency-analysis">
+                                <h4>字符频率分析</h4>
+                                <div id="char-frequency"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3>工具箱<span>Pro</span></h3>
+                    <p>一站式在线工具集合</p>
+                </div>
+                <div class="footer-links">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../index.html#tools">所有工具</a></li>
+                        <li><a href="../index.html#about">关于我们</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 工具箱Pro. 保留所有权利。</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="js/text-processing.js"></script>
+</body>
+</html> 

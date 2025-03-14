@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>配色方案生成器 - 工具箱Pro</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="css/color-scheme.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="../index.html" class="logo">工具箱<span>Pro</span></a>
+                <ul class="nav-links">
+                    <li><a href="../index.html#tools">工具</a></li>
+                    <li><a href="../index.html#about">关于</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="page-header">
+        <div class="container">
+            <h1>配色方案生成器</h1>
+            <p>快速生成专业配色方案，支持多种配色理论和自定义选项</p>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <div class="tool-container">
+                <div class="color-scheme-container">
+                    <!-- 左侧配置面板 -->
+                    <div class="color-config-panel">
+                        <div class="config-section">
+                            <h3>基础颜色</h3>
+                            <div class="color-picker-container">
+                                <input type="color" id="base-color" value="#4169E1">
+                                <input type="text" id="color-hex" value="#4169E1">
+                                <button id="random-color" class="tool-btn secondary"><i class="ri-shuffle-line"></i> 随机颜色</button>
+                            </div>
+                        </div>
+
+                        <div class="config-section">
+                            <h3>配色类型</h3>
+                            <div class="scheme-type-selector">
+                                <div class="scheme-option active" data-type="analogous">
+                                    <div class="scheme-preview analogous-preview"></div>
+                                    <span>类比色</span>
+                                </div>
+                                <div class="scheme-option" data-type="monochromatic">
+                                    <div class="scheme-preview monochromatic-preview"></div>
+                                    <span>单色调</span>
+                                </div>
+                                <div class="scheme-option" data-type="complementary">
+                                    <div class="scheme-preview complementary-preview"></div>
+                                    <span>互补色</span>
+                                </div>
+                                <div class="scheme-option" data-type="triadic">
+                                    <div class="scheme-preview triadic-preview"></div>
+                                    <span>三分色</span>
+                                </div>
+                                <div class="scheme-option" data-type="tetradic">
+                                    <div class="scheme-preview tetradic-preview"></div>
+                                    <span>四分色</span>
+                                </div>
+                                <div class="scheme-option" data-type="split-complementary">
+                                    <div class="scheme-preview split-complementary-preview"></div>
+                                    <span>分裂互补</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="config-section">
+                            <h3>颜色数量</h3>
+                            <div class="color-count-slider">
+                                <input type="range" id="color-count" min="3" max="8" value="5">
+                                <span id="color-count-value">5</span>
+                            </div>
+                        </div>
+
+                        <div class="config-section">
+                            <h3>亮度调整</h3>
+                            <div class="brightness-slider">
+                                <input type="range" id="brightness" min="-50" max="50" value="0">
+                                <span id="brightness-value">0</span>
+                            </div>
+                        </div>
+
+                        <div class="config-section">
+                            <h3>饱和度调整</h3>
+                            <div class="saturation-slider">
+                                <input type="range" id="saturation" min="-50" max="50" value="0">
+                                <span id="saturation-value">0</span>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button id="generate-scheme" class="tool-btn"><i class="ri-palette-line"></i> 生成配色</button>
+                            <button id="save-scheme" class="tool-btn secondary"><i class="ri-save-line"></i> 保存方案</button>
+                        </div>
+                    </div>
+
+                    <!-- 右侧结果面板 -->
+                    <div class="color-result-panel">
+                        <div class="panel-header">
+                            <h3>配色方案</h3>
+                            <div class="view-controls">
+                                <button id="grid-view" class="view-btn active"><i class="ri-layout-grid-line"></i></button>
+                                <button id="list-view" class="view-btn"><i class="ri-list-check"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="color-palette" id="color-palette">
+                            <!-- 颜色结果将在JS中动态生成 -->
+                            <div class="empty-state">
+                                <svg width="120" height="120" viewBox="0 0 120 120">
+                                    <rect width="120" height="120" fill="#f0f0f0" rx="8"/>
+                                    <circle cx="30" cy="60" r="15" fill="#e74c3c"/>
+                                    <circle cx="60" cy="60" r="15" fill="#3498db"/>
+                                    <circle cx="90" cy="60" r="15" fill="#2ecc71"/>
+                                    <text x="60" y="95" font-family="Arial" font-size="12" text-anchor="middle" fill="#888">点击"生成配色"按钮</text>
+                                </svg>
+                                <p>选择基础颜色和配色类型<br>生成专业配色方案</p>
+                            </div>
+                        </div>
+
+                        <div class="ui-preview-section">
+                            <h3>界面预览</h3>
+                            <div class="ui-preview" id="ui-preview">
+                                <!-- UI预览将在JS中动态更新 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3>工具箱<span>Pro</span></h3>
+                    <p>一站式在线工具集合</p>
+                </div>
+                <div class="footer-links">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../index.html#tools">所有工具</a></li>
+                        <li><a href="../index.html#about">关于我们</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 工具箱Pro. 保留所有权利。</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 颜色详情模态框 -->
+    <div id="color-detail-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>颜色详情</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="color-detail-preview" id="color-detail-preview"></div>
+                <div class="color-values">
+                    <div class="color-value-group">
+                        <label>HEX</label>
+                        <div class="copy-field">
+                            <input type="text" id="detail-hex" readonly>
+                            <button class="copy-btn" data-target="detail-hex"><i class="ri-file-copy-line"></i></button>
+                        </div>
+                    </div>
+                    <div class="color-value-group">
+                        <label>RGB</label>
+                        <div class="copy-field">
+                            <input type="text" id="detail-rgb" readonly>
+                            <button class="copy-btn" data-target="detail-rgb"><i class="ri-file-copy-line"></i></button>
+                        </div>
+                    </div>
+                    <div class="color-value-group">
+                        <label>HSL</label>
+                        <div class="copy-field">
+                            <input type="text" id="detail-hsl" readonly>
+                            <button class="copy-btn" data-target="detail-hsl"><i class="ri-file-copy-line"></i></button>
+                        </div>
+                    </div>
+                    <div class="color-value-group">
+                        <label>CSS变量</label>
+                        <div class="copy-field">
+                            <input type="text" id="detail-css" readonly>
+                            <button class="copy-btn" data-target="detail-css"><i class="ri-file-copy-line"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 已保存方案模态框 -->
+    <div id="saved-schemes-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>已保存方案</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="saved-schemes-container">
+                    <!-- 已保存方案将在JS中动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script src="js/color-scheme.js"></script>
+</body>
+</html> 

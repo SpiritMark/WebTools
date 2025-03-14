@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logo生成器 - 工具箱Pro</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/tool.css">
+    <link rel="stylesheet" href="css/logo-maker.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html"><h1>工具箱<span>Pro</span></h1></a>
+            </div>
+            <nav class="main-nav">
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="nav-list" id="navList">
+                    <li><a href="../index.html">首页</a></li>
+                    <li><a href="../index.html#tools">工具集</a></li>
+                    <li><a href="../index.html#about">关于我们</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="tool-container">
+        <div class="container">
+            <div class="tool-header">
+                <h1 class="tool-title">Logo生成器</h1>
+                <p class="tool-description">快速生成精美logo，支持多种风格和自定义选项</p>
+            </div>
+            
+            <div class="tool-content">
+                <div class="logo-maker-container">
+                    <!-- Logo配置面板 -->
+                    <div class="logo-config-panel">
+                        <div class="config-section">
+                            <h3>Logo信息</h3>
+                            <div class="form-group">
+                                <label for="logo-name">Logo名称</label>
+                                <input type="text" id="logo-name" class="form-control" placeholder="输入品牌或公司名称" maxlength="20">
+                                <div class="input-counter"><span id="name-counter">0</span>/20</div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="logo-slogan">口号/标语 (可选)</label>
+                                <input type="text" id="logo-slogan" class="form-control" placeholder="简短的品牌标语" maxlength="30">
+                                <div class="input-counter"><span id="slogan-counter">0</span>/30</div>
+                            </div>
+                        </div>
+                        
+                        <div class="config-section">
+                            <h3>设计风格</h3>
+                            <div class="form-group">
+                                <label for="logo-industry">行业分类</label>
+                                <select id="logo-industry" class="form-control">
+                                    <option value="tech">互联网/科技</option>
+                                    <option value="finance">金融/商务</option>
+                                    <option value="education">教育/培训</option>
+                                    <option value="health">医疗/健康</option>
+                                    <option value="food">餐饮/食品</option>
+                                    <option value="retail">零售/电商</option>
+                                    <option value="travel">旅游/酒店</option>
+                                    <option value="creative">创意/设计</option>
+                                    <option value="sport">体育/健身</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="logo-style">Logo风格</label>
+                                <select id="logo-style" class="form-control">
+                                    <option value="modern">现代简约</option>
+                                    <option value="classic">经典传统</option>
+                                    <option value="playful">活泼趣味</option>
+                                    <option value="luxury">高端奢华</option>
+                                    <option value="minimal">极简设计</option>
+                                    <option value="geometric">几何图形</option>
+                                    <option value="vintage">复古风格</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="config-section">
+                            <h3>颜色设置</h3>
+                            <div class="color-options">
+                                <div class="form-group">
+                                    <label for="primary-color">主要颜色</label>
+                                    <input type="color" id="primary-color" class="color-picker" value="#4a6cf7">
+                                </div>
+                                <div class="form-group">
+                                    <label for="secondary-color">次要颜色</label>
+                                    <input type="color" id="secondary-color" class="color-picker" value="#ff7846">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>配色方案</label>
+                                <div class="color-scheme-options">
+                                    <button class="color-scheme" data-primary="#4a6cf7" data-secondary="#ff7846" style="background: linear-gradient(to right, #4a6cf7, #ff7846)"></button>
+                                    <button class="color-scheme" data-primary="#2ecc71" data-secondary="#3498db" style="background: linear-gradient(to right, #2ecc71, #3498db)"></button>
+                                    <button class="color-scheme" data-primary="#e74c3c" data-secondary="#f1c40f" style="background: linear-gradient(to right, #e74c3c, #f1c40f)"></button>
+                                    <button class="color-scheme" data-primary="#9b59b6" data-secondary="#3498db" style="background: linear-gradient(to right, #9b59b6, #3498db)"></button>
+                                    <button class="color-scheme" data-primary="#34495e" data-secondary="#ecf0f1" style="background: linear-gradient(to right, #34495e, #ecf0f1)"></button>
+                                    <button class="color-scheme" data-primary="#1abc9c" data-secondary="#e67e22" style="background: linear-gradient(to right, #1abc9c, #e67e22)"></button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button id="generate-logos" class="tool-btn"><i class="ri-magic-line"></i> 生成Logo</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Logo预览区域 -->
+                    <div class="logo-preview-panel">
+                        <div class="preview-header">
+                            <h3>生成结果</h3>
+                            <button id="refresh-logos" class="tool-btn secondary"><i class="ri-refresh-line"></i> 重新生成</button>
+                        </div>
+                        
+                        <div class="logos-grid" id="logos-container">
+                            <div class="empty-state" id="empty-state">
+                                <svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="120" height="120" fill="#f0f0f0" rx="8" ry="8"/>
+                                    <text x="60" y="55" font-family="Arial" font-size="20" fill="#aaaaaa" text-anchor="middle">Logo</text>
+                                    <text x="60" y="75" font-family="Arial" font-size="12" fill="#aaaaaa" text-anchor="middle">预览区域</text>
+                                </svg>
+                                <p>填写信息并点击"生成Logo"按钮<br>生成多种精美Logo设计</p>
+                            </div>
+                            <!-- Logo卡片会被JS动态添加到这里 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logo细节查看模态框 -->
+    <div id="logo-detail-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Logo详情</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="logo-detail-view" id="logo-detail-view"></div>
+                <div class="logo-actions">
+                    <button id="download-png" class="tool-btn"><i class="ri-download-line"></i> 下载PNG</button>
+                    <button id="download-svg" class="tool-btn"><i class="ri-file-download-line"></i> 下载SVG</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3>工具箱<span>Pro</span></h3>
+                    <p>一站式在线工具集合</p>
+                </div>
+                <div class="footer-links">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../index.html#tools">所有工具</a></li>
+                        <li><a href="../index.html#about">关于我们</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 工具箱Pro. 保留所有权利。</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 引入必要的JavaScript库 -->
+    <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@3.1.2/dist/svg.min.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="js/logo-maker.js"></script>
+</body>
+</html> 

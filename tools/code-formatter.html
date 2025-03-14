@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>代码格式化工具 - 工具箱Pro</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/tool.css">
+    <link rel="stylesheet" href="css/code-formatter.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/styles/atom-one-dark.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html"><h1>工具箱<span>Pro</span></h1></a>
+            </div>
+            <nav class="main-nav">
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="nav-list" id="navList">
+                    <li><a href="../index.html">首页</a></li>
+                    <li><a href="../index.html#tools">工具集</a></li>
+                    <li><a href="../index.html#about">关于我们</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="tool-container">
+        <div class="container">
+            <div class="tool-header">
+                <h1 class="tool-title">代码格式化工具</h1>
+                <p class="tool-description">美化和格式化您的代码，支持多种编程语言和格式化选项</p>
+            </div>
+            
+            <div class="tool-content">
+                <div class="formatter-container">
+                    <div class="options-panel">
+                        <div class="option-groups-container">
+                            <div class="option-group">
+                                <h3>语言选择</h3>
+                                <select id="language-select" class="form-control">
+                                    <option value="javascript">JavaScript</option>
+                                    <option value="html">HTML</option>
+                                    <option value="css">CSS</option>
+                                    <option value="json">JSON</option>
+                                    <option value="xml">XML</option>
+                                    <option value="sql">SQL</option>
+                                    <option value="java">Java</option>
+                                    <option value="python">Python</option>
+                                    <option value="csharp">C#</option>
+                                    <option value="cpp">C++</option>
+                                    <option value="php">PHP</option>
+                                    <option value="typescript">TypeScript</option>
+                                </select>
+                            </div>
+                            
+                            <div class="option-group">
+                                <h3>缩进选项</h3>
+                                <div class="form-group">
+                                    <label for="indent-size">缩进大小</label>
+                                    <select id="indent-size" class="form-control">
+                                        <option value="2">2 空格</option>
+                                        <option value="4" selected>4 空格</option>
+                                        <option value="8">8 空格</option>
+                                    </select>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" id="use-tabs">
+                                    <label for="use-tabs">使用制表符代替空格</label>
+                                </div>
+                            </div>
+                            
+                            <div class="option-group">
+                                <h3>格式化选项</h3>
+                                <div class="form-group">
+                                    <label for="line-wrap">每行最大字符数</label>
+                                    <select id="line-wrap" class="form-control">
+                                        <option value="0">不限制</option>
+                                        <option value="80" selected>80</option>
+                                        <option value="100">100</option>
+                                        <option value="120">120</option>
+                                    </select>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" id="preserve-newlines" checked>
+                                    <label for="preserve-newlines">保留原有空行</label>
+                                </div>
+                            </div>
+                            
+                            <div class="option-group js-option">
+                                <h3>JavaScript选项</h3>
+                                <div class="form-group">
+                                    <label for="brace-style">大括号样式</label>
+                                    <select id="brace-style" class="form-control">
+                                        <option value="collapse" selected>折叠 (Java 风格)</option>
+                                        <option value="expand">展开 (ANSI 风格)</option>
+                                        <option value="end-expand">结束展开</option>
+                                        <option value="none">不变</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="option-group">
+                                <h3>文件操作</h3>
+                                <div class="file-actions">
+                                    <button id="load-file" class="tool-btn secondary">
+                                        <i class="ri-upload-line"></i> 从文件加载
+                                    </button>
+                                    <input type="file" id="file-input" style="display: none">
+                                    <button id="download-btn" class="tool-btn secondary">
+                                        <i class="ri-download-line"></i> 下载格式化结果
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="code-panels">
+                        <div class="code-panel">
+                            <div class="panel-header">
+                                <h3>输入代码</h3>
+                                <div class="panel-actions">
+                                    <button id="format-btn" class="tool-btn primary">
+                                        <i class="ri-code-line"></i> 格式化代码
+                                    </button>
+                                    <button id="prettify-btn" class="tool-btn secondary">
+                                        <i class="ri-brush-line"></i> 简单美化
+                                    </button>
+                                    <button id="paste-btn" class="tool-btn secondary">
+                                        <i class="ri-clipboard-line"></i> 粘贴
+                                    </button>
+                                    <button id="clear-input" class="tool-btn secondary">
+                                        <i class="ri-delete-bin-line"></i> 清空
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="code-input-wrapper">
+                                <div class="line-numbers" id="line-numbers"></div>
+                                <div class="code-input-container">
+                                    <textarea id="code-input" class="code-input" placeholder="在此粘贴你的源代码..." spellcheck="false"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="code-panel">
+                            <div class="panel-header">
+                                <h3>格式化结果</h3>
+                                <div class="panel-actions">
+                                    <button id="copy-output" class="tool-btn secondary">
+                                        <i class="ri-file-copy-line"></i> 复制
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="code-output-container">
+                                <pre><code id="code-output" class="code-output"></code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3>工具箱<span>Pro</span></h3>
+                    <p>一站式在线工具集合</p>
+                </div>
+                <div class="footer-links">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../index.html#tools">所有工具</a></li>
+                        <li><a href="../index.html#about">关于我们</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 工具箱Pro. 保留所有权利。</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 引入必要的JavaScript库 -->
+    <script src="https://cdn.jsdelivr.net/npm/js-beautify@1.14.7/js/lib/beautify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-beautify@1.14.7/js/lib/beautify-css.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-beautify@1.14.7/js/lib/beautify-html.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/highlight.min.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="js/code-formatter.js"></script>
+</body>
+</html> 

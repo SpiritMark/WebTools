@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>字体预览工具 - 工具箱Pro</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/tool.css">
+    <link rel="stylesheet" href="css/font-preview.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css">
+    <!-- 预加载一些网络字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Lato:wght@300;400;700&family=Montserrat:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html"><h1>工具箱<span>Pro</span></h1></a>
+            </div>
+            <nav class="main-nav">
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="nav-list" id="navList">
+                    <li><a href="../index.html">首页</a></li>
+                    <li><a href="../index.html#tools">工具集</a></li>
+                    <li><a href="../index.html#about">关于我们</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="tool-container">
+        <div class="container">
+            <div class="tool-header">
+                <h1 class="tool-title">字体预览工具</h1>
+                <p class="tool-description">预览并比较多种字体效果，帮助你为设计项目选择最佳字体</p>
+            </div>
+            
+            <div class="tool-content">
+                <div class="font-preview-container">
+                    <!-- 主预览区域 -->
+                    <div class="main-preview-section">
+                        <div class="input-actions">
+                            <div class="main-input-container">
+                                <textarea id="preview-text" class="preview-text-input" placeholder="输入你想要预览的文字...">输入文字，查看不同字体下的显示效果</textarea>
+                                <button id="reset-text" class="tool-btn secondary" title="恢复默认文本"><i class="ri-refresh-line"></i></button>
+                            </div>
+                            <div class="quick-texts">
+                                <button class="quick-text-btn" data-text="我能吞下玻璃而不伤身体">中文句子</button>
+                                <button class="quick-text-btn" data-text="The quick brown fox jumps over the lazy dog">英文句子</button>
+                                <button class="quick-text-btn" data-text="0123456789">数字</button>
+                                <button class="quick-text-btn" data-text="!@#$%^&*()_+-=[]{}|\:;',./<>?">符号</button>
+                            </div>
+                        </div>
+                        
+                        <div class="preview-options">
+                            <div class="option-group">
+                                <label for="font-size">字体大小</label>
+                                <div class="range-with-value">
+                                    <input type="range" id="font-size" min="8" max="72" value="28">
+                                    <span id="font-size-value">28px</span>
+                                </div>
+                            </div>
+                            <div class="option-group">
+                                <label for="font-weight">字体粗细</label>
+                                <select id="font-weight">
+                                    <option value="300">细体</option>
+                                    <option value="400" selected>常规</option>
+                                    <option value="500">中等</option>
+                                    <option value="700">粗体</option>
+                                    <option value="900">特粗</option>
+                                </select>
+                            </div>
+                            <div class="option-group">
+                                <label for="text-color">文字颜色</label>
+                                <div class="color-picker-container">
+                                    <input type="color" id="text-color" value="#333333">
+                                    <span id="color-hex">#333333</span>
+                                </div>
+                            </div>
+                            <div class="option-group">
+                                <label for="bg-color">背景颜色</label>
+                                <div class="color-picker-container">
+                                    <input type="color" id="bg-color" value="#ffffff">
+                                    <span id="bg-hex">#FFFFFF</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="advanced-options">
+                            <div class="toggle-advanced">
+                                <span>高级选项</span>
+                                <i class="ri-arrow-down-s-line"></i>
+                            </div>
+                            <div class="advanced-options-panel" style="display:none;">
+                                <div class="option-row">
+                                    <div class="option-group">
+                                        <label for="letter-spacing">字间距</label>
+                                        <div class="range-with-value">
+                                            <input type="range" id="letter-spacing" min="-2" max="10" value="0" step="0.5">
+                                            <span id="letter-spacing-value">0px</span>
+                                        </div>
+                                    </div>
+                                    <div class="option-group">
+                                        <label for="line-height">行高</label>
+                                        <div class="range-with-value">
+                                            <input type="range" id="line-height" min="0.8" max="3" step="0.1" value="1.5">
+                                            <span id="line-height-value">1.5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="option-row">
+                                    <div class="option-group">
+                                        <label for="text-align">对齐方式</label>
+                                        <div class="button-group">
+                                            <button class="align-btn active" data-align="left"><i class="ri-align-left"></i></button>
+                                            <button class="align-btn" data-align="center"><i class="ri-align-center"></i></button>
+                                            <button class="align-btn" data-align="right"><i class="ri-align-right"></i></button>
+                                            <button class="align-btn" data-align="justify"><i class="ri-align-justify"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="option-group">
+                                        <label for="text-transform">文本转换</label>
+                                        <select id="text-transform">
+                                            <option value="none" selected>正常</option>
+                                            <option value="uppercase">全大写</option>
+                                            <option value="lowercase">全小写</option>
+                                            <option value="capitalize">首字母大写</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="font-selector">
+                            <div class="selector-header">
+                                <h3>选择字体</h3>
+                                <div class="font-filter">
+                                    <input type="text" id="font-search" placeholder="搜索字体...">
+                                    <div class="font-type-filter">
+                                        <label class="filter-label">
+                                            <input type="checkbox" id="show-sans" checked> 无衬线
+                                        </label>
+                                        <label class="filter-label">
+                                            <input type="checkbox" id="show-serif" checked> 衬线
+                                        </label>
+                                        <label class="filter-label">
+                                            <input type="checkbox" id="show-mono" checked> 等宽
+                                        </label>
+                                        <label class="filter-label">
+                                            <input type="checkbox" id="show-display" checked> 显示
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="fonts-list" id="fonts-list">
+                                <!-- 字体列表将通过JavaScript动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 字体预览列表 -->
+                    <div class="font-preview-list">
+                        <div class="preview-list-header">
+                            <h3>当前预览</h3>
+                            <button id="clear-previews" class="tool-btn secondary"><i class="ri-delete-bin-line"></i> 清空</button>
+                        </div>
+                        <div id="font-previews-container" class="font-previews-container">
+                            <div class="empty-preview-msg">
+                                <i class="ri-font-size-2"></i>
+                                <p>从左侧选择字体添加到预览区</p>
+                            </div>
+                            <!-- 预览项将通过JavaScript动态添加 -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 字体对比工具 -->
+                <div class="font-compare-container">
+                    <div class="compare-header">
+                        <h3>字体对比</h3>
+                        <button id="compare-fonts" class="tool-btn primary"><i class="ri-contrast-2-line"></i> 对比选中字体</button>
+                    </div>
+                    <div id="font-comparison" class="font-comparison">
+                        <div class="comparison-placeholder">
+                            <i class="ri-scales-line"></i>
+                            <p>添加至少两种字体到预览列表，然后点击"对比选中字体"按钮</p>
+                        </div>
+                        <!-- 对比内容将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3>工具箱<span>Pro</span></h3>
+                    <p>一站式在线工具集合</p>
+                </div>
+                <div class="footer-links">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../index.html#tools">所有工具</a></li>
+                        <li><a href="../index.html#about">关于我们</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 工具箱Pro. 保留所有权利。</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="js/font-preview.js"></script>
+</body>
+</html> 
