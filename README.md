@@ -1,4 +1,4 @@
-# **�� 工具箱Pro | 一站式在线工具合集**  
+# **工具箱Pro | 一站式在线工具合集**  
 
 [![简体中文](https://img.shields.io/badge/简体中文-当前-blue)](./README.md) [![English](https://img.shields.io/badge/English-Switch-green)](./README_en.md)
 
