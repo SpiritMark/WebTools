@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频字幕工具 - 工具箱Pro</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/navigation.css">
+    <link rel="stylesheet" href="../css/tool.css">
+    <link rel="stylesheet" href="../css/video-subtitle.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="../js/i18n.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html"><h1>工具箱<span>Pro</span></h1></a>
+            </div>
+            <nav class="main-nav">
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="nav-list" id="navList">
+                    <li><a href="../index.html" data-i18n="common.home">首页</a></li>
+                    <li><a href="../index.html#tools" data-i18n="common.tools">工具集</a></li>
+                    <li>
+                        <a href="#" data-i18n="common.categories">分类 <i class="ri-arrow-down-s-line"></i></a>
+                        <ul class="submenu">
+                            <li><a href="../index.html#tools"><i class="ri-file-text-line"></i> 文档与文本</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-image-line"></i> 图像处理</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-video-line"></i> 视频与音频</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-database-2-line"></i> 数据处理</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-tools-line"></i> 实用工具</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-palette-line"></i> 设计与创意</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="../index.html#about" data-i18n="common.about">关于我们</a></li>
+                    <li class="language-selector">
+                        <button class="language-selector-btn">
+                            <i class="ri-global-line"></i>
+                            <span data-i18n="common.language">简体中文</span>
+                        </button>
+                        <div class="language-dropdown">
+                            <div class="language-item active" onclick="switchLanguage('zh-CN')">
+                                <img src="../img/flags/cn.png" alt="简体中文" class="language-flag">
+                                <span>简体中文</span>
+                            </div>
+                            <div class="language-item" onclick="switchLanguage('en')">
+                                <img src="../img/flags/us.png" alt="English" class="language-flag">
+                                <span>English</span>
+                            </div>
+                            <div class="language-item" onclick="switchLanguage('ja')">
+                                <img src="../img/flags/jp.png" alt="日本語" class="language-flag">
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="tool-container">
+        <div class="tool-header">
+            <h1><i class="ri-closed-captioning-line"></i> 视频字幕工具</h1>
+            <p>轻松为视频添加、编辑和同步字幕，支持多种字幕格式导入导出</p>
+        </div>
+
+        <div class="tool-content">
+            <!-- 上传区域 -->
+            <div class="upload-container" id="uploadContainer">
+                <div class="upload-area" id="uploadArea">
+                    <i class="ri-video-upload-line"></i>
+                    <h3>上传视频文件</h3>
+                    <p>支持MP4, WebM, MOV等格式，最大100MB</p>
+                    <input type="file" id="videoInput" accept="video/*" style="display: none;">
+                    <div class="upload-actions">
+                        <button class="btn btn-primary" id="uploadBtn">
+                            <i class="ri-upload-2-line"></i> 选择视频
+                        </button>
+                        <button class="btn btn-outline" id="importSubtitleBtn">
+                            <i class="ri-file-list-3-line"></i> 导入字幕文件
+                        </button>
+                        <input type="file" id="subtitleInput" accept=".srt,.vtt,.ass" style="display: none;">
+                    </div>
+                    <div class="drag-tip">或将视频拖放到此处</div>
+                </div>
+            </div>
+
+            <!-- 编辑器容器 -->
+            <div class="editor-container" id="editorContainer" style="display: none;">
+                <div class="editor-layout">
+                    <!-- 视频预览区域 -->
+                    <div class="preview-section">
+                        <div class="video-container">
+                            <div class="video-wrapper">
+                                <video id="previewVideo" controls></video>
+                                <div class="subtitle-display" id="subtitleDisplay"></div>
+                            </div>
+                            <div class="video-controls">
+                                <button id="playPauseBtn" class="control-btn"><i class="ri-play-fill"></i></button>
+                                <div class="timeline-container">
+                                    <div id="timelineTrack" class="timeline-track">
+                                        <div id="timelineProgress" class="timeline-progress"></div>
+                                        <div id="subtitleMarkers" class="subtitle-markers"></div>
+                                    </div>
+                                    <div id="timeDisplay" class="time-display">00:00 / 00:00</div>
+                                </div>
+                                <div class="playback-controls">
+                                    <button id="backwardBtn" class="control-btn-small" title="后退5秒">
+                                        <i class="ri-rewind-mini-fill"></i>
+                                    </button>
+                                    <button id="forwardBtn" class="control-btn-small" title="前进5秒">
+                                        <i class="ri-speed-mini-fill"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 字幕编辑区域 -->
+                    <div class="subtitle-editor-section">
+                        <div class="editor-header">
+                            <h3>字幕编辑</h3>
+                            <div class="editor-actions">
+                                <button id="addSubtitleBtn" class="btn btn-sm btn-primary">
+                                    <i class="ri-add-line"></i> 添加字幕
+                                </button>
+                                <button id="syncSubtitleBtn" class="btn btn-sm btn-outline">
+                                    <i class="ri-time-line"></i> 自动同步
+                                </button>
+                            </div>
+                        </div>
+                        <div class="subtitle-list-container">
+                            <div class="subtitle-list" id="subtitleList">
+                                <!-- 字幕项将通过JavaScript动态添加 -->
+                            </div>
+                        </div>
+                        <div class="current-subtitle-editor">
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label for="subtitleStartTime">开始时间</label>
+                                    <input type="text" id="subtitleStartTime" placeholder="00:00:00,000">
+                                </div>
+                                <div class="input-group">
+                                    <label for="subtitleEndTime">结束时间</label>
+                                    <input type="text" id="subtitleEndTime" placeholder="00:00:05,000">
+                                </div>
+                            </div>
+                            <div class="input-group full-width">
+                                <label for="subtitleText">字幕文本</label>
+                                <textarea id="subtitleText" rows="3" placeholder="输入字幕文本..."></textarea>
+                            </div>
+                            <div class="subtitle-edit-actions">
+                                <button id="setCurrentTimeBtn" class="btn btn-sm btn-outline">
+                                    <i class="ri-time-line"></i> 使用当前时间
+                                </button>
+                                <button id="previewSubtitleBtn" class="btn btn-sm btn-outline">
+                                    <i class="ri-play-line"></i> 预览字幕
+                                </button>
+                                <button id="saveSubtitleBtn" class="btn btn-sm btn-primary">
+                                    <i class="ri-save-line"></i> 保存字幕
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 样式和设置区域 -->
+                <div class="subtitle-settings">
+                    <div class="settings-section">
+                        <h3>字幕样式</h3>
+                        <div class="settings-row">
+                            <div class="settings-group">
+                                <label for="fontFamily">字体</label>
+                                <select id="fontFamily" class="form-select">
+                                    <option value="Arial">Arial</option>
+                                    <option value="Helvetica">Helvetica</option>
+                                    <option value="SimHei">黑体</option>
+                                    <option value="Microsoft YaHei">微软雅黑</option>
+                                    <option value="SimSun">宋体</option>
+                                </select>
+                            </div>
+                            <div class="settings-group">
+                                <label for="fontSize">字号</label>
+                                <select id="fontSize" class="form-select">
+                                    <option value="16px">小</option>
+                                    <option value="20px" selected>中</option>
+                                    <option value="24px">大</option>
+                                    <option value="28px">特大</option>
+                                </select>
+                            </div>
+                            <div class="settings-group">
+                                <label for="textColor">文字颜色</label>
+                                <input type="color" id="textColor" value="#ffffff">
+                            </div>
+                        </div>
+                        <div class="settings-row">
+                            <div class="settings-group">
+                                <label for="backgroundColor">背景颜色</label>
+                                <input type="color" id="backgroundColor" value="#000000">
+                            </div>
+                            <div class="settings-group">
+                                <label for="backgroundOpacity">背景透明度</label>
+                                <input type="range" id="backgroundOpacity" min="0" max="1" step="0.1" value="0.5">
+                            </div>
+                            <div class="settings-group">
+                                <label for="position">位置</label>
+                                <select id="position" class="form-select">
+                                    <option value="top">顶部</option>
+                                    <option value="bottom" selected>底部</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h3>导出选项</h3>
+                        <div class="settings-row">
+                            <div class="settings-group">
+                                <label for="exportFormat">格式</label>
+                                <select id="exportFormat" class="form-select">
+                                    <option value="srt">SRT</option>
+                                    <option value="vtt">VTT (WebVTT)</option>
+                                    <option value="ass">ASS</option>
+                                </select>
+                            </div>
+                            <div class="settings-group">
+                                <label for="exportEncoding">编码</label>
+                                <select id="exportEncoding" class="form-select">
+                                    <option value="utf8">UTF-8</option>
+                                    <option value="utf16">UTF-16</option>
+                                    <option value="gbk">GBK</option>
+                                </select>
+                            </div>
+                            <div class="export-buttons">
+                                <button id="exportSubtitleBtn" class="btn btn-primary">
+                                    <i class="ri-download-line"></i> 导出字幕
+                                </button>
+                                <button id="exportVideoBtn" class="btn btn-outline">
+                                    <i class="ri-film-line"></i> 导出视频
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 使用说明 -->
+            <div class="usage-section">
+                <h3>使用说明</h3>
+                <div class="usage-steps">
+                    <div class="step-item">
+                        <div class="step-icon">1</div>
+                        <div class="step-content">
+                            <h4>上传视频</h4>
+                            <p>点击"选择视频"按钮或拖放视频到上传区域，也可以选择导入现有字幕文件</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-icon">2</div>
+                        <div class="step-content">
+                            <h4>添加字幕</h4>
+                            <p>点击"添加字幕"按钮，设置起止时间并输入文本，或使用"自动同步"功能</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-icon">3</div>
+                        <div class="step-content">
+                            <h4>编辑字幕</h4>
+                            <p>通过预览视频调整字幕时间和内容，可实时查看效果</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-icon">4</div>
+                        <div class="step-content">
+                            <h4>导出成果</h4>
+                            <p>设置样式后导出字幕文件，或将字幕嵌入视频导出</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="features-section">
+                    <h3>功能特点</h3>
+                    <div class="features-grid">
+                        <div class="feature-item">
+                            <div class="feature-icon"><i class="ri-file-transfer-line"></i></div>
+                            <div class="feature-content">
+                                <h4>多格式支持</h4>
+                                <p>支持SRT、VTT、ASS等主流字幕格式的导入导出</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon"><i class="ri-align-vertically"></i></div>
+                            <div class="feature-content">
+                                <h4>字幕样式</h4>
+                                <p>自定义字体、大小、颜色和位置，让字幕更加美观</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon"><i class="ri-timer-line"></i></div>
+                            <div class="feature-content">
+                                <h4>时间同步</h4>
+                                <p>精确调整字幕显示时间，确保与视频内容完美匹配</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon"><i class="ri-video-download-line"></i></div>
+                            <div class="feature-content">
+                                <h4>视频嵌入</h4>
+                                <p>可将字幕直接嵌入视频导出，无需额外字幕文件</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 模态框区域 -->
+            <div class="modal" id="exportModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>导出视频</h3>
+                        <button class="close-btn" id="closeExportModal"><i class="ri-close-line"></i></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="videoExportFormat">视频格式</label>
+                            <select id="videoExportFormat" class="form-select">
+                                <option value="mp4">MP4</option>
+                                <option value="webm">WebM</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="videoExportQuality">视频质量</label>
+                            <select id="videoExportQuality" class="form-select">
+                                <option value="high">高质量</option>
+                                <option value="medium">中等质量</option>
+                                <option value="low">低质量</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="subtitleBurnMethod">字幕嵌入方式</label>
+                            <select id="subtitleBurnMethod" class="form-select">
+                                <option value="hardcode">硬编码（永久嵌入视频）</option>
+                                <option value="softcode">软编码（可以开关的字幕轨道）</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="exportFilename">输出文件名</label>
+                            <input type="text" id="exportFilename" placeholder="输入文件名">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="startExportBtn" class="btn btn-primary">开始导出</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal" id="processingModal">
+                <div class="modal-content">
+                    <div class="modal-body text-center">
+                        <div class="spinner"></div>
+                        <h3>处理中</h3>
+                        <p>请稍候，正在处理您的视频...</p>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="exportProgress"></div>
+                        </div>
+                        <p id="progressText">0%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>工具箱<span>Pro</span></h2>
+                    <p>工具箱Pro是一个为用户提供各种实用工具的平台，我们致力于开发简单易用的在线工具，帮助用户提高工作效率。</p>
+                </div>
+                <div class="footer-links">
+                    <h3>工具</h3>
+                    <ul>
+                        <li><a href="image-editor.html">图片编辑</a></li>
+                        <li><a href="pdf-tools.html">PDF工具</a></li>
+                        <li><a href="video-edit.html">视频剪辑</a></li>
+                        <li><a href="text-processing.html">文本处理</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h3>关于</h3>
+                    <ul>
+                        <li><a href="../index.html#tools">工具</a></li>
+                        <li><a href="../index.html#about">关于</a></li>
+                        <li><a href="#">使用条款</a></li>
+                        <li><a href="#">隐私政策</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2024 工具箱Pro. 版权所有.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/video-subtitle.js"></script>
+</body>
+</html> 

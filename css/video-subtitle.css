@@ -1,0 +1,708 @@
+/* 视频字幕工具样式 */
+
+.tool-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 上传区域样式 */
+.upload-container {
+    padding: 2rem;
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 2rem;
+}
+
+.upload-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed var(--border-color);
+    border-radius: 8px;
+    padding: 3rem 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    background-color: rgba(var(--primary-rgb), 0.05);
+}
+
+.upload-area:hover {
+    border-color: var(--primary-color);
+    background-color: rgba(var(--primary-rgb), 0.08);
+}
+
+.upload-area i {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.upload-area h3 {
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.upload-area p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+.upload-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1rem;
+}
+
+.drag-tip {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+}
+
+/* 编辑器布局 */
+.editor-container {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    box-shadow: var(--card-shadow);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.editor-layout {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 992px) {
+    .editor-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 视频预览区域样式 */
+.preview-section {
+    background-color: var(--bg-darker);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.video-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.video-wrapper {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background-color: #000;
+    position: relative;
+    overflow: hidden;
+}
+
+.video-wrapper video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background-color: #000;
+}
+
+.subtitle-display {
+    position: absolute;
+    bottom: 50px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: white;
+    padding: 8px 16px;
+    font-size: 20px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 5;
+    transition: all 0.3s ease;
+}
+
+.subtitle-display.top {
+    bottom: auto;
+    top: 50px;
+}
+
+.video-controls {
+    padding: 15px;
+    background-color: var(--bg-darker);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.control-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.control-btn:hover {
+    background-color: var(--primary-hover);
+}
+
+.control-btn i {
+    font-size: 1.25rem;
+}
+
+.control-btn-small {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.control-btn-small:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.timeline-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.timeline-track {
+    height: 12px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    position: relative;
+    cursor: pointer;
+}
+
+.timeline-progress {
+    position: absolute;
+    height: 100%;
+    background-color: var(--primary-color);
+    border-radius: 6px;
+    width: 0;
+}
+
+.subtitle-markers {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    pointer-events: none;
+}
+
+.subtitle-marker {
+    position: absolute;
+    height: 12px;
+    background-color: rgba(255, 255, 255, 0.6);
+    border-radius: 2px;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.subtitle-marker:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.subtitle-marker.active {
+    background-color: #ffcc00;
+}
+
+.time-display {
+    text-align: right;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.playback-controls {
+    display: flex;
+    gap: 8px;
+}
+
+/* 字幕编辑区域 */
+.subtitle-editor-section {
+    background-color: var(--bg-lighter);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.editor-header {
+    padding: 15px;
+    background-color: var(--bg-darker);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.editor-header h3 {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 1.1rem;
+}
+
+.editor-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.subtitle-list-container {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 300px;
+    padding: 10px;
+}
+
+.subtitle-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.subtitle-item {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.subtitle-item:hover {
+    background-color: var(--bg-darker);
+}
+
+.subtitle-item.active {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 1px var(--primary-color);
+}
+
+.subtitle-time {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.subtitle-content {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: var(--text-color);
+    word-break: break-word;
+}
+
+.subtitle-actions {
+    display: flex;
+    gap: 5px;
+    justify-content: flex-end;
+    margin-top: 5px;
+}
+
+.subtitle-btn {
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 2px;
+    font-size: 1rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.subtitle-btn:hover {
+    color: var(--primary-color);
+    background-color: rgba(var(--primary-rgb), 0.1);
+}
+
+.current-subtitle-editor {
+    padding: 15px;
+    border-top: 1px solid var(--border-color);
+    background-color: var(--bg-lighter);
+}
+
+.input-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.input-group {
+    flex: 1;
+}
+
+.input-group.full-width {
+    width: 100%;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.input-group input, .input-group textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    resize: none;
+}
+
+.subtitle-edit-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    gap: 10px;
+}
+
+/* 字幕设置区域 */
+.subtitle-settings {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.settings-section {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.settings-section h3 {
+    margin: 0 0 15px 0;
+    font-size: 1.1rem;
+    color: var(--text-color);
+}
+
+.settings-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.settings-row:last-child {
+    margin-bottom: 0;
+}
+
+.settings-group {
+    flex: 1;
+    min-width: 120px;
+}
+
+.settings-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.form-select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+}
+
+input[type="color"] {
+    width: 100%;
+    height: 35px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background-color: var(--input-bg);
+    cursor: pointer;
+}
+
+input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 6px;
+    background-color: var(--border-color);
+    border-radius: 3px;
+    margin-top: 8px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    cursor: pointer;
+}
+
+.export-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+/* 使用说明 */
+.usage-section {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    box-shadow: var(--card-shadow);
+    padding: 25px;
+    margin-top: 30px;
+}
+
+.usage-section h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+}
+
+.usage-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.step-icon {
+    width: 36px;
+    height: 36px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.step-content h4 {
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.step-content p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* 功能特点 */
+.features-section {
+    margin-top: 30px;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.feature-item {
+    background-color: var(--bg-lighter);
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+    width: 50px;
+    height: 50px;
+    background-color: rgba(var(--primary-rgb), 0.1);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+}
+
+.feature-content h4 {
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.feature-content p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* 模态框 */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--text-secondary);
+}
+
+/* 进度条 */
+.progress-bar-container {
+    width: 100%;
+    height: 8px;
+    background-color: rgba(var(--primary-rgb), 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 15px 0;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: var(--primary-color);
+    width: 0;
+    transition: width 0.3s ease;
+}
+
+/* 加载中动画 */
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(var(--primary-rgb), 0.2);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .input-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .settings-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .export-buttons {
+        flex-direction: column;
+    }
+    
+    .export-buttons button {
+        width: 100%;
+    }
+    
+    .subtitle-edit-actions {
+        flex-wrap: wrap;
+    }
+    
+    .subtitle-edit-actions button {
+        flex: 1;
+        min-width: 120px;
+    }
+} 
