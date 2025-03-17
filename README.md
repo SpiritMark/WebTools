@@ -46,4 +46,4 @@
 ---
 
 ## **📜 开源协议**
-本项目基于 **MIT / GPL / Apache 2.0** 许可证开源，详情请见 [LICENSE](./LICENSE)。  
+本项目基于 **MIT ** 许可证开源，详情请见 [LICENSE](./LICENSE)。  
