@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR文字识别 - 工具箱Pro</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/navigation.css">
+    <link rel="stylesheet" href="../css/tool.css">
+    <link rel="stylesheet" href="../css/ocr.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="../js/i18n.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html"><h1>工具箱<span>Pro</span></h1></a>
+            </div>
+            <nav class="main-nav">
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="nav-list" id="navList">
+                    <li><a href="../index.html" data-i18n="common.home">首页</a></li>
+                    <li><a href="../index.html#tools" data-i18n="common.tools">工具集</a></li>
+                    <li>
+                        <a href="#" data-i18n="common.categories">分类 <i class="ri-arrow-down-s-line"></i></a>
+                        <ul class="submenu">
+                            <li><a href="../index.html#tools"><i class="ri-file-text-line"></i> 文档与文本</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-image-line"></i> 图像处理</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-video-line"></i> 视频与音频</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-database-2-line"></i> 数据处理</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-tools-line"></i> 实用工具</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-palette-line"></i> 设计与创意</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="../index.html#about" data-i18n="common.about">关于我们</a></li>
+                    <li class="language-selector">
+                        <button class="language-selector-btn">
+                            <i class="ri-global-line"></i>
+                            <span data-i18n="common.language">简体中文</span>
+                        </button>
+                        <div class="language-dropdown">
+                            <div class="language-item active" onclick="switchLanguage('zh-CN')">
+                                <img src="../img/flags/cn.png" alt="简体中文" class="language-flag">
+                                <span>简体中文</span>
+                            </div>
+                            <div class="language-item" onclick="switchLanguage('en')">
+                                <img src="../img/flags/us.png" alt="English" class="language-flag">
+                                <span>English</span>
+                            </div>
+                            <div class="language-item" onclick="switchLanguage('ja')">
+                                <img src="../img/flags/jp.png" alt="日本語" class="language-flag">
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="tool-container">
+        <div class="tool-header">
+            <h1><i class="ri-file-text-search-line"></i> OCR文字识别</h1>
+            <p>从图片中提取文字，支持多语言识别，无需下载软件，在线即可完成</p>
+        </div>
+
+        <div class="tool-content">
+            <div class="ocr-container">
+                <!-- 左侧上传与预览区 -->
+                <div class="ocr-input-section">
+                    <div class="upload-container" id="uploadContainer">
+                        <div class="upload-area" id="uploadArea">
+                            <i class="ri-image-add-line"></i>
+                            <h3>上传图片</h3>
+                            <p>支持JPG、PNG、BMP等格式，文件大小不超过5MB</p>
+                            <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                            <div class="upload-actions">
+                                <button class="btn btn-primary" id="uploadBtn">
+                                    <i class="ri-upload-2-line"></i> 选择图片
+                                </button>
+                                <button class="btn btn-outline" id="cameraBtn">
+                                    <i class="ri-camera-line"></i> 拍照识别
+                                </button>
+                            </div>
+                            <div class="drag-tip">或将图片拖放到此处</div>
+                        </div>
+                    </div>
+
+                    <div class="preview-container" id="previewContainer" style="display: none;">
+                        <div class="preview-header">
+                            <h3>图片预览</h3>
+                            <button class="btn btn-icon" id="changeImageBtn">
+                                <i class="ri-restart-line"></i>
+                            </button>
+                        </div>
+                        <div class="image-preview-wrapper">
+                            <img id="imagePreview" src="#" alt="预览图">
+                            <div class="image-preview-overlay"></div>
+                            <div class="preview-loading" id="previewLoading">
+                                <div class="spinner"></div>
+                                <p>正在识别中，请稍候...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="ocr-options">
+                        <h3>识别选项</h3>
+                        <div class="option-group">
+                            <label for="languageSelect">识别语言</label>
+                            <select id="languageSelect" class="form-select">
+                                <option value="auto">自动检测</option>
+                                <option value="chi_sim" selected>中文(简体)</option>
+                                <option value="chi_tra">中文(繁体)</option>
+                                <option value="eng">英文</option>
+                                <option value="jpn">日文</option>
+                                <option value="kor">韩文</option>
+                                <option value="fra">法文</option>
+                                <option value="deu">德文</option>
+                                <option value="rus">俄文</option>
+                                <option value="spa">西班牙文</option>
+                            </select>
+                        </div>
+                        <div class="option-group">
+                            <label for="accuracySelect">识别模式</label>
+                            <select id="accuracySelect" class="form-select">
+                                <option value="fast">快速模式</option>
+                                <option value="accurate" selected>标准模式</option>
+                                <option value="best">高精度模式</option>
+                            </select>
+                        </div>
+                        <div class="option-toggle">
+                            <label class="switch">
+                                <input type="checkbox" id="layoutAnalysisToggle">
+                                <span class="slider round"></span>
+                            </label>
+                            <span>保留文本布局</span>
+                        </div>
+                        <div class="option-toggle">
+                            <label class="switch">
+                                <input type="checkbox" id="autoCorrectToggle" checked>
+                                <span class="slider round"></span>
+                            </label>
+                            <span>自动校正</span>
+                        </div>
+                        <button class="btn btn-primary" id="recognizeBtn">
+                            <i class="ri-scan-line"></i> 开始识别
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 右侧结果区 -->
+                <div class="ocr-result-section">
+                    <div class="result-header">
+                        <h3>识别结果</h3>
+                        <div class="result-actions">
+                            <button class="btn btn-icon" id="copyBtn" title="复制文本">
+                                <i class="ri-file-copy-line"></i>
+                            </button>
+                            <button class="btn btn-icon" id="downloadBtn" title="下载文本">
+                                <i class="ri-download-line"></i>
+                            </button>
+                            <button class="btn btn-icon" id="clearBtn" title="清空文本">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="result-editor">
+                        <textarea id="resultText" placeholder="识别结果将显示在这里..."></textarea>
+                    </div>
+                    <div class="recognition-stats">
+                        <div class="stat-item">
+                            <i class="ri-time-line"></i>
+                            <span>识别耗时: <span id="recognitionTime">0</span> 秒</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="ri-text"></i>
+                            <span>字符数: <span id="charCount">0</span></span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="ri-file-list-line"></i>
+                            <span>行数: <span id="lineCount">0</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 拍照模态框 -->
+            <div class="modal" id="cameraModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>拍照识别</h3>
+                        <button class="close-btn" id="closeCameraModal"><i class="ri-close-line"></i></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="camera-container">
+                            <video id="cameraVideo" autoplay playsinline></video>
+                            <canvas id="cameraCanvas" style="display: none;"></canvas>
+                            <div class="camera-overlay">
+                                <div class="camera-frame"></div>
+                            </div>
+                        </div>
+                        <div class="camera-controls">
+                            <button class="btn btn-primary" id="takePictureBtn">
+                                <i class="ri-camera-line"></i> 拍照
+                            </button>
+                            <button class="btn btn-outline" id="switchCameraBtn">
+                                <i class="ri-camera-switch-line"></i> 切换摄像头
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 示例与使用说明 -->
+            <div class="usage-section">
+                <h3>使用说明</h3>
+                <div class="usage-steps">
+                    <div class="step-item">
+                        <div class="step-icon">1</div>
+                        <div class="step-content">
+                            <h4>上传图片</h4>
+                            <p>点击"选择图片"按钮或拖放图片到上传区域，也可以使用"拍照识别"功能</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-icon">2</div>
+                        <div class="step-content">
+                            <h4>设置选项</h4>
+                            <p>选择识别语言和模式，可根据需要保留文本布局和使用自动校正功能</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-icon">3</div>
+                        <div class="step-content">
+                            <h4>开始识别</h4>
+                            <p>点击"开始识别"按钮，系统将自动分析图片中的文字并显示结果</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-icon">4</div>
+                        <div class="step-content">
+                            <h4>编辑和导出</h4>
+                            <p>识别完成后，可以编辑文本，也可以复制或下载识别结果</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="examples">
+                    <h3>使用示例</h3>
+                    <div class="example-grid">
+                        <div class="example-item">
+                            <div class="example-image">
+                                <img src="https://picsum.photos/seed/ocr1/300/200" alt="文档识别示例">
+                            </div>
+                            <div class="example-desc">
+                                <h4>文档识别</h4>
+                                <p>识别扫描文档、PDF或书籍中的文字</p>
+                            </div>
+                        </div>
+                        <div class="example-item">
+                            <div class="example-image">
+                                <img src="https://picsum.photos/seed/ocr2/300/200" alt="名片识别示例">
+                            </div>
+                            <div class="example-desc">
+                                <h4>名片识别</h4>
+                                <p>快速提取名片上的联系信息</p>
+                            </div>
+                        </div>
+                        <div class="example-item">
+                            <div class="example-image">
+                                <img src="https://picsum.photos/seed/ocr3/300/200" alt="表格识别示例">
+                            </div>
+                            <div class="example-desc">
+                                <h4>表格识别</h4>
+                                <p>将图片中的表格数据转换为文本</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>工具箱<span>Pro</span></h2>
+                    <p>工具箱Pro是一个为用户提供各种实用工具的平台，我们致力于开发简单易用的在线工具，帮助用户提高工作效率。</p>
+                </div>
+                <div class="footer-links">
+                    <h3>工具</h3>
+                    <ul>
+                        <li><a href="image-editor.html">图片编辑</a></li>
+                        <li><a href="pdf-tools.html">PDF工具</a></li>
+                        <li><a href="code-formatter.html">代码格式化</a></li>
+                        <li><a href="text-processing.html">文本处理</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h3>关于</h3>
+                    <ul>
+                        <li><a href="../index.html#tools">工具</a></li>
+                        <li><a href="../index.html#about">关于</a></li>
+                        <li><a href="#">使用条款</a></li>
+                        <li><a href="#">隐私政策</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2024 工具箱Pro. 版权所有.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="../js/ocr.js"></script>
+</body>
+</html> 

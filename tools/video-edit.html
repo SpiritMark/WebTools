@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频剪辑工具 - 工具箱Pro</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/navigation.css">
+    <link rel="stylesheet" href="../css/tool.css">
+    <link rel="stylesheet" href="../css/video-edit.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="../js/i18n.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html"><h1>工具箱<span>Pro</span></h1></a>
+            </div>
+            <nav class="main-nav">
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="nav-list" id="navList">
+                    <li><a href="../index.html" data-i18n="common.home">首页</a></li>
+                    <li><a href="../index.html#tools" data-i18n="common.tools">工具集</a></li>
+                    <li>
+                        <a href="#" data-i18n="common.categories">分类 <i class="ri-arrow-down-s-line"></i></a>
+                        <ul class="submenu">
+                            <li><a href="../index.html#tools"><i class="ri-file-text-line"></i> 文档与文本</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-image-line"></i> 图像处理</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-video-line"></i> 视频与音频</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-database-2-line"></i> 数据处理</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-tools-line"></i> 实用工具</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-palette-line"></i> 设计与创意</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="../index.html#about" data-i18n="common.about">关于我们</a></li>
+                    <li class="language-selector">
+                        <button class="language-selector-btn">
+                            <i class="ri-global-line"></i>
+                            <span data-i18n="common.language">简体中文</span>
+                        </button>
+                        <div class="language-dropdown">
+                            <div class="language-item active" onclick="switchLanguage('zh-CN')">
+                                <img src="../img/flags/cn.png" alt="简体中文" class="language-flag">
+                                <span>简体中文</span>
+                            </div>
+                            <div class="language-item" onclick="switchLanguage('en')">
+                                <img src="../img/flags/us.png" alt="English" class="language-flag">
+                                <span>English</span>
+                            </div>
+                            <div class="language-item" onclick="switchLanguage('ja')">
+                                <img src="../img/flags/jp.png" alt="日本語" class="language-flag">
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="tool-container">
+        <div class="tool-header">
+            <h1><i class="ri-vidicon-line"></i> 视频剪辑工具</h1>
+            <p>简单易用的在线视频剪辑工具，可以裁剪视频、调整速度、添加滤镜等</p>
+        </div>
+
+        <div class="tool-content">
+            <div class="upload-container" id="uploadContainer">
+                <div class="upload-area" id="uploadArea">
+                    <i class="ri-upload-cloud-2-line"></i>
+                    <h3>上传视频文件</h3>
+                    <p>支持MP4, WebM, MOV等格式，最大100MB</p>
+                    <input type="file" id="videoInput" accept="video/*" style="display: none;">
+                    <button class="btn btn-primary" id="uploadBtn">选择视频</button>
+                </div>
+            </div>
+
+            <div class="editor-container" id="editorContainer" style="display: none;">
+                <div class="editor-layout">
+                    <!-- 预览区域 -->
+                    <div class="preview-section">
+                        <div class="video-wrapper">
+                            <video id="previewVideo" controls></video>
+                        </div>
+                        <div class="video-controls">
+                            <button id="playPauseBtn" class="control-btn"><i class="ri-play-fill"></i></button>
+                            <div class="timeline-container">
+                                <div id="timelineTrack" class="timeline-track">
+                                    <div id="timelineProgress" class="timeline-progress"></div>
+                                    <div id="startMarker" class="timeline-marker start-marker"></div>
+                                    <div id="endMarker" class="timeline-marker end-marker"></div>
+                                </div>
+                                <div id="timeDisplay" class="time-display">00:00 / 00:00</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 编辑工具区域 -->
+                    <div class="tools-section">
+                        <div class="tool-panel">
+                            <div class="panel-header">
+                                <h3>剪辑工具</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="tool-group">
+                                    <h4>时间裁剪</h4>
+                                    <div class="trim-controls">
+                                        <div class="input-group">
+                                            <label for="startTime">开始时间</label>
+                                            <input type="text" id="startTime" placeholder="00:00:00">
+                                        </div>
+                                        <div class="input-group">
+                                            <label for="endTime">结束时间</label>
+                                            <input type="text" id="endTime" placeholder="00:00:00">
+                                        </div>
+                                    </div>
+                                    <button id="trimBtn" class="btn btn-secondary">应用裁剪</button>
+                                </div>
+
+                                <div class="tool-group">
+                                    <h4>速度调整</h4>
+                                    <div class="speed-slider">
+                                        <input type="range" id="speedRange" min="0.25" max="2" step="0.25" value="1">
+                                        <span id="speedValue">1.0x</span>
+                                    </div>
+                                    <button id="applySpeedBtn" class="btn btn-secondary">应用速度</button>
+                                </div>
+
+                                <div class="tool-group">
+                                    <h4>视频分辨率</h4>
+                                    <select id="resolutionSelect" class="form-select">
+                                        <option value="original">原始分辨率</option>
+                                        <option value="1080p">1080p (1920x1080)</option>
+                                        <option value="720p">720p (1280x720)</option>
+                                        <option value="480p">480p (854x480)</option>
+                                        <option value="360p">360p (640x360)</option>
+                                    </select>
+                                </div>
+
+                                <div class="tool-group">
+                                    <h4>滤镜效果</h4>
+                                    <div class="filters-grid">
+                                        <div class="filter-item" data-filter="none">
+                                            <div class="filter-preview"></div>
+                                            <span>无</span>
+                                        </div>
+                                        <div class="filter-item" data-filter="grayscale">
+                                            <div class="filter-preview grayscale"></div>
+                                            <span>黑白</span>
+                                        </div>
+                                        <div class="filter-item" data-filter="sepia">
+                                            <div class="filter-preview sepia"></div>
+                                            <span>复古</span>
+                                        </div>
+                                        <div class="filter-item" data-filter="invert">
+                                            <div class="filter-preview invert"></div>
+                                            <span>反色</span>
+                                        </div>
+                                        <div class="filter-item" data-filter="blur">
+                                            <div class="filter-preview blur"></div>
+                                            <span>模糊</span>
+                                        </div>
+                                        <div class="filter-item" data-filter="brightness">
+                                            <div class="filter-preview brightness"></div>
+                                            <span>明亮</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <button id="resetBtn" class="btn btn-outline">重置</button>
+                    <button id="previewBtn" class="btn btn-secondary">预览效果</button>
+                    <button id="exportBtn" class="btn btn-primary">导出视频</button>
+                </div>
+
+                <!-- 导出选项模态框 -->
+                <div class="modal" id="exportModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>导出视频</h3>
+                            <button class="close-btn" id="closeExportModal"><i class="ri-close-line"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="exportFormat">格式</label>
+                                <select id="exportFormat" class="form-select">
+                                    <option value="mp4">MP4</option>
+                                    <option value="webm">WebM</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="exportQuality">质量</label>
+                                <select id="exportQuality" class="form-select">
+                                    <option value="high">高质量</option>
+                                    <option value="medium">中等质量</option>
+                                    <option value="low">低质量</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="exportFilename">文件名</label>
+                                <input type="text" id="exportFilename" placeholder="输入文件名">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="startExportBtn" class="btn btn-primary">开始导出</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 处理中模态框 -->
+                <div class="modal" id="processingModal">
+                    <div class="modal-content">
+                        <div class="modal-body text-center">
+                            <div class="spinner"></div>
+                            <h3>视频处理中</h3>
+                            <p>请稍候，正在处理您的视频...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>工具箱<span>Pro</span></h2>
+                    <p>工具箱Pro是一个为用户提供各种实用工具的平台，我们致力于开发简单易用的在线工具，帮助用户提高工作效率。</p>
+                </div>
+                <div class="footer-links">
+                    <h3>工具</h3>
+                    <ul>
+                        <li><a href="image-editor.html">图片编辑</a></li>
+                        <li><a href="pdf-tools.html">PDF工具</a></li>
+                        <li><a href="code-formatter.html">代码格式化</a></li>
+                        <li><a href="text-processing.html">文本处理</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h3>关于</h3>
+                    <ul>
+                        <li><a href="../index.html#tools">工具</a></li>
+                        <li><a href="../index.html#about">关于</a></li>
+                        <li><a href="#">使用条款</a></li>
+                        <li><a href="#">隐私政策</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2024 工具箱Pro. 版权所有.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/video-edit.js"></script>
+</body>
+</html> 
