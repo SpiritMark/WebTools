@@ -256,37 +256,34 @@
     border-radius: 8px;
     cursor: pointer;
     display: flex;
-    gap: 12px;
-    padding: 10px 15px;
+    gap: 10px;
+    padding: 10px;
     transition: all 0.2s ease;
-    margin-bottom: 5px;
-}
-
-.language-item:hover {
-    background-color: rgba(76, 110, 245, 0.08);
-}
-
-.language-item.active {
-    background: linear-gradient(135deg, rgba(76, 110, 245, 0.15), rgba(21, 170, 191, 0.15));
-    color: #4c6ef5;
-    font-weight: 500;
     position: relative;
 }
 
+.language-item:hover {
+    background-color: rgba(76, 110, 245, 0.1);
+}
+
+.language-item.active {
+    color: #4c6ef5;
+    font-weight: 500;
+    background-color: rgba(76, 110, 245, 0.08);
+}
+
 .language-item.active::after {
-    content: '\ea3c';  /* 使用Remix图标中的对勾图标 */
+    content: '\ea6c'; /* ri-check-line */
     font-family: 'remixicon';
     position: absolute;
-    right: 15px;
+    right: 10px;
+    font-size: 14px;
     color: #4c6ef5;
 }
 
-.language-flag {
-    height: 16px;
-    width: 24px;
-    object-fit: cover;
-    border-radius: 2px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.language-item i {
+    font-size: 18px;
+    color: #4c6ef5;
 }
 
 /* 响应式设计 */

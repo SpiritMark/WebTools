@@ -192,25 +192,24 @@ function determineLanguage() {
 // 更新语言指示器
 function updateLanguageIndicator(lang) {
     // 更新语言选择器按钮文本
-    const langButtons = document.querySelectorAll('.language-selector-btn span');
-    if (langButtons.length > 0) {
-        langButtons.forEach(button => {
-            if (button.dataset.i18n === 'common.language') {
-                button.textContent = translations[lang].common.language;
-            }
-        });
-    }
+    const langButtons = document.querySelectorAll('.language-selector-btn span[data-i18n="common.language"]');
+    langButtons.forEach(button => {
+        if (translations[lang] && translations[lang].common && translations[lang].common.language) {
+            button.textContent = translations[lang].common.language;
+        }
+    });
     
-    // 更新活动状态
+    // 更新下拉菜单中的活动状态
     const langItems = document.querySelectorAll('.language-item');
-    if (langItems.length > 0) {
-        langItems.forEach(item => {
-            item.classList.remove('active');
-            if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(`'${lang}'`)) {
-                item.classList.add('active');
-            }
-        });
-    }
+    langItems.forEach(item => {
+        // 移除所有item的active类
+        item.classList.remove('active');
+        
+        // 给当前语言的item添加active类
+        if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(`'${lang}'`)) {
+            item.classList.add('active');
+        }
+    });
 }
 
 // 翻译元素
@@ -248,28 +247,20 @@ function changeLanguage(lang) {
         // 设置Cookie
         document.cookie = `language=${lang};path=/;max-age=${60*60*24*30}`;
         
-        // 更新页面元素
+        // 更新UI
         translateElements(lang);
         updateLanguageIndicator(lang);
-  
-  // 更新页面标题
-        const titleEl = document.querySelector('title');
-        if (titleEl && titleEl.getAttribute('data-i18n')) {
-            const key = titleEl.getAttribute('data-i18n').split('.');
-            const namespace = key[0];
-            const term = key[1];
-            
-            if (translations[lang][namespace] && translations[lang][namespace][term]) {
-                document.title = translations[lang][namespace][term];
-            }
-        }
         
-        // 更新动态元素
-        updateDynamicElements(lang);
+        // 触发自定义事件，通知其他脚本语言已变更
+        const event = new CustomEvent('languageChanged', { 
+            detail: { language: lang } 
+        });
+        document.dispatchEvent(event);
         
-        return true;
+        console.log(`Language changed to: ${lang}`);
+    } else {
+        console.error(`Language ${lang} is not supported.`);
     }
-    return false;
 }
 
 // 获取翻译文本
@@ -289,14 +280,15 @@ function getText(key, lang = currentLanguage) {
 
 // 初始化 i18n
 document.addEventListener('DOMContentLoaded', function() {
-    // 确定语言
-    currentLanguage = determineLanguage();
+    // 确定使用的语言
+    const initialLang = determineLanguage();
+    currentLanguage = initialLang;
     
-    // 翻译页面
-    translateElements(currentLanguage);
+    // 应用翻译
+    translateElements(initialLang);
+    updateLanguageIndicator(initialLang);
     
-    // 更新语言指示器
-    updateLanguageIndicator(currentLanguage);
+    console.log(`Initialized with language: ${initialLang}`);
     
     // 暴露全局函数
     window.changeLanguage = changeLanguage;

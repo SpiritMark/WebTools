@@ -1,8 +1,17 @@
-// 通用脚本文件
+/**
+ * 工具箱Pro主脚本
+ * 包含主题切换、导航栏和其他UI交互功能
+ */
 
 document.addEventListener('DOMContentLoaded', function() {
-    // 初始化移动端菜单功能
+    // 初始化主题设置
+    initTheme();
+    
+    // 初始化移动菜单
     initMobileMenu();
+    
+    // 初始化导航高亮
+    initNavHighlight();
     
     // 初始化平滑滚动
     initSmoothScroll();
@@ -149,44 +158,98 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('hashchange', setActiveNavItem);
 });
 
-// 初始化移动端菜单
+/**
+ * 主题切换功能
+ */
+function initTheme() {
+    // 获取主题选择器元素
+    const simpleThemeBtn = document.getElementById('simpleTheme');
+    const neomorphicThemeBtn = document.getElementById('neomorphicTheme');
+    
+    if (!simpleThemeBtn || !neomorphicThemeBtn) return;
+    
+    // 从localStorage中获取保存的主题设置
+    const savedTheme = localStorage.getItem('theme');
+    
+    // 应用保存的主题设置或默认主题
+    if (savedTheme === 'simple') {
+        applySimpleTheme();
+    } else {
+        applyNeomorphicTheme();
+    }
+    
+    // 极简主题按钮点击事件
+    simpleThemeBtn.addEventListener('click', function() {
+        applySimpleTheme();
+        localStorage.setItem('theme', 'simple');
+    });
+    
+    // 拟态主题按钮点击事件
+    neomorphicThemeBtn.addEventListener('click', function() {
+        applyNeomorphicTheme();
+        localStorage.setItem('theme', 'neomorphic');
+    });
+}
+
+// 应用极简主题
+function applySimpleTheme() {
+    document.documentElement.classList.add('theme-simple');
+    const simpleThemeBtn = document.getElementById('simpleTheme');
+    const neomorphicThemeBtn = document.getElementById('neomorphicTheme');
+    if (simpleThemeBtn) simpleThemeBtn.classList.add('active');
+    if (neomorphicThemeBtn) neomorphicThemeBtn.classList.remove('active');
+}
+
+// 应用拟态主题
+function applyNeomorphicTheme() {
+    document.documentElement.classList.remove('theme-simple');
+    const simpleThemeBtn = document.getElementById('simpleTheme');
+    const neomorphicThemeBtn = document.getElementById('neomorphicTheme');
+    if (simpleThemeBtn) simpleThemeBtn.classList.remove('active');
+    if (neomorphicThemeBtn) neomorphicThemeBtn.classList.add('active');
+}
+
+/**
+ * 移动端菜单功能
+ */
 function initMobileMenu() {
     const menuToggle = document.getElementById('menuToggle');
     const navList = document.getElementById('navList');
     
-    if (!menuToggle || !navList) return;
-    
-    menuToggle.addEventListener('click', function() {
-        navList.classList.toggle('active');
+    if (menuToggle && navList) {
+        menuToggle.addEventListener('click', function() {
+            navList.classList.toggle('show');
+            menuToggle.classList.toggle('active');
+        });
+    }
+}
+
+/**
+ * 导航栏高亮功能
+ */
+function initNavHighlight() {
+    // 设置当前活动的导航项
+    function setActiveNavItem() {
+        const navLinks = document.querySelectorAll('.nav-list a');
+        const currentPath = window.location.pathname;
+        const currentHash = window.location.hash;
         
-        // 切换菜单按钮图标
-        const icon = menuToggle.querySelector('i');
-        if (icon) {
-            if (navList.classList.contains('active')) {
-                icon.classList.remove('ri-menu-line');
-                icon.classList.add('ri-close-line');
-            } else {
-                icon.classList.remove('ri-close-line');
-                icon.classList.add('ri-menu-line');
-            }
-        }
-    });
-    
-    // 点击外部区域关闭菜单
-    document.addEventListener('click', function(event) {
-        if (navList.classList.contains('active') && 
-            !navList.contains(event.target) && 
-            !menuToggle.contains(event.target)) {
-            navList.classList.remove('active');
+        navLinks.forEach(link => {
+            link.classList.remove('active');
             
-            // 恢复菜单按钮图标
-            const icon = menuToggle.querySelector('i');
-            if (icon) {
-                icon.classList.remove('ri-close-line');
-                icon.classList.add('ri-menu-line');
+            if (currentHash && link.getAttribute('href') === currentHash) {
+                link.classList.add('active');
+            } else if (!currentHash && link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
             }
-        }
-    });
+        });
+    }
+    
+    // 初始化时设置活动状态
+    setActiveNavItem();
+    
+    // 哈希改变时更新活动状态
+    window.addEventListener('hashchange', setActiveNavItem);
 }
 
 // 初始化平滑滚动
@@ -341,9 +404,16 @@ function initCardInteractions() {
  * 在语言切换时处理需要特殊处理的元素
  */
 function updateDynamicElements(language) {
-    // 在这里可以添加一些不能通过data-i18n属性处理的元素
+    // 更新页面标题
+    const titleEl = document.querySelector('title');
+    if (titleEl && titleEl.getAttribute('data-i18n')) {
+        if (typeof getText === 'function') {
+            document.title = getText(titleEl.getAttribute('data-i18n'), language);
+        }
+    }
     
-    // 例如：动态创建的元素、图表标签等
+    // 其他可能需要动态更新的元素
+    // ...
 }
 
 /**
@@ -372,13 +442,14 @@ function getCurrentPageCategory() {
     return 'common';
 }
 
-// 语言切换功能 (如果已有i18n.js，则与其集成)
+// 语言切换功能
 function switchLanguage(lang) {
     if (typeof changeLanguage === 'function') {
-        // 如果存在i18n.js中的changeLanguage函数
+        // 如果存在i18n.js中的changeLanguage函数，使用它
         changeLanguage(lang);
     } else {
-        // 设置语言Cookie
+        console.warn('changeLanguage function not found in i18n.js');
+        // 设置语言Cookie作为备用方案
         document.cookie = `language=${lang};path=/;max-age=${60*60*24*30}`;
         // 刷新页面应用新语言
         window.location.reload();

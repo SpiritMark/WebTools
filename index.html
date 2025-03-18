@@ -41,15 +41,15 @@
                         </button>
                         <div class="language-dropdown">
                             <div class="language-item active" onclick="switchLanguage('zh-CN')">
-                                <img src="img/flags/cn.png" alt="简体中文" class="language-flag">
+                                <i class="ri-earth-fill"></i>
                                 <span>简体中文</span>
                             </div>
                             <div class="language-item" onclick="switchLanguage('en')">
-                                <img src="img/flags/us.png" alt="English" class="language-flag">
+                                <i class="ri-earth-fill"></i>
                                 <span>English</span>
                             </div>
                             <div class="language-item" onclick="switchLanguage('ja')">
-                                <img src="img/flags/jp.png" alt="日本語" class="language-flag">
+                                <i class="ri-earth-fill"></i>
                                 <span>日本語</span>
                             </div>
                         </div>
@@ -219,7 +219,7 @@
                     <h2>工具箱<span>Pro</span></h2>
                     <p data-i18n="index.aboutDescription">工具箱Pro是一个为用户提供各种实用工具的平台，我们致力于开发简单易用的在线工具，帮助用户提高工作效率。</p>
                     <div class="social-links">
-                        <a href="#" class="social-link"><i class="ri-github-fill"></i></a>
+                        <a href="" class="social-link"><i class="ri-github-fill"></i></a>
                         <a href="#" class="social-link"><i class="ri-twitter-fill"></i></a>
                         <a href="#" class="social-link"><i class="ri-mail-fill"></i></a>
                     </div>
@@ -249,6 +249,44 @@
         </div>
     </footer>
 
+    <!-- 主题选择器 - 新位置 -->
+    <div class="theme-selector">
+        <button class="theme-selector-btn" id="themeToggleBtn">
+            <i class="ri-palette-line"></i>
+            <span>主题</span>
+        </button>
+        <div class="theme-dropdown" id="themeDropdown">
+            <div class="theme-dropdown-header">选择主题样式</div>
+            <div class="theme-items-container">
+                <div class="theme-item" id="simpleTheme">
+                    <div class="theme-item-icon simple-preview"></div>
+                    <span>极简</span>
+                </div>
+                <div class="theme-item" id="neomorphicTheme">
+                    <div class="theme-item-icon neo-preview"></div>
+                    <span>拟态</span>
+                </div>
+                <div class="theme-item" id="vscodeTheme">
+                    <div class="theme-item-icon vscode-preview"></div>
+                    <span>VSCode</span>
+                </div>
+                <div class="theme-item" id="darkTheme">
+                    <div class="theme-item-icon dark-preview"></div>
+                    <span>暗黑</span>
+                </div>
+                <div class="theme-item" id="eyeCareTheme">
+                    <div class="theme-item-icon eye-care-preview"></div>
+                    <span>护眼</span>
+                </div>
+                <div class="theme-item" id="oceanTheme">
+                    <div class="theme-item-icon ocean-preview"></div>
+                    <span>海洋</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/theme.js"></script>
     <script src="js/script.js"></script>
 </body>
 </html>

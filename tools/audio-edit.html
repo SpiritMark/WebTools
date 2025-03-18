@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音频剪辑与合并工具 - 工具箱Pro</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/navigation.css">
+    <link rel="stylesheet" href="../css/tool.css">
+    <link rel="stylesheet" href="../css/audio-edit.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="../js/i18n.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html"><h1>工具箱<span>Pro</span></h1></a>
+            </div>
+            <nav class="main-nav">
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="nav-list" id="navList">
+                    <li><a href="../index.html" data-i18n="common.home">首页</a></li>
+                    <li><a href="../index.html#tools" data-i18n="common.tools">工具集</a></li>
+                    <li>
+                        <a href="#" data-i18n="common.categories">分类 <i class="ri-arrow-down-s-line"></i></a>
+                        <ul class="submenu">
+                            <li><a href="../index.html#tools"><i class="ri-file-text-line"></i> 文档与文本</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-image-line"></i> 图像处理</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-video-line"></i> 视频与音频</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-database-2-line"></i> 数据处理</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-tools-line"></i> 实用工具</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-palette-line"></i> 设计与创意</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="../index.html#about" data-i18n="common.about">关于我们</a></li>
+                    <li class="language-selector">
+                        <button class="language-selector-btn">
+                            <i class="ri-global-line"></i>
+                            <span data-i18n="common.language">简体中文</span>
+                        </button>
+                        <div class="language-dropdown">
+                            <div class="language-item active" onclick="switchLanguage('zh-CN')">
+                                <i class="ri-earth-fill"></i>
+                                <span>简体中文</span>
+                            </div>
+                            <div class="language-item" onclick="switchLanguage('en')">
+                                <i class="ri-earth-fill"></i>
+                                <span>English</span>
+                            </div>
+                            <div class="language-item" onclick="switchLanguage('ja')">
+                                <i class="ri-earth-fill"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="tool-container">
+        <div class="tool-header">
+            <h1><i class="ri-music-2-line"></i> 音频剪辑与合并工具</h1>
+            <p>简单易用的在线音频编辑工具，可以剪辑、合并多个音频文件，调整音量和添加特效</p>
+        </div>
+
+        <div class="tool-content">
+            <!-- 上传音频区域 -->
+            <div class="upload-container" id="uploadContainer">
+                <div class="upload-area" id="uploadArea">
+                    <i class="ri-upload-cloud-2-line"></i>
+                    <h3>上传音频文件</h3>
+                    <p>支持MP3, WAV, OGG, AAC等格式，最大50MB</p>
+                    <input type="file" id="audioInput" accept="audio/*" multiple style="display: none;">
+                    <button class="btn btn-primary" id="uploadBtn">选择音频文件</button>
+                </div>
+            </div>
+
+            <!-- 音频编辑器区域 -->
+            <div class="editor-container" id="editorContainer" style="display: none;">
+                <div class="editor-layout">
+                    <!-- 音频轨道列表区域 -->
+                    <div class="tracks-section">
+                        <div class="section-header">
+                            <h3>音频轨道</h3>
+                            <div class="section-actions">
+                                <button id="addTrackBtn" class="btn btn-sm"><i class="ri-add-line"></i> 添加轨道</button>
+                            </div>
+                        </div>
+                        <div class="tracks-list" id="tracksList">
+                            <!-- 音频轨道将在这里动态添加 -->
+                        </div>
+                    </div>
+
+                    <!-- 编辑工具区域 -->
+                    <div class="tools-section">
+                        <div class="tool-panel">
+                            <div class="panel-header">
+                                <h3>编辑工具</h3>
+                            </div>
+                            <div class="panel-body">
+                                <!-- 剪辑工具 -->
+                                <div class="tool-group">
+                                    <h4>时间裁剪</h4>
+                                    <div class="trim-controls">
+                                        <div class="input-group">
+                                            <label for="startTime">开始时间</label>
+                                            <input type="text" id="startTime" placeholder="00:00.00">
+                                        </div>
+                                        <div class="input-group">
+                                            <label for="endTime">结束时间</label>
+                                            <input type="text" id="endTime" placeholder="00:00.00">
+                                        </div>
+                                    </div>
+                                    <button id="trimBtn" class="btn btn-secondary">应用裁剪</button>
+                                </div>
+
+                                <!-- 音量调整 -->
+                                <div class="tool-group">
+                                    <h4>音量调整</h4>
+                                    <div class="volume-slider">
+                                        <input type="range" id="volumeRange" min="0" max="200" step="5" value="100">
+                                        <span id="volumeValue">100%</span>
+                                    </div>
+                                    <button id="applyVolumeBtn" class="btn btn-secondary">应用音量</button>
+                                </div>
+
+                                <!-- 淡入淡出效果 -->
+                                <div class="tool-group">
+                                    <h4>淡入淡出</h4>
+                                    <div class="fade-controls">
+                                        <div class="input-group">
+                                            <label for="fadeInTime">淡入时长(秒)</label>
+                                            <input type="number" id="fadeInTime" min="0" max="10" step="0.1" value="0">
+                                        </div>
+                                        <div class="input-group">
+                                            <label for="fadeOutTime">淡出时长(秒)</label>
+                                            <input type="number" id="fadeOutTime" min="0" max="10" step="0.1" value="0">
+                                        </div>
+                                    </div>
+                                    <button id="applyFadeBtn" class="btn btn-secondary">应用淡变</button>
+                                </div>
+
+                                <!-- 速度调整 -->
+                                <div class="tool-group">
+                                    <h4>速度调整</h4>
+                                    <div class="speed-slider">
+                                        <input type="range" id="speedRange" min="0.5" max="2" step="0.1" value="1">
+                                        <span id="speedValue">1.0x</span>
+                                    </div>
+                                    <button id="applySpeedBtn" class="btn btn-secondary">应用速度</button>
+                                </div>
+
+                                <!-- 音频滤镜效果 -->
+                                <div class="tool-group">
+                                    <h4>音频效果</h4>
+                                    <select id="effectSelect" class="form-select">
+                                        <option value="none">无效果</option>
+                                        <option value="echo">回声</option>
+                                        <option value="reverb">混响</option>
+                                        <option value="bassboost">低音增强</option>
+                                        <option value="highpass">高通滤波</option>
+                                        <option value="lowpass">低通滤波</option>
+                                    </select>
+                                    <button id="applyEffectBtn" class="btn btn-secondary">应用效果</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 波形预览和时间轴区域 -->
+                <div class="waveform-section">
+                    <div class="waveform-container" id="waveformContainer">
+                        <!-- 波形将在这里渲染 -->
+                    </div>
+                    <div class="timeline-controls">
+                        <button id="playPauseBtn" class="control-btn"><i class="ri-play-fill"></i></button>
+                        <div class="timeline-container">
+                            <div id="timelineTrack" class="timeline-track">
+                                <div id="timelineProgress" class="timeline-progress"></div>
+                                <div id="timelineCursor" class="timeline-cursor"></div>
+                            </div>
+                            <div id="timeDisplay" class="time-display">00:00 / 00:00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 合并音频选项 -->
+                <div class="merge-options">
+                    <h3>合并设置</h3>
+                    <div class="merge-controls">
+                        <div class="merge-option">
+                            <label for="mergeType">合并方式</label>
+                            <select id="mergeType" class="form-select">
+                                <option value="sequential">顺序播放(一个接一个)</option>
+                                <option value="overlay">叠加混音(同时播放)</option>
+                                <option value="crossfade">交叉淡变(平滑过渡)</option>
+                            </select>
+                        </div>
+                        <div class="merge-option crossfade-duration" style="display: none;">
+                            <label for="crossfadeDuration">交叉淡变时长(秒)</label>
+                            <input type="number" id="crossfadeDuration" min="0.1" max="5" step="0.1" value="1">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 操作按钮区域 -->
+                <div class="action-bar">
+                    <button id="resetBtn" class="btn btn-outline">重置</button>
+                    <button id="previewBtn" class="btn btn-secondary">预览效果</button>
+                    <button id="exportBtn" class="btn btn-primary">导出音频</button>
+                </div>
+
+                <!-- 导出选项模态框 -->
+                <div class="modal" id="exportModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>导出音频</h3>
+                            <button class="close-btn" id="closeExportModal"><i class="ri-close-line"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="exportFormat">格式</label>
+                                <select id="exportFormat" class="form-select">
+                                    <option value="mp3">MP3</option>
+                                    <option value="wav">WAV</option>
+                                    <option value="ogg">OGG</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="exportQuality">质量</label>
+                                <select id="exportQuality" class="form-select">
+                                    <option value="high">高 (320kbps)</option>
+                                    <option value="medium" selected>中 (192kbps)</option>
+                                    <option value="low">低 (128kbps)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="exportFilename">文件名</label>
+                                <input type="text" id="exportFilename" class="form-input" value="merged_audio">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="cancelExportBtn" class="btn btn-outline">取消</button>
+                            <button id="confirmExportBtn" class="btn btn-primary">导出</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2023 工具箱Pro. 保留所有权利。</p>
+        </div>
+    </footer>
+
+    <!-- 主题选择器 - 新位置 -->
+    <div class="theme-selector">
+        <button class="theme-selector-btn" id="themeToggleBtn">
+            <i class="ri-palette-line"></i>
+            <span>主题</span>
+        </button>
+        <div class="theme-dropdown" id="themeDropdown">
+            <div class="theme-dropdown-header">选择主题样式</div>
+            <div class="theme-items-container">
+                <div class="theme-item" id="simpleTheme">
+                    <div class="theme-item-icon simple-preview"></div>
+                    <span>极简</span>
+                </div>
+                <div class="theme-item" id="neomorphicTheme">
+                    <div class="theme-item-icon neo-preview"></div>
+                    <span>拟态</span>
+                </div>
+                <div class="theme-item" id="vscodeTheme">
+                    <div class="theme-item-icon vscode-preview"></div>
+                    <span>VSCode</span>
+                </div>
+                <div class="theme-item" id="darkTheme">
+                    <div class="theme-item-icon dark-preview"></div>
+                    <span>暗黑</span>
+                </div>
+                <div class="theme-item" id="eyeCareTheme">
+                    <div class="theme-item-icon eye-care-preview"></div>
+                    <span>护眼</span>
+                </div>
+                <div class="theme-item" id="oceanTheme">
+                    <div class="theme-item-icon ocean-preview"></div>
+                    <span>海洋</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 使用Web Audio API和waveform.js库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/6.6.3/wavesurfer.min.js"></script>
+    <script src="../js/theme.js"></script>
+    <script src="../js/audio-edit.js"></script>
+</body>
+</html> 

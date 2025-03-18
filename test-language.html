@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="index.title">语言切换测试</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/navigation.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="js/i18n.js"></script>
+    <style>
+        .test-container {
+            max-width: 800px;
+            margin: 100px auto;
+            padding: 20px;
+            background-color: #f5f8ff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        .language-display {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        .language-info {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .debug-box {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f3f3f3;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html"><h1>工具箱<span>Pro</span></h1></a>
+            </div>
+            <nav class="main-nav">
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="nav-list" id="navList">
+                    <li><a href="index.html" data-i18n="common.home">首页</a></li>
+                    <li><a href="#" class="active">语言测试</a></li>
+                    <li><a href="#" data-i18n="common.about">关于我们</a></li>
+                    <li class="language-selector">
+                        <button class="language-selector-btn">
+                            <i class="ri-global-line"></i>
+                            <span data-i18n="common.language">简体中文</span>
+                        </button>
+                        <div class="language-dropdown">
+                            <div class="language-item active" onclick="switchLanguage('zh-CN')">
+                                <i class="ri-earth-fill"></i>
+                                <span>简体中文</span>
+                            </div>
+                            <div class="language-item" onclick="switchLanguage('en')">
+                                <i class="ri-earth-fill"></i>
+                                <span>English</span>
+                            </div>
+                            <div class="language-item" onclick="switchLanguage('ja')">
+                                <i class="ri-earth-fill"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="test-container">
+        <h1>语言切换测试页面</h1>
+        <p data-i18n="index.heroSubtitle">无需下载安装，直接在浏览器中使用各种实用工具</p>
+        
+        <div class="language-display">
+            <div class="language-info">
+                <strong>当前语言：</strong> <span id="currentLanguage"></span>
+            </div>
+            <div class="language-info">
+                <strong>网页标题：</strong> <span id="pageTitle"></span>
+            </div>
+            <div class="language-info">
+                <strong>导航项：</strong>
+                <span id="navHome"></span> | 
+                <span id="navAbout"></span>
+            </div>
+            <div class="debug-box" id="debugInfo"></div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+    <script>
+        // 页面加载完成后更新显示信息
+        document.addEventListener('DOMContentLoaded', function() {
+            updateLanguageInfo();
+            
+            // 监听语言变更事件
+            document.addEventListener('languageChanged', function(e) {
+                updateLanguageInfo();
+            });
+        });
+        
+        function updateLanguageInfo() {
+            // 获取当前语言
+            let currentLang = 'zh-CN';
+            try {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.startsWith('language=')) {
+                        currentLang = cookie.substring('language='.length, cookie.length);
+                        break;
+                    }
+                }
+            } catch (e) {
+                console.error('Error getting language cookie:', e);
+            }
+            
+            // 更新显示
+            document.getElementById('currentLanguage').textContent = currentLang;
+            document.getElementById('pageTitle').textContent = document.title;
+            
+            const navHome = document.querySelector('[data-i18n="common.home"]');
+            document.getElementById('navHome').textContent = navHome ? navHome.textContent : 'N/A';
+            
+            const navAbout = document.querySelector('[data-i18n="common.about"]');
+            document.getElementById('navAbout').textContent = navAbout ? navAbout.textContent : 'N/A';
+            
+            // 添加调试信息
+            const debugInfo = `
+语言Cookie: ${document.cookie}
+浏览器语言: ${navigator.language}
+页面语言: ${document.documentElement.lang}
+窗口尺寸: ${window.innerWidth} x ${window.innerHeight}
+`;
+            document.getElementById('debugInfo').textContent = debugInfo;
+        }
+    </script>
+</body>
+</html> 

@@ -5,7 +5,7 @@
 ---
 ![image](https://github.com/user-attachments/assets/4a34d8e3-0635-4878-a295-5c16db51da5e)
 
-🚀 **ToolBox Pro** is an **open-source all-in-one online tools collection**, offering various practical tools for **document processing, image editing, audio & video editing**, and more. No downloads required—just open and use!  
+🚀 **ToolBox Pro** is an **open-source all-in-one online tools collection**, offering various practical tools for **document processing, image editing, audio & video editing, password management**, and more. No downloads required—just open and use!  
 
 👉 **Visit Website**: [🔗 Demo Link](https://www.0p05q.asia/)  
 
@@ -15,6 +15,7 @@
 ✅ **Document & Text Tools**: PDF processing, text editing, Markdown editor, text encryption, etc.  
 ✅ **Image Processing**: Online image editing, stitching, ID photo creation, batch processing, etc.  
 ✅ **Audio & Video Editing**: Video cutting, subtitle adding, audio editing, speed adjustment, etc.  
+✅ **Security Tools**: Random password generator (customizable length, character types, strength evaluation, password history management)  
 
 ---
 
@@ -22,6 +23,8 @@
 - 🌐 **Fully Online**: No installation required, instant access  
 - 🚀 **Efficient & Simple**: Clean interface, practical features  
 - 🔒 **Privacy Protection**: All operations are executed locally without file uploads  
+- 🎨 **Multiple Themes**: Supports minimalist, neomorphic, VSCode, dark mode, eye-friendly, ocean themes
+- 💾 **Local Storage**: Saves settings and history records for improved efficiency
 
 ---
 
@@ -32,9 +35,17 @@
 
 ---
 
+## **🔥 Popular Tools**
+- **Random Password Generator**: Generate strong, secure, customizable passwords with strength evaluation and history management
+- **PDF Tools**: Convert, merge, split, add watermarks and more PDF processing functions
+- **Audio Editor**: Cut, mix, add effects, supports multiple audio formats
+
+---
+
 ## **🛠 Tech Stack**
-- **Frontend**: React / Vue / JavaScript / Tailwind CSS (add others if applicable)  
-- **Backend (if applicable)**: Node.js / Express / Serverless  
+- **Frontend**: HTML5, CSS3, JavaScript (vanilla)
+- **Interaction**: Browser APIs, LocalStorage, FileReader API
+- **UI/UX**: Responsive design, modern interface, multi-theme support
 
 ---
 
@@ -43,6 +54,12 @@ We welcome contributions! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) to le
 
 ---
 
+## **🙏 Acknowledgments**
+- [Remix Icon](https://remixicon.com/) - Excellent open-source icon library
+- All project contributors
+
+---
+
 ## **📜 Open Source License**
-This project is open-source under the **MIT / GPL / Apache 2.0** license. See [LICENSE](./LICENSE) for details.
+This project is open-source under the **MIT** license. See [LICENSE](./LICENSE) for details.
 
