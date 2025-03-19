@@ -18,7 +18,11 @@ const translations = {
       contactUs: '联系我们',
             downloadApp: '下载App',
             search: '搜索...',
-            supportedFormats: '支持格式: JPG, PNG, GIF, BMP, WEBP'
+            supportedFormats: '支持格式: JPG, PNG, GIF, BMP, WEBP',
+            apply: '应用',
+            cancel: '取消',
+            upload: '选择图片',
+            dragAndDrop: '拖放图片到此处，或'
         },
         index: {
             title: '在线工具箱 - 一站式在线工具集合',
@@ -51,7 +55,33 @@ const translations = {
             imageEffects: '图片特效',
             batchImage: '批量图片处理',
             bgRemove: '图片背景去除',
-            webpageSnapshot: '网页快照工具'
+            webpageSnapshot: '网页快照工具',
+            anonymousChat: '匿名聊天'
+        },
+        anonymousChat: {
+            title: '匿名聊天',
+            description: '创建或加入聊天室，与他人进行安全匿名的交流，无需注册账号',
+            joinOrCreate: '加入或创建聊天室',
+            roomId: '聊天室ID',
+            roomIdPlaceholder: '输入或自动生成聊天室ID',
+            generateRandom: '生成随机ID',
+            roomIdHint: '分享该ID给好友以便他们加入同一聊天室',
+            nickname: '昵称',
+            nicknamePlaceholder: '输入您的昵称',
+            encryption: '端到端加密',
+            messageExpiry: '消息自动销毁',
+            joinChat: '进入聊天室',
+            privacyNote: '所有消息均在浏览器端加密，我们不存储任何聊天内容，确保您的隐私安全',
+            members: '成员',
+            leaveRoom: '离开聊天室',
+            connected: '已连接',
+            welcomeTitle: '欢迎来到加密聊天室',
+            welcomeMessage: '此聊天室中的所有消息均已加密，刷新页面或关闭浏览器后聊天记录将被清除。',
+            messagePlaceholder: '输入消息...',
+            addText: '添加文本',
+            clearDrawing: '清除绘图',
+            downloadImage: '下载图片',
+            resetImage: '重置图片'
         }
     },
     'en': {
@@ -67,7 +97,11 @@ const translations = {
       contactUs: 'Contact Us',
             downloadApp: 'Download App',
             search: 'Search...',
-            supportedFormats: 'Supported formats: JPG, PNG, GIF, BMP, WEBP'
+            supportedFormats: 'Supported formats: JPG, PNG, GIF, BMP, WEBP',
+            apply: 'Apply',
+            cancel: 'Cancel',
+            upload: 'Select Image',
+            dragAndDrop: 'Drag and drop image here, or'
         },
   index: {
             title: 'Online Toolbox - All-in-One Online Tools Collection',
@@ -100,7 +134,33 @@ const translations = {
             imageEffects: 'Image Effects',
             batchImage: 'Batch Image Processing',
             bgRemove: 'Background Remover',
-            webpageSnapshot: 'Webpage Snapshot'
+            webpageSnapshot: 'Webpage Snapshot',
+            anonymousChat: 'Anonymous Chat'
+        },
+        anonymousChat: {
+            title: 'Anonymous Chat',
+            description: 'Create or join chat rooms for secure, anonymous communication with others, no registration required',
+            joinOrCreate: 'Join or Create a Chat Room',
+            roomId: 'Room ID',
+            roomIdPlaceholder: 'Enter or auto-generate Room ID',
+            generateRandom: 'Generate Random ID',
+            roomIdHint: 'Share this ID with friends so they can join the same chat room',
+            nickname: 'Nickname',
+            nicknamePlaceholder: 'Enter your nickname',
+            encryption: 'End-to-end encryption',
+            messageExpiry: 'Auto-delete messages',
+            joinChat: 'Enter Chat Room',
+            privacyNote: 'All messages are encrypted in your browser. We don\'t store any chat content, ensuring your privacy',
+            members: 'Members',
+            leaveRoom: 'Leave Room',
+            connected: 'Connected',
+            welcomeTitle: 'Welcome to Encrypted Chat Room',
+            welcomeMessage: 'All messages in this chat room are encrypted. Chat history will be deleted after refreshing the page or closing the browser.',
+            messagePlaceholder: 'Type a message...',
+            addText: 'Add Text',
+            clearDrawing: 'Clear Drawing',
+            downloadImage: 'Download Image',
+            resetImage: 'Reset Image'
         }
     },
     'ja': {
@@ -116,7 +176,11 @@ const translations = {
             contactUs: 'お問い合わせ',
             downloadApp: 'アプリをダウンロード',
             search: '検索...',
-            supportedFormats: '対応フォーマット: JPG, PNG, GIF, BMP, WEBP'
+            supportedFormats: '対応フォーマット: JPG, PNG, GIF, BMP, WEBP',
+            apply: '適用',
+            cancel: 'キャンセル',
+            upload: '画像を選択',
+            dragAndDrop: '画像をここにドラッグ＆ドロップ、または'
         },
         index: {
             title: 'オンラインツールボックス - オールインワンオンラインツールコレクション',
@@ -149,7 +213,33 @@ const translations = {
             imageEffects: '画像エフェクト',
             batchImage: '一括画像処理',
             bgRemove: '背景削除',
-            webpageSnapshot: 'ウェブページスナップショット'
+            webpageSnapshot: 'ウェブページスナップショット',
+            anonymousChat: '匿名チャット'
+        },
+        anonymousChat: {
+            title: '匿名チャット',
+            description: 'チャットルームを作成または参加し、安全に匿名で通信できます。登録不要',
+            joinOrCreate: 'チャットルームに参加または作成',
+            roomId: 'ルームID',
+            roomIdPlaceholder: 'ルームIDを入力または自動生成',
+            generateRandom: 'ランダムID生成',
+            roomIdHint: '友達と同じチャットルームに参加できるように、このIDを共有してください',
+            nickname: 'ニックネーム',
+            nicknamePlaceholder: 'ニックネームを入力',
+            encryption: 'エンドツーエンド暗号化',
+            messageExpiry: 'メッセージ自動削除',
+            joinChat: 'チャットルームに入る',
+            privacyNote: 'すべてのメッセージはブラウザ内で暗号化されます。チャット内容は保存されず、プライバシーが確保されます',
+            members: 'メンバー',
+            leaveRoom: 'ルームを退出',
+            connected: '接続済み',
+            welcomeTitle: '暗号化チャットルームへようこそ',
+            welcomeMessage: 'このチャットルームのすべてのメッセージは暗号化されています。ページを更新したりブラウザを閉じたりすると、チャット履歴は削除されます。',
+            messagePlaceholder: 'メッセージを入力...',
+            addText: 'テキストを追加',
+            clearDrawing: '描画をクリア',
+            downloadImage: '画像をダウンロード',
+            resetImage: '画像をリセット'
         }
     }
 };
@@ -250,48 +340,78 @@ function changeLanguage(lang) {
         // 更新UI
         translateElements(lang);
         updateLanguageIndicator(lang);
+        updateDynamicElements(lang);
         
-        // 触发自定义事件，通知其他脚本语言已变更
-        const event = new CustomEvent('languageChanged', { 
-            detail: { language: lang } 
-        });
-        document.dispatchEvent(event);
-        
-        console.log(`Language changed to: ${lang}`);
+        // 更新页面标题
+        const titleElement = document.querySelector('title');
+        if (titleElement && titleElement.hasAttribute('data-i18n')) {
+            const key = titleElement.getAttribute('data-i18n').split('.');
+            const namespace = key[0];
+            const term = key[1];
+            
+            if (translations[lang] && translations[lang][namespace] && translations[lang][namespace][term]) {
+                titleElement.textContent = translations[lang][namespace][term];
+            }
+        }
     } else {
         console.error(`Language ${lang} is not supported.`);
     }
 }
 
-// 获取翻译文本
+// 获取特定文本
 function getText(key, lang = currentLanguage) {
-    const parts = key.split('.');
-    if (parts.length !== 2) return key;
-    
-    const namespace = parts[0];
-    const term = parts[1];
+    const keyParts = key.split('.');
+    const namespace = keyParts[0];
+    const term = keyParts[1];
     
     if (translations[lang] && translations[lang][namespace] && translations[lang][namespace][term]) {
         return translations[lang][namespace][term];
     }
     
-    return key;
+    return key; // 如果找不到翻译，返回键名
 }
 
-// 初始化 i18n
-document.addEventListener('DOMContentLoaded', function() {
-    // 确定使用的语言
-    const initialLang = determineLanguage();
-    currentLanguage = initialLang;
+// 初始化多语言支持
+function initI18n() {
+    // 确定使用哪种语言
+    currentLanguage = determineLanguage();
     
     // 应用翻译
-    translateElements(initialLang);
-    updateLanguageIndicator(initialLang);
+    translateElements(currentLanguage);
+    updateLanguageIndicator(currentLanguage);
     
-    console.log(`Initialized with language: ${initialLang}`);
+    // 绑定语言切换事件
+    const switchButtons = document.querySelectorAll('[onclick^="switchLanguage"]');
+    switchButtons.forEach(button => {
+        const match = button.getAttribute('onclick').match(/switchLanguage\(['"]([^'"]+)['"]\)/);
+        if (match && match[1]) {
+            const lang = match[1];
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                changeLanguage(lang);
+            });
+            // 移除内联onclick属性
+            button.removeAttribute('onclick');
+        }
+    });
     
-    // 暴露全局函数
-    window.changeLanguage = changeLanguage;
-    window.getText = getText;
-    window.switchLanguage = changeLanguage; // 别名，兼容旧代码
-});
+    // 更新页面标题
+    const titleElement = document.querySelector('title');
+    if (titleElement && titleElement.hasAttribute('data-i18n')) {
+        const key = titleElement.getAttribute('data-i18n').split('.');
+        const namespace = key[0];
+        const term = key[1];
+        
+        if (translations[currentLanguage] && translations[currentLanguage][namespace] && translations[currentLanguage][namespace][term]) {
+            titleElement.textContent = translations[currentLanguage][namespace][term];
+        }
+    }
+}
+
+// 公开的语言切换函数
+function switchLanguage(lang) {
+    changeLanguage(lang);
+}
+
+// DOM加载完成后初始化
+document.addEventListener('DOMContentLoaded', initI18n);

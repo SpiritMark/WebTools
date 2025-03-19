@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="anonymousChat.title">匿名聊天 | 工具箱Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/navigation.css">
+    <link rel="stylesheet" href="../css/anonymous-chat.css">
+    <link rel="stylesheet" href="../css/anonymous-chat-modern.css">
+    <script src="../js/i18n.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html"><h1>工具箱<span>Pro</span></h1></a>
+            </div>
+            <nav class="main-nav">
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="nav-list" id="navList">
+                    <li><a href="../index.html" data-i18n="common.home">首页</a></li>
+                    <li><a href="../index.html#tools" data-i18n="common.tools">工具</a></li>
+                    <li><a href="../index.html#about" data-i18n="common.about">关于</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="tool-container">
+        <div class="container">
+            <div class="tool-header">
+                <h1 class="tool-title" data-i18n="anonymousChat.title">匿名聊天</h1>
+                <p class="tool-description" data-i18n="anonymousChat.description">创建或加入聊天室，与他人进行安全匿名的交流，无需注册账号</p>
+            </div>
+            
+            <div class="tool-content">
+                <!-- 聊天入口页面 -->
+                <div id="chat-entry" class="chat-entry">
+                    <div class="entry-container">
+                        <div class="entry-header">
+                            <h2 data-i18n="anonymousChat.joinOrCreate">加入或创建聊天室</h2>
+                        </div>
+                        
+                        <div class="entry-form">
+                            <div class="input-group">
+                                <label for="room-id" data-i18n="anonymousChat.roomId">聊天室ID</label>
+                                <div class="input-with-icon">
+                                    <i class="ri-chat-3-line"></i>
+                                    <input type="text" id="room-id" placeholder="输入或自动生成聊天室ID" data-i18n="anonymousChat.roomIdPlaceholder">
+                                </div>
+                                <button id="generate-room" class="btn btn-secondary btn-sm">
+                                    <i class="ri-refresh-line"></i> <span data-i18n="anonymousChat.generateRandom">生成随机ID</span>
+                                </button>
+                                <p class="hint" data-i18n="anonymousChat.roomIdHint">分享该ID给好友以便他们加入同一聊天室</p>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="nickname" data-i18n="anonymousChat.nickname">昵称</label>
+                                <div class="input-with-icon">
+                                    <i class="ri-user-line"></i>
+                                    <input type="text" id="nickname" placeholder="输入您的昵称" data-i18n="anonymousChat.nicknamePlaceholder">
+                                </div>
+                            </div>
+                            
+                            <div class="chat-options">
+                                <div class="option-item">
+                                    <input type="checkbox" id="encryption" checked>
+                                    <label for="encryption">
+                                        <i class="ri-lock-line"></i>
+                                        <span data-i18n="anonymousChat.encryption">端到端加密</span>
+                                    </label>
+                                </div>
+                                
+                                <div class="option-item">
+                                    <input type="checkbox" id="message-expiry">
+                                    <label for="message-expiry">
+                                        <i class="ri-timer-line"></i>
+                                        <span data-i18n="anonymousChat.messageExpiry">消息自动销毁</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="entry-actions">
+                                <button id="create-join-room" class="btn btn-primary btn-block">
+                                    <i class="ri-login-box-line"></i> <span data-i18n="anonymousChat.joinChat">进入聊天室</span>
+                                </button>
+                            </div>
+                            
+                            <div class="privacy-note">
+                                <i class="ri-shield-check-line"></i>
+                                <p data-i18n="anonymousChat.privacyNote">所有消息均在浏览器端加密，我们不存储任何聊天内容，确保您的隐私安全</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 聊天室界面 (初始隐藏) -->
+                <div id="chat-room" class="chat-room" style="display: none;">
+                    <div class="chat-container">
+                        <div class="chat-sidebar">
+                            <div class="room-info">
+                                <h3 class="room-id">聊天室: <span id="display-room-id"></span></h3>
+                                <button id="copy-room-id" class="btn btn-icon" title="复制聊天室ID">
+                                    <i class="ri-file-copy-line"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="member-list-header">
+                                <h4 data-i18n="anonymousChat.members">成员</h4>
+                                <span id="member-count" class="member-count">0</span>
+                            </div>
+                            
+                            <ul id="member-list" class="member-list">
+                                <!-- 成员列表将通过JS动态更新 -->
+                            </ul>
+                            
+                            <div class="chat-actions">
+                                <button id="leave-room" class="btn btn-danger btn-sm btn-block">
+                                    <i class="ri-logout-box-line"></i> <span data-i18n="anonymousChat.leaveRoom">离开聊天室</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-main">
+                            <div class="chat-header">
+                                <div class="room-status">
+                                    <span id="connection-status" class="status-indicator connected"></span>
+                                    <span id="status-text" data-i18n="anonymousChat.connected">已连接</span>
+                                </div>
+                                
+                                <div class="chat-controls">
+                                    <button id="clear-messages" class="btn btn-text" title="清除消息">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div id="messages-container" class="messages-container">
+                                <div class="welcome-message">
+                                    <div class="welcome-icon">
+                                        <i class="ri-lock-line"></i>
+                                    </div>
+                                    <h3 data-i18n="anonymousChat.welcomeTitle">欢迎来到加密聊天室</h3>
+                                    <p data-i18n="anonymousChat.welcomeMessage">此聊天室中的所有消息均已加密，刷新页面或关闭浏览器后聊天记录将被清除。</p>
+                                </div>
+                                <!-- 消息将通过JS动态添加 -->
+                            </div>
+                            
+                            <div class="message-composer">
+                                <div class="composer-actions">
+                                    <button id="attach-file" class="action-btn" title="发送文件">
+                                        <i class="ri-attachment-2"></i>
+                                    </button>
+                                    <button id="emoji-picker-btn" class="action-btn" title="表情">
+                                        <i class="ri-emotion-line"></i>
+                                    </button>
+                                </div>
+                                
+                                <div class="message-input-container">
+                                    <textarea id="message-input" class="message-input" placeholder="输入消息..." data-i18n="anonymousChat.messagePlaceholder"></textarea>
+                                    <button id="send-message" class="send-btn" disabled>
+                                        <i class="ri-send-plane-fill"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2024 工具箱Pro. <span data-i18n="common.allRightsReserved">版权所有</span>.</p>
+            <div class="footer-links">
+                <a href="#" data-i18n="common.termsOfUse">使用条款</a>
+                <a href="#" data-i18n="common.privacyPolicy">隐私政策</a>
+                <a href="#" data-i18n="common.contactUs">联系我们</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <script>
+    // Firebase 配置
+    const firebaseConfig = {
+      apiKey: "AIzaSyAF8cdy1y04AlI06l4alTcJ56CPa0H0LOI",
+      authDomain: "spiritmark-2c35d.firebaseapp.com",
+      projectId: "spiritmark-2c35d",
+      storageBucket: "spiritmark-2c35d.firebasestorage.app",
+      messagingSenderId: "658362462092",
+      appId: "1:658362462092:web:9f3ecb001265ff91a7f0a9",
+      measurementId: "G-8D87Z9W8WH"
+    };
+
+    // 初始化Firebase
+    firebase.initializeApp(firebaseConfig);
+    </script>
+
+    <!-- 保留原有的Socket.io和CryptoJS -->
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.7.2/dist/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.min.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="./js/anonymous-chat.js"></script>
+</body>
+</html> 
