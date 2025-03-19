@@ -22,16 +22,37 @@ document.addEventListener('DOMContentLoaded', function() {
     // 初始化卡片交互效果
     initCardInteractions();
     
-    // 滚动时添加阴影效果到头部
+    // 头部导航滚动效果 - 使用requestAnimationFrame优化性能
     const header = document.querySelector('.header');
     if (header) {
-        window.addEventListener('scroll', function() {
-            if (window.scrollY > 10) {
-                header.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.1)';
+        let lastScrollY = window.scrollY;
+        let ticking = false;
+        
+        // 使用requestAnimationFrame处理滚动效果
+        function updateHeader() {
+            if (lastScrollY > 50) {
+                if (!header.classList.contains('scrolled')) {
+                    header.classList.add('scrolled');
+                }
             } else {
-                header.style.boxShadow = 'none';
+                if (header.classList.contains('scrolled')) {
+                    header.classList.remove('scrolled');
+                }
             }
-        });
+            ticking = false;
+        }
+        
+        window.addEventListener('scroll', function() {
+            lastScrollY = window.scrollY;
+            
+            if (!ticking) {
+                window.requestAnimationFrame(updateHeader);
+                ticking = true;
+            }
+        }, { passive: true });
+        
+        // 初始检查
+        updateHeader();
     }
     
     // 监听语言变更事件
@@ -43,17 +64,6 @@ document.addEventListener('DOMContentLoaded', function() {
         updateDynamicElements(lang);
     });
 
-    // 导航栏滚动效果
-    if (header) {
-        window.addEventListener('scroll', function() {
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
-        });
-    }
-    
     // 移动端菜单切换
     const menuToggle = document.getElementById('menuToggle');
     const navList = document.getElementById('navList');

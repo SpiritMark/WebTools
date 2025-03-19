@@ -5,10 +5,15 @@
     padding: 15px 0;
     position: sticky;
     top: 0;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     z-index: 1000;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    transform: translateZ(0);
+    will-change: box-shadow, padding;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    perspective: 1000px;
 }
 
 /* 缩小状态下的导航栏（滚动后） */

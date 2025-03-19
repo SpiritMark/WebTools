@@ -61,8 +61,6 @@ img {
 
 /* Header Styles */
 .header {
-    background-color: white;
-    box-shadow: var(--shadow-sm);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -76,9 +74,6 @@ img {
 }
 
 .header.scrolled {
-    background-color: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-    height: 60px;
 }
 
 .logo h1 {
