@@ -56,10 +56,15 @@ class ImageEditor {
         this.brushSize = 5;
         this.brushColor = '#ff0000';
         this.brushType = 'brush';
+        this.brushOpacity = 1;
         this.lastX = 0;
         this.lastY = 0;
         this.drawingHistory = [];
         this.currentHistoryIndex = -1;
+        this.points = [];
+        this.minDistance = 2;
+        this.maxDistance = 30;
+        this.brushPreview = null;
         
         // 添加贴纸相关属性
         this.selectedSticker = null;
@@ -347,8 +352,8 @@ class ImageEditor {
             this.ctx.restore();
         });
         
-        // 绘制所有文字
-        this.texts.forEach((text, index) => {
+        // 渲染文字
+        this.texts.forEach(text => {
             this.ctx.save();
             
             // 设置文字样式
@@ -357,98 +362,57 @@ class ImageEditor {
             if (text.italic) fontStyle += 'italic ';
             this.ctx.font = `${fontStyle}${text.fontSize}px ${text.fontFamily}`;
             this.ctx.fillStyle = text.color;
+            this.ctx.textBaseline = 'bottom';
             
-            // 获取文字尺寸
-            const metrics = this.ctx.measureText(text.text);
-            const textWidth = metrics.width;
-            const textHeight = text.fontSize;
-            
-            // 添加text-hover类标记，用于CSS样式
-            if (text.isHovered) {
-                const textElement = document.createElement('div');
-                textElement.classList.add('text-hover');
-                textElement.style.position = 'absolute';
+            // 如果是选中的文字，绘制边框
+            if (text === this.selectedText) {
+                const metrics = this.ctx.measureText(text.text);
+                const textWidth = metrics.width;
+                const textHeight = text.fontSize;
                 
-                // 获取canvas位置
-                const rect = this.canvas.getBoundingClientRect();
-                textElement.style.left = (rect.left + text.x) + 'px';
-                textElement.style.top = (rect.top + text.y - textHeight) + 'px';
-                textElement.style.width = textWidth + 'px';
-                textElement.style.height = textHeight + 'px';
-                textElement.style.pointerEvents = 'none';
-                
-                // 添加到DOM，但会在下一帧移除
-                document.body.appendChild(textElement);
-                setTimeout(() => {
-                    if (textElement.parentNode) {
-                        textElement.parentNode.removeChild(textElement);
-                    }
-                }, 100);
-            }
-            
-            // 如果是选中的文字，绘制边框和背景
-            if (this.selectedText === text) {
-                // 绘制半透明背景
-                this.ctx.fillStyle = 'rgba(46, 102, 231, 0.1)';
-                this.ctx.fillRect(
-                    text.x,
-                    text.y - textHeight,
-                    textWidth,
-                    textHeight
-                );
-                
-                // 绘制边框
-                this.ctx.strokeStyle = '#2e66e7';
-            this.ctx.lineWidth = 2;
+                // 绘制选中框
+                this.ctx.strokeStyle = '#4c6ef5';
+                this.ctx.lineWidth = 1;
+                this.ctx.setLineDash([5, 3]);
                 this.ctx.strokeRect(
-                    text.x,
-                    text.y - textHeight,
-                    textWidth,
-                    textHeight
+                    text.x - 5,
+                    text.y - textHeight - 5,
+                    textWidth + 10,
+                    textHeight + 10
                 );
                 
-                // 绘制拖拽手柄提示
-                if (this.isDraggingText) {
-                    const handleSize = 6;
-                    this.ctx.fillStyle = '#2e66e7';
-                    
-                    // 左上角
+                // 绘制控制点
+                this.ctx.fillStyle = '#4c6ef5';
+                this.ctx.setLineDash([]);
+                const controlPoints = [
+                    { x: text.x - 5, y: text.y - textHeight - 5 },
+                    { x: text.x + textWidth + 5, y: text.y - textHeight - 5 },
+                    { x: text.x - 5, y: text.y + 5 },
+                    { x: text.x + textWidth + 5, y: text.y + 5 }
+                ];
+                controlPoints.forEach(point => {
                     this.ctx.beginPath();
-                    this.ctx.arc(text.x, text.y - textHeight, handleSize/2, 0, Math.PI * 2);
+                    this.ctx.arc(point.x, point.y, 4, 0, Math.PI * 2);
                     this.ctx.fill();
-                    
-                    // 右上角
-                    this.ctx.beginPath();
-                    this.ctx.arc(text.x + textWidth, text.y - textHeight, handleSize/2, 0, Math.PI * 2);
-                    this.ctx.fill();
-                    
-                    // 左下角
-                    this.ctx.beginPath();
-                    this.ctx.arc(text.x, text.y, handleSize/2, 0, Math.PI * 2);
-                    this.ctx.fill();
-                    
-                    // 右下角
-                    this.ctx.beginPath();
-                    this.ctx.arc(text.x + textWidth, text.y, handleSize/2, 0, Math.PI * 2);
-                    this.ctx.fill();
-                }
+                });
             }
             
-            // 恢复文字颜色并绘制文字
+            // 绘制文字
             this.ctx.fillStyle = text.color;
             this.ctx.fillText(text.text, text.x, text.y);
             
             // 绘制下划线
             if (text.underline) {
+                const metrics = this.ctx.measureText(text.text);
                 this.ctx.beginPath();
                 this.ctx.moveTo(text.x, text.y + 2);
-                this.ctx.lineTo(text.x + textWidth, text.y + 2);
+                this.ctx.lineTo(text.x + metrics.width, text.y + 2);
                 this.ctx.strokeStyle = text.color;
                 this.ctx.lineWidth = 1;
                 this.ctx.stroke();
-        }
-        
-        this.ctx.restore();
+            }
+            
+            this.ctx.restore();
         });
     }
     
@@ -818,17 +782,15 @@ class ImageEditor {
         });
         }
 
-        // 创建拖拽辅助元素
-        this.createDragHelpers();
-
-        // 文字拖拽功能 - 完全重写
-        // 鼠标按下事件 - 检测并选择文字
+        // 文字拖拽功能
         this.canvas.addEventListener('mousedown', (e) => {
-            if (this.isDraggingSticker) return; // 如果正在拖动贴纸，不处理文字
+            if (this.currentTool !== 'text' || this.isDraggingSticker) return;
             
             const rect = this.canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            const scaleX = this.canvas.width / rect.width;
+            const scaleY = this.canvas.height / rect.height;
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
             
             // 检查是否点击了文字
             let clickedText = null;
@@ -844,111 +806,97 @@ class ImageEditor {
                 const metrics = this.ctx.measureText(text.text);
                 const textWidth = metrics.width;
                 const textHeight = text.fontSize;
-                this.ctx.restore();
                 
-                // 扩大检测区域，使文字更容易选中
-                const padding = 10;
+                // 扩大点击区域
+                const padding = textHeight / 2;
                 if (x >= text.x - padding && 
                     x <= text.x + textWidth + padding &&
                     y >= text.y - textHeight - padding && 
                     y <= text.y + padding) {
                     clickedText = text;
+                    this.ctx.restore();
                     break;
                 }
+                this.ctx.restore();
             }
             
             if (clickedText) {
-                console.log('选中文字并开始拖动:', clickedText.text);
-                // 选中文字并开始拖动
                 this.selectedText = clickedText;
                 this.isDraggingText = true;
                 this.dragStartX = x - clickedText.x;
                 this.dragStartY = y - clickedText.y;
                 
-                // 设置鼠标样式
-                this.canvas.style.cursor = 'grabbing';
-                
-                // 添加拖拽状态类
-                const canvasParent = this.canvas.parentElement;
-                if (canvasParent) {
-                    canvasParent.classList.add('canvas-is-dragging');
-                }
+                this.canvas.style.cursor = 'move';
+                document.body.style.userSelect = 'none';
                 
                 // 显示拖拽指示器
                 this.showTextDragIndicator(clickedText);
-                
-                // 强制重绘以显示选中状态
-                this.drawImage();
-                
-                // 阻止默认行为和事件冒泡
-                e.preventDefault();
-                e.stopPropagation();
-            } else if (e.target === this.canvas && !this.isDraggingText) {
-                // 点击画布空白处，取消选中
+            } else {
                 this.selectedText = null;
                 this.hideTextDragIndicator();
-                this.drawImage();
             }
+            
+            this.drawImage();
         });
         
-        // 鼠标移动事件 - 处理文字拖动
         document.addEventListener('mousemove', (e) => {
             if (!this.isDraggingText || !this.selectedText) return;
             
             const rect = this.canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            const scaleX = this.canvas.width / rect.width;
+            const scaleY = this.canvas.height / rect.height;
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
             
-            // 计算新位置
-            const newX = x - this.dragStartX;
-            const newY = y - this.dragStartY;
+            // 计算新位置，考虑边界
+            let newX = x - this.dragStartX;
+            let newY = y - this.dragStartY;
             
-            // 直接更新文字位置
+            // 获取文字尺寸
+            this.ctx.save();
+            let fontStyle = '';
+            if (this.selectedText.bold) fontStyle += 'bold ';
+            if (this.selectedText.italic) fontStyle += 'italic ';
+            this.ctx.font = `${fontStyle}${this.selectedText.fontSize}px ${this.selectedText.fontFamily}`;
+            const metrics = this.ctx.measureText(this.selectedText.text);
+            const textWidth = metrics.width;
+            this.ctx.restore();
+            
+            // 边界检查
+            newX = Math.max(0, Math.min(newX, this.canvas.width - textWidth));
+            newY = Math.max(this.selectedText.fontSize, Math.min(newY, this.canvas.height));
+            
+            // 更新文字位置
             this.selectedText.x = newX;
             this.selectedText.y = newY;
             
-            // 更新拖拽指示器位置
+            // 更新拖拽指示器
             this.updateTextDragIndicator(newX, newY);
             
-            // 重绘画布
             this.drawImage();
-            
-            // 阻止默认行为和事件冒泡，确保不会干扰拖动
             e.preventDefault();
-            e.stopPropagation();
         });
         
-        // 鼠标抬起事件 - 结束拖动
-        document.addEventListener('mouseup', (e) => {
+        document.addEventListener('mouseup', () => {
             if (this.isDraggingText) {
-                console.log('结束拖动文字');
                 this.isDraggingText = false;
                 this.canvas.style.cursor = 'default';
-                
-                // 移除拖拽状态类
-                const canvasParent = this.canvas.parentElement;
-                if (canvasParent) {
-                    canvasParent.classList.remove('canvas-is-dragging');
-                }
-                
-                // 隐藏拖拽指示器
+                document.body.style.userSelect = '';
                 this.hideTextDragGuides();
-                
-                // 阻止事件冒泡，确保不触发其他事件
-                e.preventDefault();
-                e.stopPropagation();
+                this.drawImage();
             }
         });
-        
-        // 鼠标悬停事件 - 改变鼠标样式
+
+        // 鼠标悬停效果
         this.canvas.addEventListener('mousemove', (e) => {
-            if (this.isDraggingText) return; // 如果正在拖动，不改变样式
+            if (this.isDraggingText || this.currentTool !== 'text') return;
             
             const rect = this.canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            const scaleX = this.canvas.width / rect.width;
+            const scaleY = this.canvas.height / rect.height;
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
             
-            // 检查鼠标是否在文字上
             let isOverText = false;
             let hoveredText = null;
             
@@ -966,27 +914,19 @@ class ImageEditor {
                 const textHeight = text.fontSize;
                 this.ctx.restore();
                 
-                // 检测区域
-                const padding = 10;
+                const padding = textHeight / 2;
                 if (x >= text.x - padding && 
                     x <= text.x + textWidth + padding &&
                     y >= text.y - textHeight - padding && 
                     y <= text.y + padding) {
                     isOverText = true;
                     hoveredText = text;
-                    
-                    // 为当前文本添加hover类标记
-                    text.isHovered = true;
                     break;
-                } else {
-                    text.isHovered = false;
                 }
             }
             
-            // 设置鼠标样式
-            this.canvas.style.cursor = isOverText ? 'grab' : 'default';
+            this.canvas.style.cursor = isOverText ? 'move' : 'default';
             
-            // 显示或隐藏文本拖拽提示
             if (isOverText && hoveredText) {
                 this.showTextDragHandle(hoveredText);
             } else {
@@ -995,173 +935,67 @@ class ImageEditor {
         });
     }
     
-    // 创建拖拽辅助元素
-    createDragHelpers() {
-        // 文本拖动指示器
-        this.textDragIndicator = document.createElement('div');
-        this.textDragIndicator.className = 'text-position-indicator';
-        this.textDragIndicator.style.display = 'none';
-        document.querySelector('.editor-preview').appendChild(this.textDragIndicator);
-        
-        // 文本拖动辅助线
-        this.dragGuides = document.createElement('div');
-        this.dragGuides.className = 'drag-guides';
-        this.dragGuides.style.display = 'none';
-        
-        // 水平辅助线
-        this.horizontalGuide = document.createElement('div');
-        this.horizontalGuide.className = 'drag-guide-horizontal';
-        this.dragGuides.appendChild(this.horizontalGuide);
-        
-        // 垂直辅助线
-        this.verticalGuide = document.createElement('div');
-        this.verticalGuide.className = 'drag-guide-vertical';
-        this.dragGuides.appendChild(this.verticalGuide);
-        
-        document.querySelector('.editor-preview').appendChild(this.dragGuides);
-        
-        // 文本拖动手柄
-        this.textDragHandle = document.createElement('div');
-        this.textDragHandle.className = 'text-drag-handle';
-        this.textDragHandle.innerHTML = '<span style="margin-right:4px;">✋</span> 拖动文字';
-        this.textDragHandle.style.display = 'none';
-        document.querySelector('.editor-preview').appendChild(this.textDragHandle);
-    }
-    
-    // 显示文本拖动手柄
-    showTextDragHandle(text) {
-        if (!this.textDragHandle) return;
-        
-        const rect = this.canvas.getBoundingClientRect();
-        this.ctx.save();
-        let fontStyle = '';
-        if (text.bold) fontStyle += 'bold ';
-        if (text.italic) fontStyle += 'italic ';
-        this.ctx.font = `${fontStyle}${text.fontSize}px ${text.fontFamily}`;
-        
-        const metrics = this.ctx.measureText(text.text);
-        const textWidth = metrics.width;
-        this.ctx.restore();
-        
-        // 设置手柄位置
-        const handleX = rect.left + text.x + textWidth/2;
-        const handleY = rect.top + text.y - text.fontSize - 10;
-        
-        this.textDragHandle.style.left = `${handleX}px`;
-        this.textDragHandle.style.top = `${handleY}px`;
-        this.textDragHandle.style.display = 'block';
-    }
-    
-    // 隐藏文本拖动手柄
-    hideTextDragHandle() {
-        if (this.textDragHandle) {
-            this.textDragHandle.style.display = 'none';
-        }
-    }
-    
-    // 显示文本拖动指示器
-    showTextDragIndicator(text) {
-        if (!this.textDragIndicator || !this.dragGuides) return;
-        
-        const rect = this.canvas.getBoundingClientRect();
-        this.ctx.save();
-        let fontStyle = '';
-        if (text.bold) fontStyle += 'bold ';
-        if (text.italic) fontStyle += 'italic ';
-        this.ctx.font = `${fontStyle}${text.fontSize}px ${text.fontFamily}`;
-        
-        const metrics = this.ctx.measureText(text.text);
-        const textWidth = metrics.width;
-        this.ctx.restore();
-        
-        // 设置指示器位置
-        const indicatorX = rect.left + text.x + textWidth/2;
-        const indicatorY = rect.top + text.y - text.fontSize - 25;
-        
-        this.textDragIndicator.style.left = `${indicatorX}px`;
-        this.textDragIndicator.style.top = `${indicatorY}px`;
-        this.textDragIndicator.textContent = `X: ${Math.round(text.x)}, Y: ${Math.round(text.y)}`;
-        this.textDragIndicator.style.display = 'block';
-        
-        // 设置辅助线位置
-        this.dragGuides.style.display = 'block';
-        this.dragGuides.style.left = `${rect.left}px`;
-        this.dragGuides.style.top = `${rect.top}px`;
-        this.dragGuides.style.width = `${this.canvas.width}px`;
-        this.dragGuides.style.height = `${this.canvas.height}px`;
-        
-        this.horizontalGuide.style.top = `${text.y}px`;
-        this.verticalGuide.style.left = `${text.x + textWidth/2}px`;
-    }
-    
-    // 更新文本拖动指示器
-    updateTextDragIndicator(x, y) {
-        if (!this.textDragIndicator || !this.dragGuides) return;
-        
-        const rect = this.canvas.getBoundingClientRect();
-        this.ctx.save();
-        let fontStyle = '';
-        if (this.selectedText.bold) fontStyle += 'bold ';
-        if (this.selectedText.italic) fontStyle += 'italic ';
-        this.ctx.font = `${fontStyle}${this.selectedText.fontSize}px ${this.selectedText.fontFamily}`;
-        
-        const metrics = this.ctx.measureText(this.selectedText.text);
-        const textWidth = metrics.width;
-        this.ctx.restore();
-        
-        // 更新指示器位置
-        const indicatorX = rect.left + x + textWidth/2;
-        const indicatorY = rect.top + y - this.selectedText.fontSize - 25;
-        
-        this.textDragIndicator.style.left = `${indicatorX}px`;
-        this.textDragIndicator.style.top = `${indicatorY}px`;
-        this.textDragIndicator.textContent = `X: ${Math.round(x)}, Y: ${Math.round(y)}`;
-        
-        // 更新辅助线位置
-        this.horizontalGuide.style.top = `${y}px`;
-        this.verticalGuide.style.left = `${x + textWidth/2}px`;
-    }
-    
-    // 隐藏文本拖动指示器
-    hideTextDragIndicator() {
-        if (this.textDragIndicator) {
-            this.textDragIndicator.style.display = 'none';
-        }
-    }
-    
-    // 隐藏文本拖动辅助线
-    hideTextDragGuides() {
-        if (this.dragGuides) {
-            this.dragGuides.style.display = 'none';
-        }
-        this.hideTextDragIndicator();
-    }
-    
     initializeDrawListeners() {
         // 笔刷大小调整
         const brushSizeSlider = document.getElementById('brush-size');
-        brushSizeSlider.addEventListener('input', (e) => {
-            this.brushSize = parseInt(e.target.value);
-            this.updateRangeValue('brush-size', e.target.value + 'px');
-        });
+        if (brushSizeSlider) {
+            brushSizeSlider.addEventListener('input', (e) => {
+                this.brushSize = parseInt(e.target.value);
+                this.updateRangeValue('brush-size', e.target.value + 'px');
+                this.updateBrushPreview();
+            });
+        }
+        
+        // 笔刷不透明度调整
+        const brushOpacitySlider = document.getElementById('brush-opacity');
+        if (brushOpacitySlider) {
+            brushOpacitySlider.addEventListener('input', (e) => {
+                this.brushOpacity = parseInt(e.target.value) / 100;
+                this.updateRangeValue('brush-opacity', e.target.value + '%');
+                this.updateBrushPreview();
+            });
+        }
         
         // 笔刷颜色选择
         const brushColorPicker = document.getElementById('brush-color');
-        brushColorPicker.addEventListener('input', (e) => {
-            this.brushColor = e.target.value;
-        });
+        if (brushColorPicker) {
+            brushColorPicker.addEventListener('input', (e) => {
+                this.brushColor = e.target.value;
+                this.updateBrushPreview();
+            });
+        }
         
         // 笔刷类型选择
         document.querySelectorAll('.brush-type').forEach(btn => {
             btn.addEventListener('click', () => {
                 this.setBrushType(btn.dataset.type);
+                this.updateBrushPreview();
             });
         });
         
         // 清除绘画按钮
-        document.getElementById('clear-drawing').addEventListener('click', () => {
-            this.clearDrawing();
-        });
+        const clearDrawingBtn = document.getElementById('clear-drawing');
+        if (clearDrawingBtn) {
+            clearDrawingBtn.addEventListener('click', () => {
+                this.clearDrawing();
+            });
+        }
+
+        // 撤销按钮
+        const undoBtn = document.getElementById('undo-drawing');
+        if (undoBtn) {
+            undoBtn.addEventListener('click', () => {
+                this.undoDrawing();
+            });
+        }
+
+        // 重做按钮
+        const redoBtn = document.getElementById('redo-drawing');
+        if (redoBtn) {
+            redoBtn.addEventListener('click', () => {
+                this.redoDrawing();
+            });
+        }
         
         // 画布鼠标事件
         this.canvas.addEventListener('mousedown', (e) => {
@@ -1171,8 +1005,12 @@ class ImageEditor {
         });
         
         this.canvas.addEventListener('mousemove', (e) => {
-            if (this.currentTool === 'draw' && this.isDrawing) {
-                this.draw(e);
+            if (this.currentTool === 'draw') {
+                if (this.isDrawing) {
+                    this.draw(e);
+                } else {
+                    this.updateBrushCursor(e);
+                }
             }
         });
         
@@ -1187,6 +1025,9 @@ class ImageEditor {
                 this.stopDrawing();
             }
         });
+
+        // 创建画笔预览元素
+        this.createBrushPreview();
     }
     
     initializeStickerListeners() {
@@ -1598,43 +1439,40 @@ class ImageEditor {
         this.lastX = e.clientX - rect.left;
         this.lastY = e.clientY - rect.top;
         
+        // 重置点数组
+        this.points = [];
+        this.addPoint(this.lastX, this.lastY);
+        
         // 创建新的历史记录
-        this.drawingHistory = this.drawingHistory.slice(0, this.currentHistoryIndex + 1);
-        this.drawingHistory.push(this.canvas.toDataURL());
-        this.currentHistoryIndex++;
+        this.saveToHistory();
     }
     
     draw(e) {
+        if (!this.isDrawing) return;
+        
         const rect = this.canvas.getBoundingClientRect();
         const currentX = e.clientX - rect.left;
         const currentY = e.clientY - rect.top;
         
-        this.ctx.beginPath();
-        this.ctx.moveTo(this.lastX, this.lastY);
-        this.ctx.lineTo(currentX, currentY);
+        // 添加新的点
+        this.addPoint(currentX, currentY);
         
-        // 设置笔刷样式
-        this.ctx.strokeStyle = this.brushColor;
-        this.ctx.lineWidth = this.brushSize;
-        this.ctx.lineCap = 'round';
-        this.ctx.lineJoin = 'round';
-        
-        // 根据笔刷类型设置不同的效果
+        // 根据笔刷类型绘制
         switch (this.brushType) {
             case 'brush':
-                this.ctx.globalAlpha = 1;
-                this.ctx.stroke();
+                this.drawBrush();
                 break;
-                
             case 'marker':
-                this.ctx.globalAlpha = 0.3;
-                this.ctx.stroke();
+                this.drawMarker();
                 break;
-                
+            case 'pencil':
+                this.drawPencil();
+                break;
+            case 'spray':
+                this.drawSpray(currentX, currentY);
+                break;
             case 'eraser':
-                this.ctx.globalCompositeOperation = 'destination-out';
-                this.ctx.stroke();
-                this.ctx.globalCompositeOperation = 'source-over';
+                this.drawEraser();
                 break;
         }
         
@@ -1642,18 +1480,212 @@ class ImageEditor {
         this.lastY = currentY;
     }
     
+    addPoint(x, y) {
+        const points = this.points;
+        const lastPoint = points[points.length - 1];
+        
+        if (lastPoint) {
+            const dx = x - lastPoint.x;
+            const dy = y - lastPoint.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < this.minDistance) {
+                return;
+            }
+            
+            if (distance > this.maxDistance) {
+                const count = Math.floor(distance / this.maxDistance);
+                for (let i = 1; i <= count; i++) {
+                    const ratio = i / (count + 1);
+                    points.push({
+                        x: lastPoint.x + dx * ratio,
+                        y: lastPoint.y + dy * ratio,
+                        pressure: 0.5
+                    });
+                }
+            }
+        }
+        
+        points.push({ x, y, pressure: 1 });
+    }
+    
+    drawBrush() {
+        const points = this.points;
+        const ctx = this.ctx;
+        
+        ctx.save();
+        ctx.globalAlpha = this.brushOpacity;
+        ctx.strokeStyle = this.brushColor;
+        ctx.lineWidth = this.brushSize;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        
+        if (points.length < 3) {
+            ctx.beginPath();
+            ctx.arc(points[0].x, points[0].y, ctx.lineWidth / 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+            return;
+        }
+        
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        
+        for (let i = 1; i < points.length - 2; i++) {
+            const xc = (points[i].x + points[i + 1].x) / 2;
+            const yc = (points[i].y + points[i + 1].y) / 2;
+            ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+        }
+        
+        ctx.stroke();
+        ctx.restore();
+    }
+    
+    drawMarker() {
+        const ctx = this.ctx;
+        ctx.save();
+        ctx.globalAlpha = 0.3 * this.brushOpacity;
+        ctx.strokeStyle = this.brushColor;
+        ctx.lineWidth = this.brushSize;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        
+        this.drawBrush();
+        
+        ctx.restore();
+    }
+    
+    drawPencil() {
+        const ctx = this.ctx;
+        ctx.save();
+        ctx.globalAlpha = this.brushOpacity;
+        ctx.strokeStyle = this.brushColor;
+        ctx.lineWidth = this.brushSize / 2;
+        ctx.lineCap = 'butt';
+        ctx.lineJoin = 'miter';
+        
+        this.drawBrush();
+        
+        ctx.restore();
+    }
+    
+    drawSpray(x, y) {
+        const ctx = this.ctx;
+        const density = this.brushSize * 2;
+        const radius = this.brushSize;
+        
+        ctx.save();
+        ctx.fillStyle = this.brushColor;
+        ctx.globalAlpha = 0.05 * this.brushOpacity;
+        
+        for (let i = 0; i < density; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const radiusRandom = Math.random() * radius;
+            const px = x + Math.cos(angle) * radiusRandom;
+            const py = y + Math.sin(angle) * radiusRandom;
+            
+            ctx.beginPath();
+            ctx.arc(px, py, 1, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        ctx.restore();
+    }
+    
+    drawSprayPreview(ctx, x, y) {
+        const density = this.brushSize;
+        const radius = this.brushSize / 2;
+        
+        ctx.fillStyle = this.brushColor;
+        ctx.globalAlpha = 0.1 * this.brushOpacity;
+        
+        for (let i = 0; i < density; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const radiusRandom = Math.random() * radius;
+            const px = x + Math.cos(angle) * radiusRandom;
+            const py = y + Math.sin(angle) * radiusRandom;
+            
+            ctx.beginPath();
+            ctx.arc(px, py, 1, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+    
+    drawEraser() {
+        const ctx = this.ctx;
+        ctx.save();
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.globalAlpha = this.brushOpacity;
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = this.brushSize;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        
+        this.drawBrush();
+        
+        ctx.restore();
+    }
+    
     stopDrawing() {
         this.isDrawing = false;
-        this.ctx.beginPath();
+        this.points = [];
+        if (this.brushPreview) {
+            this.brushPreview.parentElement.style.display = 'none';
+        }
+    }
+    
+    saveToHistory() {
+        // 删除当前位置之后的历史记录
+        this.drawingHistory = this.drawingHistory.slice(0, this.currentHistoryIndex + 1);
+        // 添加新的状态
+        this.drawingHistory.push(this.canvas.toDataURL());
+        this.currentHistoryIndex++;
+        // 限制历史记录数量
+        if (this.drawingHistory.length > 50) {
+            this.drawingHistory.shift();
+            this.currentHistoryIndex--;
+        }
+        this.updateUndoRedoButtons();
+    }
+    
+    undoDrawing() {
+        if (this.currentHistoryIndex > 0) {
+            this.currentHistoryIndex--;
+            this.loadFromHistory();
+        }
+    }
+    
+    redoDrawing() {
+        if (this.currentHistoryIndex < this.drawingHistory.length - 1) {
+            this.currentHistoryIndex++;
+            this.loadFromHistory();
+        }
+    }
+    
+    loadFromHistory() {
+        const img = new Image();
+        img.src = this.drawingHistory[this.currentHistoryIndex];
+        img.onload = () => {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.drawImage(img, 0, 0);
+        };
+        this.updateUndoRedoButtons();
+    }
+    
+    updateUndoRedoButtons() {
+        const undoBtn = document.getElementById('undo-drawing');
+        const redoBtn = document.getElementById('redo-drawing');
+        
+        if (undoBtn) {
+            undoBtn.disabled = this.currentHistoryIndex <= 0;
+        }
+        if (redoBtn) {
+            redoBtn.disabled = this.currentHistoryIndex >= this.drawingHistory.length - 1;
+        }
     }
     
     clearDrawing() {
-        // 保存当前状态到历史记录
-        this.drawingHistory = this.drawingHistory.slice(0, this.currentHistoryIndex + 1);
-        this.drawingHistory.push(this.canvas.toDataURL());
-        this.currentHistoryIndex++;
-        
-        // 清除画布
+        this.saveToHistory();
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.drawImage();
     }
@@ -1759,6 +1791,91 @@ class ImageEditor {
         link.download = 'edited-image.png';
         link.href = tempCanvas.toDataURL('image/png');
         link.click();
+    }
+
+    createBrushPreview() {
+        // 创建画笔预览容器
+        const previewContainer = document.createElement('div');
+        previewContainer.className = 'brush-preview-container';
+        previewContainer.style.position = 'absolute';
+        previewContainer.style.pointerEvents = 'none';
+        previewContainer.style.zIndex = '1000';
+        previewContainer.style.display = 'none';
+        
+        // 创建画笔预览画布
+        this.brushPreview = document.createElement('canvas');
+        this.brushPreview.width = 100;
+        this.brushPreview.height = 100;
+        previewContainer.appendChild(this.brushPreview);
+        
+        document.querySelector('.editor-preview').appendChild(previewContainer);
+    }
+
+    updateBrushPreview() {
+        if (!this.brushPreview) return;
+        
+        const ctx = this.brushPreview.getContext('2d');
+        ctx.clearRect(0, 0, this.brushPreview.width, this.brushPreview.height);
+        
+        // 绘制画笔预览
+        const centerX = this.brushPreview.width / 2;
+        const centerY = this.brushPreview.height / 2;
+        
+        ctx.save();
+        ctx.globalAlpha = this.brushOpacity;
+        
+        switch (this.brushType) {
+            case 'brush':
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, this.brushSize / 2, 0, Math.PI * 2);
+                ctx.fillStyle = this.brushColor;
+                ctx.fill();
+                break;
+                
+            case 'marker':
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, this.brushSize / 2, 0, Math.PI * 2);
+                ctx.fillStyle = this.brushColor;
+                ctx.globalAlpha = 0.3;
+                ctx.fill();
+                break;
+                
+            case 'pencil':
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, this.brushSize / 4, 0, Math.PI * 2);
+                ctx.fillStyle = this.brushColor;
+                ctx.fill();
+                break;
+                
+            case 'spray':
+                this.drawSprayPreview(ctx, centerX, centerY);
+                break;
+                
+            case 'eraser':
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, this.brushSize / 2, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.fill();
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                break;
+        }
+        
+        ctx.restore();
+    }
+
+    updateBrushCursor(e) {
+        if (!this.brushPreview) return;
+        
+        const rect = this.canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const container = this.brushPreview.parentElement;
+        container.style.display = 'block';
+        container.style.left = (e.clientX + 20) + 'px';
+        container.style.top = (e.clientY + 20) + 'px';
     }
 }
 

@@ -1,0 +1,341 @@
+/* 单位转换器样式 */
+.tool-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* 转换器容器 */
+.converter-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* 单位类别选择区域 */
+.category-selection {
+    flex: 1;
+    min-width: 300px;
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.category-selection h2 {
+    font-size: 1.25rem;
+    color: var(--text-dark);
+    margin-bottom: 1.25rem;
+    text-align: center;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 1rem;
+}
+
+.category-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 0.5rem;
+    background-color: var(--bg-light);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.category-btn:hover {
+    background-color: var(--primary-light);
+}
+
+.category-btn.active {
+    background-color: var(--primary);
+    color: white;
+}
+
+.category-btn i {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.category-btn span {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* 转换器面板 */
+.converter-panel {
+    flex: 2;
+    min-width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* 历史记录 */
+.converter-history {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.converter-history h3 {
+    font-size: 1.1rem;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+}
+
+.history-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.history-item {
+    background-color: var(--bg-light);
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.history-item:hover {
+    background-color: var(--primary-light);
+}
+
+.history-empty {
+    color: var(--text-medium);
+    font-style: italic;
+    padding: 0.5rem 0;
+}
+
+/* 转换器输入框 */
+.converter-box {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.input-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.input-with-select {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.converter-input {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1.1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    transition: border-color 0.2s ease;
+}
+
+.converter-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.unit-select {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--bg-light);
+    cursor: pointer;
+}
+
+.swap-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary-light);
+    color: var(--primary);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    align-self: center;
+    margin-top: 10px;
+}
+
+.swap-btn:hover {
+    background-color: var(--primary);
+    color: white;
+}
+
+.swap-btn i {
+    font-size: 1.25rem;
+}
+
+.formula-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background-color: var(--bg-light);
+    border-radius: 6px;
+}
+
+.formula-display label {
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.formula-text {
+    font-family: monospace;
+    color: var(--text-medium);
+}
+
+/* 转换表格 */
+.conversion-table {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.conversion-table h3 {
+    font-size: 1.1rem;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+}
+
+.table-wrapper {
+    max-height: 300px;
+    overflow-y: auto;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+#conversionTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#conversionTable th,
+#conversionTable td {
+    padding: 0.85rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+#conversionTable th {
+    background-color: var(--bg-light);
+    font-weight: 500;
+    color: var(--text-dark);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+#conversionTable tr:last-child td {
+    border-bottom: none;
+}
+
+#conversionTable tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+#conversionTable tr:hover {
+    background-color: var(--primary-light);
+}
+
+/* 单位信息区域 */
+.unit-info {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.unit-info h3 {
+    font-size: 1.25rem;
+    color: var(--text-dark);
+    margin-bottom: 1.25rem;
+    text-align: center;
+}
+
+.unit-info-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.unit-card {
+    background-color: var(--bg-light);
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.unit-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.unit-card-header h4 {
+    font-size: 1.1rem;
+    color: var(--text-dark);
+}
+
+.unit-card-header .unit-symbol {
+    color: var(--primary);
+    font-weight: 600;
+    font-family: monospace;
+}
+
+.unit-description {
+    font-size: 0.9rem;
+    color: var(--text-medium);
+    line-height: 1.5;
+}
+
+.unit-examples {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-medium);
+    font-style: italic;
+}
+
+/* 响应式样式 */
+@media (max-width: 768px) {
+    .converter-container {
+        flex-direction: column;
+    }
+    
+    .input-section {
+        flex-direction: column;
+    }
+    
+    .swap-btn {
+        transform: rotate(90deg);
+        margin: 0.5rem 0;
+    }
+    
+    .category-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    }
+} 

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="ipLookup.title">IP地址查询 | 工具箱Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/navigation.css">
+    <link rel="stylesheet" href="../css/ip-lookup.css">
+    <script src="../js/i18n.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html"><h1>工具箱<span>Pro</span></h1></a>
+            </div>
+            <nav class="main-nav">
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="nav-list" id="navList">
+                    <li><a href="../index.html" data-i18n="common.home">首页</a></li>
+                    <li><a href="../index.html#tools" data-i18n="common.tools">工具</a></li>
+                    <li><a href="../index.html#about" data-i18n="common.about">关于</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="tool-container">
+        <div class="container">
+            <div class="tool-header">
+                <h1 class="tool-title" data-i18n="ipLookup.title">IP地址查询</h1>
+                <p class="tool-description" data-i18n="ipLookup.description">查询任何IP地址的详细信息，包括地理位置、ISP、域名和网络信息</p>
+            </div>
+            
+            <div class="tool-content">
+                <div class="lookup-container">
+                    <!-- 顶部查询区域 -->
+                    <div class="query-section">
+                        <div class="query-box">
+                            <div class="input-with-icon">
+                                <i class="ri-global-line"></i>
+                                <input type="text" id="ipInput" class="ip-input" placeholder="输入IP地址或域名..." data-i18n="ipLookup.placeholder">
+                            </div>
+                            <button id="lookupBtn" class="lookup-btn" data-i18n="ipLookup.lookup">查询</button>
+                        </div>
+                        <div class="query-options">
+                            <label class="option-label">
+                                <input type="checkbox" id="showMap" checked>
+                                <span data-i18n="ipLookup.showMap">显示地图</span>
+                            </label>
+                            <label class="option-label">
+                                <input type="checkbox" id="showWhois" checked>
+                                <span data-i18n="ipLookup.showWhois">显示WHOIS信息</span>
+                            </label>
+                            <button id="myIPBtn" class="my-ip-btn" data-i18n="ipLookup.myIP">我的IP</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 加载状态 -->
+                    <div id="loadingState" class="loading-state" style="display: none;">
+                        <div class="loader"></div>
+                        <p data-i18n="ipLookup.loading">正在查询IP地址信息...</p>
+                    </div>
+                    
+                    <!-- 结果区域 -->
+                    <div id="resultSection" class="result-section" style="display: none;">
+                        <div class="result-header">
+                            <div class="result-summary">
+                                <div class="ip-badge" id="ipAddress">8.8.8.8</div>
+                                <div class="location-info" id="locationSummary">
+                                    <i class="ri-map-pin-line"></i>
+                                    <span>美国, 加利福尼亚</span>
+                                </div>
+                            </div>
+                            <div class="action-buttons">
+                                <button id="copyResultBtn" class="action-btn" title="复制结果">
+                                    <i class="ri-file-copy-line"></i>
+                                </button>
+                                <button id="saveResultBtn" class="action-btn" title="保存为PDF">
+                                    <i class="ri-download-line"></i>
+                                </button>
+                                <button id="shareResultBtn" class="action-btn" title="分享">
+                                    <i class="ri-share-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 结果信息卡片 -->
+                        <div class="result-cards">
+                            <!-- 基本信息卡片 -->
+                            <div class="result-card">
+                                <div class="card-header">
+                                    <i class="ri-information-line"></i>
+                                    <h3 data-i18n="ipLookup.basicInfo">基本信息</h3>
+                                </div>
+                                <div class="card-content">
+                                    <table class="info-table">
+                                        <tr>
+                                            <td data-i18n="ipLookup.ipVersion">IP版本</td>
+                                            <td id="ipVersion">IPv4</td>
+                                        </tr>
+                                        <tr>
+                                            <td data-i18n="ipLookup.ipType">IP类型</td>
+                                            <td id="ipType">公共IP</td>
+                                        </tr>
+                                        <tr>
+                                            <td data-i18n="ipLookup.hostname">主机名</td>
+                                            <td id="hostname">dns.google</td>
+                                        </tr>
+                                        <tr>
+                                            <td data-i18n="ipLookup.asn">ASN</td>
+                                            <td id="asn">AS15169</td>
+                                        </tr>
+                                        <tr>
+                                            <td data-i18n="ipLookup.organization">组织</td>
+                                            <td id="organization">Google LLC</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- 位置信息卡片 -->
+                            <div class="result-card">
+                                <div class="card-header">
+                                    <i class="ri-map-pin-line"></i>
+                                    <h3 data-i18n="ipLookup.location">位置信息</h3>
+                                </div>
+                                <div class="card-content">
+                                    <table class="info-table">
+                                        <tr>
+                                            <td data-i18n="ipLookup.continent">大洲</td>
+                                            <td id="continent">北美洲</td>
+                                        </tr>
+                                        <tr>
+                                            <td data-i18n="ipLookup.country">国家</td>
+                                            <td id="country">美国</td>
+                                        </tr>
+                                        <tr>
+                                            <td data-i18n="ipLookup.region">地区</td>
+                                            <td id="region">加利福尼亚</td>
+                                        </tr>
+                                        <tr>
+                                            <td data-i18n="ipLookup.city">城市</td>
+                                            <td id="city">山景城</td>
+                                        </tr>
+                                        <tr>
+                                            <td data-i18n="ipLookup.postalCode">邮编</td>
+                                            <td id="postalCode">94043</td>
+                                        </tr>
+                                        <tr>
+                                            <td data-i18n="ipLookup.timezone">时区</td>
+                                            <td id="timezone">America/Los_Angeles</td>
+                                        </tr>
+                                        <tr>
+                                            <td data-i18n="ipLookup.coordinates">坐标</td>
+                                            <td id="coordinates">37.4056, -122.0775</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- 网络信息卡片 -->
+                            <div class="result-card">
+                                <div class="card-header">
+                                    <i class="ri-wifi-line"></i>
+                                    <h3 data-i18n="ipLookup.network">网络信息</h3>
+                                </div>
+                                <div class="card-content">
+                                    <table class="info-table">
+                                        <tr>
+                                            <td data-i18n="ipLookup.isp">ISP</td>
+                                            <td id="isp">Google LLC</td>
+                                        </tr>
+                                        <tr>
+                                            <td data-i18n="ipLookup.network">网络</td>
+                                            <td id="network">8.8.8.0/24</td>
+                                        </tr>
+                                        <tr>
+                                            <td data-i18n="ipLookup.routingPrefix">路由前缀</td>
+                                            <td id="routingPrefix">8.8.8.0/24</td>
+                                        </tr>
+                                        <tr>
+                                            <td data-i18n="ipLookup.domain">域名</td>
+                                            <td id="domain">google.com</td>
+                                        </tr>
+                                        <tr>
+                                            <td data-i18n="ipLookup.usageType">使用类型</td>
+                                            <td id="usageType">数据中心/服务器托管/DNS</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- 安全信息卡片 -->
+                            <div class="result-card">
+                                <div class="card-header">
+                                    <i class="ri-shield-check-line"></i>
+                                    <h3 data-i18n="ipLookup.security">安全信息</h3>
+                                </div>
+                                <div class="card-content">
+                                    <table class="info-table">
+                                        <tr>
+                                            <td data-i18n="ipLookup.threatLevel">威胁级别</td>
+                                            <td id="threatLevel">
+                                                <span class="security-badge safe">安全</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td data-i18n="ipLookup.proxy">代理/VPN</td>
+                                            <td id="isProxy">
+                                                <span class="security-badge neutral">否</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td data-i18n="ipLookup.tor">Tor出口节点</td>
+                                            <td id="isTor">
+                                                <span class="security-badge neutral">否</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td data-i18n="ipLookup.datacenter">数据中心</td>
+                                            <td id="isDatacenter">
+                                                <span class="security-badge info">是</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td data-i18n="ipLookup.blocklists">黑名单</td>
+                                            <td id="blocklists">未列入黑名单</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 地图区域 -->
+                        <div id="mapSection" class="map-section">
+                            <div class="section-header">
+                                <h3 data-i18n="ipLookup.mapLocation">地图位置</h3>
+                                <div class="view-options">
+                                    <button class="view-option active" data-view="standard" data-i18n="ipLookup.standardView">标准</button>
+                                    <button class="view-option" data-view="satellite" data-i18n="ipLookup.satelliteView">卫星</button>
+                                </div>
+                            </div>
+                            <div id="mapContainer" class="map-container">
+                                <!-- 地图将在这里加载 -->
+                            </div>
+                        </div>
+                        
+                        <!-- WHOIS信息区域 -->
+                        <div id="whoisSection" class="whois-section">
+                            <div class="section-header">
+                                <h3 data-i18n="ipLookup.whoisInfo">WHOIS信息</h3>
+                                <button id="copyWhoisBtn" class="copy-btn">
+                                    <i class="ri-file-copy-line"></i>
+                                    <span data-i18n="ipLookup.copy">复制</span>
+                                </button>
+                            </div>
+                            <div class="whois-container">
+                                <pre id="whoisData" class="whois-data">正在加载WHOIS信息...</pre>
+                            </div>
+                        </div>
+                        
+                        <!-- 相关工具 -->
+                        <div class="related-tools">
+                            <h3 data-i18n="ipLookup.relatedTools">相关工具</h3>
+                            <div class="tools-grid">
+                                <a href="./dns-lookup.html" class="tool-link">
+                                    <i class="ri-global-line"></i>
+                                    <span data-i18n="ipLookup.dnsLookup">DNS查询</span>
+                                </a>
+                                <a href="./ping.html" class="tool-link">
+                                    <i class="ri-radar-line"></i>
+                                    <span data-i18n="ipLookup.ping">Ping工具</span>
+                                </a>
+                                <a href="./port-scanner.html" class="tool-link">
+                                    <i class="ri-scan-line"></i>
+                                    <span data-i18n="ipLookup.portScanner">端口扫描</span>
+                                </a>
+                                <a href="./network-tools.html" class="tool-link">
+                                    <i class="ri-wifi-line"></i>
+                                    <span data-i18n="ipLookup.networkTools">网络工具</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 查询历史 -->
+                    <div class="lookup-history">
+                        <div class="history-header">
+                            <h3 data-i18n="ipLookup.recentLookups">最近查询</h3>
+                            <button id="clearHistoryBtn" class="clear-btn" data-i18n="ipLookup.clearHistory">清除历史</button>
+                        </div>
+                        <div id="historyList" class="history-list">
+                            <!-- 历史记录将通过JS动态生成 -->
+                            <div class="history-empty" data-i18n="ipLookup.noHistory">暂无查询历史</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- IP知识库 -->
+                <div class="ip-knowledge">
+                    <h2 data-i18n="ipLookup.ipKnowledge">IP地址知识</h2>
+                    
+                    <div class="knowledge-section">
+                        <h3 data-i18n="ipLookup.whatIsIP">什么是IP地址？</h3>
+                        <p data-i18n="ipLookup.ipDefinition">IP地址（Internet Protocol Address）是互联网上每台计算机或设备的唯一标识符，用于在网络上确定设备的位置和实现通信。</p>
+                    </div>
+                    
+                    <div class="knowledge-section">
+                        <h3 data-i18n="ipLookup.ipVersions">IP地址版本</h3>
+                        <div class="version-comparison">
+                            <div class="version-card">
+                                <h4>IPv4</h4>
+                                <p data-i18n="ipLookup.ipv4Definition">第四版IP协议，使用32位地址格式，通常表示为四组由点分隔的数字，如 192.168.1.1</p>
+                                <ul>
+                                    <li data-i18n="ipLookup.ipv4Point1">提供大约43亿个唯一地址</li>
+                                    <li data-i18n="ipLookup.ipv4Point2">目前仍是互联网上最普遍使用的IP版本</li>
+                                    <li data-i18n="ipLookup.ipv4Point3">由于地址空间枯竭，正逐步向IPv6过渡</li>
+                                </ul>
+                            </div>
+                            <div class="version-card">
+                                <h4>IPv6</h4>
+                                <p data-i18n="ipLookup.ipv6Definition">第六版IP协议，使用128位地址格式，通常表示为8组由冒号分隔的十六进制数字，如 2001:0db8:85a3:0000:0000:8a2e:0370:7334</p>
+                                <ul>
+                                    <li data-i18n="ipLookup.ipv6Point1">提供约340万亿亿亿个唯一地址</li>
+                                    <li data-i18n="ipLookup.ipv6Point2">解决IPv4地址耗尽问题</li>
+                                    <li data-i18n="ipLookup.ipv6Point3">提供更好的安全性和效率</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="knowledge-section">
+                        <h3 data-i18n="ipLookup.ipClasses">IP地址类别</h3>
+                        <table class="knowledge-table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="ipLookup.classType">类别</th>
+                                    <th data-i18n="ipLookup.addressRange">地址范围</th>
+                                    <th data-i18n="ipLookup.defaultSubnet">默认子网掩码</th>
+                                    <th data-i18n="ipLookup.usage">用途</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>A类</td>
+                                    <td>1.0.0.0 - 126.255.255.255</td>
+                                    <td>255.0.0.0</td>
+                                    <td data-i18n="ipLookup.classAUsage">大型网络</td>
+                                </tr>
+                                <tr>
+                                    <td>B类</td>
+                                    <td>128.0.0.0 - 191.255.255.255</td>
+                                    <td>255.255.0.0</td>
+                                    <td data-i18n="ipLookup.classBUsage">中型网络</td>
+                                </tr>
+                                <tr>
+                                    <td>C类</td>
+                                    <td>192.0.0.0 - 223.255.255.255</td>
+                                    <td>255.255.255.0</td>
+                                    <td data-i18n="ipLookup.classCUsage">小型网络</td>
+                                </tr>
+                                <tr>
+                                    <td>D类</td>
+                                    <td>224.0.0.0 - 239.255.255.255</td>
+                                    <td>N/A</td>
+                                    <td data-i18n="ipLookup.classDUsage">多播</td>
+                                </tr>
+                                <tr>
+                                    <td>E类</td>
+                                    <td>240.0.0.0 - 255.255.255.255</td>
+                                    <td>N/A</td>
+                                    <td data-i18n="ipLookup.classEUsage">保留用于研究</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="knowledge-section">
+                        <h3 data-i18n="ipLookup.privateIP">私有IP地址范围</h3>
+                        <ul class="knowledge-list">
+                            <li><strong>A类私有IP：</strong> 10.0.0.0 - 10.255.255.255</li>
+                            <li><strong>B类私有IP：</strong> 172.16.0.0 - 172.31.255.255</li>
+                            <li><strong>C类私有IP：</strong> 192.168.0.0 - 192.168.255.255</li>
+                        </ul>
+                        <p data-i18n="ipLookup.privateIPDesc">私有IP地址不能直接在互联网上路由，通常用于本地网络内部通信，必须通过NAT（网络地址转换）才能与互联网通信。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2024 工具箱Pro. <span data-i18n="common.allRightsReserved">版权所有</span>.</p>
+            <div class="footer-links">
+                <a href="#" data-i18n="common.termsOfUse">使用条款</a>
+                <a href="#" data-i18n="common.privacyPolicy">隐私政策</a>
+                <a href="#" data-i18n="common.contactUs">联系我们</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 加载地图API脚本 -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
+    
+    <script src="../js/script.js"></script>
+    <script src="./js/ip-lookup.js"></script>
+</body>
+</html> 

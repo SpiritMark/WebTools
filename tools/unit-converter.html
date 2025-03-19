@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="unitConverter.title">单位转换器 | 工具箱Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/navigation.css">
+    <link rel="stylesheet" href="../css/unit-converter.css">
+    <script src="../js/i18n.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html"><h1>工具箱<span>Pro</span></h1></a>
+            </div>
+            <nav class="main-nav">
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="nav-list" id="navList">
+                    <li><a href="../index.html" data-i18n="common.home">首页</a></li>
+                    <li><a href="../index.html#tools" data-i18n="common.tools">工具</a></li>
+                    <li><a href="../index.html#about" data-i18n="common.about">关于</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="tool-container">
+        <div class="container">
+            <div class="tool-header">
+                <h1 class="tool-title" data-i18n="unitConverter.title">单位转换器</h1>
+                <p class="tool-description" data-i18n="unitConverter.description">轻松转换各种测量单位，包括长度、重量、面积、体积、温度、时间等</p>
+            </div>
+            
+            <div class="tool-content">
+                <div class="converter-container">
+                    <!-- 单位选择区域 -->
+                    <div class="category-selection">
+                        <h2 data-i18n="unitConverter.selectCategory">选择单位类别</h2>
+                        <div class="category-grid">
+                            <button class="category-btn active" data-category="length">
+                                <i class="ri-ruler-line"></i>
+                                <span data-i18n="unitConverter.length">长度</span>
+                            </button>
+                            <button class="category-btn" data-category="area">
+                                <i class="ri-shape-2-line"></i>
+                                <span data-i18n="unitConverter.area">面积</span>
+                            </button>
+                            <button class="category-btn" data-category="volume">
+                                <i class="ri-cube-line"></i>
+                                <span data-i18n="unitConverter.volume">体积</span>
+                            </button>
+                            <button class="category-btn" data-category="weight">
+                                <i class="ri-scales-line"></i>
+                                <span data-i18n="unitConverter.weight">重量</span>
+                            </button>
+                            <button class="category-btn" data-category="temperature">
+                                <i class="ri-temp-hot-line"></i>
+                                <span data-i18n="unitConverter.temperature">温度</span>
+                            </button>
+                            <button class="category-btn" data-category="time">
+                                <i class="ri-time-line"></i>
+                                <span data-i18n="unitConverter.time">时间</span>
+                            </button>
+                            <button class="category-btn" data-category="speed">
+                                <i class="ri-speed-line"></i>
+                                <span data-i18n="unitConverter.speed">速度</span>
+                            </button>
+                            <button class="category-btn" data-category="data">
+                                <i class="ri-hard-drive-line"></i>
+                                <span data-i18n="unitConverter.data">数据</span>
+                            </button>
+                            <button class="category-btn" data-category="pressure">
+                                <i class="ri-compasses-2-line"></i>
+                                <span data-i18n="unitConverter.pressure">压力</span>
+                            </button>
+                            <button class="category-btn" data-category="energy">
+                                <i class="ri-flashlight-line"></i>
+                                <span data-i18n="unitConverter.energy">能量</span>
+                            </button>
+                            <button class="category-btn" data-category="fuel">
+                                <i class="ri-gas-station-line"></i>
+                                <span data-i18n="unitConverter.fuel">油耗</span>
+                            </button>
+                            <button class="category-btn" data-category="angle">
+                                <i class="ri-clockwise-line"></i>
+                                <span data-i18n="unitConverter.angle">角度</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 转换器区域 -->
+                    <div class="converter-panel">
+                        <div class="converter-history">
+                            <h3 data-i18n="unitConverter.recentConversions">最近转换</h3>
+                            <div class="history-list" id="conversionHistory">
+                                <!-- 历史记录将通过JS动态生成 -->
+                                <div class="history-empty" data-i18n="unitConverter.noHistory">暂无历史记录</div>
+                            </div>
+                        </div>
+                        
+                        <div class="converter-box">
+                            <div class="input-section">
+                                <div class="input-with-select">
+                                    <input type="number" id="inputValue" class="converter-input" value="1" step="any">
+                                    <select id="fromUnit" class="unit-select">
+                                        <!-- 单位选项将通过JS动态生成 -->
+                                    </select>
+                                </div>
+                                <button id="swapUnits" class="swap-btn">
+                                    <i class="ri-arrow-left-right-line"></i>
+                                </button>
+                                <div class="input-with-select">
+                                    <input type="number" id="outputValue" class="converter-input" readonly>
+                                    <select id="toUnit" class="unit-select">
+                                        <!-- 单位选项将通过JS动态生成 -->
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="formula-display">
+                                <label data-i18n="unitConverter.formula">转换公式:</label>
+                                <div id="formula" class="formula-text">1 米 = 100 厘米</div>
+                            </div>
+                        </div>
+                        
+                        <div class="conversion-table">
+                            <h3 data-i18n="unitConverter.commonConversions">常用换算</h3>
+                            <div class="table-wrapper">
+                                <table id="conversionTable">
+                                    <thead>
+                                        <tr>
+                                            <th data-i18n="unitConverter.from">从</th>
+                                            <th data-i18n="unitConverter.to">到</th>
+                                            <th data-i18n="unitConverter.result">结果</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- 常用换算表将通过JS动态生成 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 单位信息区域 -->
+                <div class="unit-info">
+                    <h3 id="categoryTitle" data-i18n="unitConverter.lengthUnits">长度单位</h3>
+                    <div id="unitInfo" class="unit-info-content">
+                        <!-- 单位信息将通过JS动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2024 工具箱Pro. <span data-i18n="common.allRightsReserved">版权所有</span>.</p>
+            <div class="footer-links">
+                <a href="#" data-i18n="common.termsOfUse">使用条款</a>
+                <a href="#" data-i18n="common.privacyPolicy">隐私政策</a>
+                <a href="#" data-i18n="common.contactUs">联系我们</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="./js/unit-converter.js"></script>
+</body>
+</html> 

@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据可视化工具 - 工具箱Pro</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/navigation.css">
+    <link rel="stylesheet" href="../css/tool.css">
+    <link rel="stylesheet" href="../css/data-visualization.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="../js/i18n.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html"><h1>工具箱<span>Pro</span></h1></a>
+            </div>
+            <nav class="main-nav">
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="nav-list" id="navList">
+                    <li><a href="../index.html" data-i18n="common.home">首页</a></li>
+                    <li><a href="../index.html#tools" data-i18n="common.tools">工具集</a></li>
+                    <li>
+                        <a href="#" data-i18n="common.categories">分类 <i class="ri-arrow-down-s-line"></i></a>
+                        <ul class="submenu">
+                            <li><a href="../index.html#tools"><i class="ri-file-text-line"></i> 文档与文本</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-image-line"></i> 图像处理</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-video-line"></i> 视频与音频</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-database-2-line"></i> 数据处理</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-tools-line"></i> 实用工具</a></li>
+                            <li><a href="../index.html#tools"><i class="ri-palette-line"></i> 设计与创意</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="../index.html#about" data-i18n="common.about">关于我们</a></li>
+                    <li class="language-selector">
+                        <button class="language-selector-btn">
+                            <i class="ri-global-line"></i>
+                            <span data-i18n="common.language">简体中文</span>
+                        </button>
+                        <div class="language-dropdown">
+                            <div class="language-item active" onclick="switchLanguage('zh-CN')">
+                                <i class="ri-earth-fill"></i>
+                                <span>简体中文</span>
+                            </div>
+                            <div class="language-item" onclick="switchLanguage('en')">
+                                <i class="ri-earth-fill"></i>
+                                <span>English</span>
+                            </div>
+                            <div class="language-item" onclick="switchLanguage('ja')">
+                                <i class="ri-earth-fill"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="tool-container">
+        <div class="tool-header">
+            <h1><i class="ri-bar-chart-grouped-line"></i> 数据可视化工具</h1>
+            <p>轻松将您的数据转换为直观、美观的图表，帮助您更好地理解和展示数据</p>
+        </div>
+
+        <div class="tool-content">
+            <div class="visualization-layout">
+                <!-- 数据输入区域 -->
+                <div class="data-input-panel">
+                    <div class="panel-header">
+                        <h3>数据来源</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="input-tabs">
+                            <button class="tab-btn active" data-tab="file-upload">
+                                <i class="ri-file-upload-line"></i> 上传文件
+                            </button>
+                            <button class="tab-btn" data-tab="paste-data">
+                                <i class="ri-clipboard-line"></i> 粘贴数据
+                            </button>
+                            <button class="tab-btn" data-tab="sample-data">
+                                <i class="ri-database-2-line"></i> 示例数据
+                            </button>
+                        </div>
+                        
+                        <div class="tab-content active" id="file-upload">
+                            <div class="upload-area" id="uploadArea">
+                                <i class="ri-upload-cloud-2-line"></i>
+                                <h4>上传数据文件</h4>
+                                <p>支持CSV、Excel、JSON格式，最大10MB</p>
+                                <input type="file" id="dataFileInput" accept=".csv,.xls,.xlsx,.json" style="display: none;">
+                                <button class="btn btn-primary" id="uploadBtn">选择文件</button>
+                            </div>
+                            <div class="uploaded-file-info" id="uploadedFileInfo" style="display: none;">
+                                <div class="file-info">
+                                    <i class="ri-file-line"></i>
+                                    <div class="file-details">
+                                        <span class="file-name" id="fileName">data.csv</span>
+                                        <span class="file-size" id="fileSize">25KB</span>
+                                    </div>
+                                </div>
+                                <button class="remove-file-btn" id="removeFileBtn">
+                                    <i class="ri-close-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-content" id="paste-data">
+                            <div class="textarea-container">
+                                <textarea id="dataTextarea" placeholder="在此粘贴您的CSV数据、JSON数据或表格数据..."></textarea>
+                                <div class="textarea-actions">
+                                    <select id="dataFormat" class="format-select">
+                                        <option value="csv">CSV</option>
+                                        <option value="json">JSON</option>
+                                        <option value="tsv">TSV</option>
+                                    </select>
+                                    <button class="btn btn-primary" id="parseDataBtn">解析数据</button>
+                                    <button class="btn btn-secondary" id="clearDataBtn">清除</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-content" id="sample-data">
+                            <div class="sample-data-list">
+                                <div class="sample-card" data-sample="sales">
+                                    <div class="sample-icon"><i class="ri-shopping-cart-line"></i></div>
+                                    <div class="sample-info">
+                                        <h4>销售数据</h4>
+                                        <p>月度销售数据与目标对比</p>
+                                    </div>
+                                </div>
+                                <div class="sample-card" data-sample="population">
+                                    <div class="sample-icon"><i class="ri-group-line"></i></div>
+                                    <div class="sample-info">
+                                        <h4>人口统计</h4>
+                                        <p>各年龄段人口分布</p>
+                                    </div>
+                                </div>
+                                <div class="sample-card" data-sample="weather">
+                                    <div class="sample-icon"><i class="ri-sun-line"></i></div>
+                                    <div class="sample-info">
+                                        <h4>天气数据</h4>
+                                        <p>一年中的温度和降水量</p>
+                                    </div>
+                                </div>
+                                <div class="sample-card" data-sample="finance">
+                                    <div class="sample-icon"><i class="ri-line-chart-line"></i></div>
+                                    <div class="sample-info">
+                                        <h4>财务报表</h4>
+                                        <p>季度收入和支出分析</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 数据预览与处理 -->
+                <div class="data-preview-panel" id="dataPreviewPanel" style="display: none;">
+                    <div class="panel-header">
+                        <h3>数据预览</h3>
+                        <div class="panel-actions">
+                            <button class="btn btn-sm" id="refreshDataBtn">
+                                <i class="ri-refresh-line"></i> 刷新
+                            </button>
+                            <button class="btn btn-sm" id="editDataBtn">
+                                <i class="ri-edit-line"></i> 编辑
+                            </button>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="data-grid-container">
+                            <table class="data-grid" id="dataGrid">
+                                <!-- 数据表格会在JS中动态生成 -->
+                            </table>
+                        </div>
+                        <div class="data-summary" id="dataSummary">
+                            <!-- 数据摘要信息会在JS中动态生成 -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 图表配置区域 -->
+                <div class="chart-config-panel">
+                    <div class="panel-header">
+                        <h3>图表配置</h3>
+                    </div>
+                    <div class="panel-body">
+                        <!-- 图表类型选择 -->
+                        <div class="config-section">
+                            <h4>图表类型</h4>
+                            <div class="chart-type-grid">
+                                <div class="chart-type-card" data-chart-type="bar">
+                                    <div class="chart-icon"><i class="ri-bar-chart-horizontal-line"></i></div>
+                                    <span>柱状图</span>
+                                </div>
+                                <div class="chart-type-card" data-chart-type="line">
+                                    <div class="chart-icon"><i class="ri-line-chart-line"></i></div>
+                                    <span>折线图</span>
+                                </div>
+                                <div class="chart-type-card" data-chart-type="pie">
+                                    <div class="chart-icon"><i class="ri-pie-chart-line"></i></div>
+                                    <span>饼图</span>
+                                </div>
+                                <div class="chart-type-card" data-chart-type="doughnut">
+                                    <div class="chart-icon"><i class="ri-donut-chart-line"></i></div>
+                                    <span>环形图</span>
+                                </div>
+                                <div class="chart-type-card" data-chart-type="scatter">
+                                    <div class="chart-icon"><i class="ri-bubble-chart-line"></i></div>
+                                    <span>散点图</span>
+                                </div>
+                                <div class="chart-type-card" data-chart-type="bubble">
+                                    <div class="chart-icon"><i class="ri-bubble-chart-fill"></i></div>
+                                    <span>气泡图</span>
+                                </div>
+                                <div class="chart-type-card" data-chart-type="area">
+                                    <div class="chart-icon"><i class="ri-line-chart-fill"></i></div>
+                                    <span>面积图</span>
+                                </div>
+                                <div class="chart-type-card" data-chart-type="stacked-bar">
+                                    <div class="chart-icon"><i class="ri-stack-line"></i></div>
+                                    <span>堆叠柱状图</span>
+                                </div>
+                                <div class="chart-type-card" data-chart-type="radar">
+                                    <div class="chart-icon"><i class="ri-radar-line"></i></div>
+                                    <span>雷达图</span>
+                                </div>
+                                <div class="chart-type-card" data-chart-type="polar">
+                                    <div class="chart-icon"><i class="ri-record-circle-line"></i></div>
+                                    <span>极坐标图</span>
+                                </div>
+                                <div class="chart-type-card" data-chart-type="heatmap">
+                                    <div class="chart-icon"><i class="ri-function-line"></i></div>
+                                    <span>热力图</span>
+                                </div>
+                                <div class="chart-type-card" data-chart-type="treemap">
+                                    <div class="chart-icon"><i class="ri-layout-grid-line"></i></div>
+                                    <span>矩形树图</span>
+                                </div>
+                                <div class="chart-type-card" data-chart-type="waterfall">
+                                    <div class="chart-icon"><i class="ri-bar-chart-fill"></i></div>
+                                    <span>瀑布图</span>
+                                </div>
+                                <div class="chart-type-card" data-chart-type="funnel">
+                                    <div class="chart-icon"><i class="ri-filter-3-line"></i></div>
+                                    <span>漏斗图</span>
+                                </div>
+                                <div class="chart-type-card" data-chart-type="boxplot">
+                                    <div class="chart-icon"><i class="ri-bar-chart-2-line"></i></div>
+                                    <span>箱线图</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 数据映射 -->
+                        <div class="config-section">
+                            <h4>数据映射</h4>
+                            <div class="mapping-fields" id="mappingFields">
+                                <!-- 数据映射字段会根据图表类型动态生成 -->
+                                <div class="placeholder-message">
+                                    <i class="ri-information-line"></i>
+                                    <p>请先上传数据并选择图表类型</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 图表样式 -->
+                        <div class="config-section">
+                            <h4>图表样式</h4>
+                            <div class="accordion" id="styleAccordion">
+                                <div class="accordion-item">
+                                    <div class="accordion-header">
+                                        <span>基本样式</span>
+                                        <i class="ri-arrow-down-s-line"></i>
+                                    </div>
+                                    <div class="accordion-content">
+                                        <div class="form-group">
+                                            <label for="chartTitle">图表标题</label>
+                                            <input type="text" id="chartTitle" class="form-input" placeholder="输入图表标题">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="chartTheme">颜色主题</label>
+                                            <select id="chartTheme" class="form-select">
+                                                <option value="default">默认</option>
+                                                <option value="vintage">复古</option>
+                                                <option value="dark">深色</option>
+                                                <option value="macarons">马卡龙</option>
+                                                <option value="infographic">信息图</option>
+                                                <option value="roma">罗马</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="chartBackground">背景颜色</label>
+                                            <input type="color" id="chartBackground" class="color-picker" value="#ffffff">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <div class="accordion-header">
+                                        <span>轴与网格</span>
+                                        <i class="ri-arrow-down-s-line"></i>
+                                    </div>
+                                    <div class="accordion-content">
+                                        <div class="form-group">
+                                            <label for="xAxisName">X轴名称</label>
+                                            <input type="text" id="xAxisName" class="form-input" placeholder="X轴名称">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="yAxisName">Y轴名称</label>
+                                            <input type="text" id="yAxisName" class="form-input" placeholder="Y轴名称">
+                                        </div>
+                                        <div class="form-group checkbox-group">
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" id="showGrid" checked>
+                                                <span>显示网格线</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-group checkbox-group">
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" id="showLegend" checked>
+                                                <span>显示图例</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <div class="accordion-header">
+                                        <span>字体与标签</span>
+                                        <i class="ri-arrow-down-s-line"></i>
+                                    </div>
+                                    <div class="accordion-content">
+                                        <div class="form-group">
+                                            <label for="labelRotation">标签旋转角度</label>
+                                            <input type="range" id="labelRotation" min="0" max="90" value="0" class="range-slider">
+                                            <span class="range-value" id="labelRotationValue">0°</span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="fontSize">字体大小</label>
+                                            <input type="range" id="fontSize" min="10" max="20" value="12" class="range-slider">
+                                            <span class="range-value" id="fontSizeValue">12px</span>
+                                        </div>
+                                        <div class="form-group checkbox-group">
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" id="showDataLabels">
+                                                <span>显示数据标签</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <div class="accordion-header">
+                                        <span>动画与交互</span>
+                                        <i class="ri-arrow-down-s-line"></i>
+                                    </div>
+                                    <div class="accordion-content">
+                                        <div class="form-group checkbox-group">
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" id="enableAnimation" checked>
+                                                <span>启用动画效果</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="animationDuration">动画持续时间</label>
+                                            <select id="animationDuration" class="form-select">
+                                                <option value="500">快速 (0.5秒)</option>
+                                                <option value="1000" selected>中等 (1秒)</option>
+                                                <option value="2000">慢速 (2秒)</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group checkbox-group">
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" id="enableZoom" checked>
+                                                <span>允许缩放</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 图表生成按钮 -->
+                        <div class="generate-section">
+                            <button id="generateChartBtn" class="btn btn-primary">
+                                <i class="ri-pie-chart-2-line"></i> 生成图表
+                            </button>
+                            <button id="resetConfigBtn" class="btn btn-secondary">
+                                <i class="ri-refresh-line"></i> 重置配置
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 图表预览区域 -->
+                <div class="chart-preview-panel" id="chartPreviewPanel" style="display: none;">
+                    <div class="panel-header">
+                        <h3>图表预览</h3>
+                        <div class="panel-actions">
+                            <button class="btn btn-sm" id="downloadChartBtn">
+                                <i class="ri-download-line"></i> 下载
+                            </button>
+                            <button class="btn btn-sm" id="copyChartBtn">
+                                <i class="ri-clipboard-line"></i> 复制
+                            </button>
+                            <select id="downloadFormat" class="format-select">
+                                <option value="png">PNG</option>
+                                <option value="jpeg">JPEG</option>
+                                <option value="svg">SVG</option>
+                                <option value="pdf">PDF</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="chart-container" id="chartContainer">
+                            <!-- 图表将在这里渲染 -->
+                            <div class="empty-chart-state">
+                                <svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="200" height="200" fill="#f8f9fa" rx="8"/>
+                                    <line x1="30" y1="170" x2="170" y2="170" stroke="#ddd" stroke-width="2"/>
+                                    <line x1="30" y1="30" x2="30" y2="170" stroke="#ddd" stroke-width="2"/>
+                                    <rect x="45" y="80" width="20" height="90" fill="#e9ecef" rx="2"/>
+                                    <rect x="75" y="100" width="20" height="70" fill="#e9ecef" rx="2"/>
+                                    <rect x="105" y="60" width="20" height="110" fill="#e9ecef" rx="2"/>
+                                    <rect x="135" y="90" width="20" height="80" fill="#e9ecef" rx="2"/>
+                                    <text x="100" y="200" font-family="Arial" font-size="12" fill="#6c757d" text-anchor="middle">配置并生成图表</text>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 特性介绍区域 -->
+            <div class="features-section">
+                <h3>功能特点</h3>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon"><i class="ri-file-transfer-line"></i></div>
+                        <div class="feature-content">
+                            <h4>多格式支持</h4>
+                            <p>支持CSV、Excel、JSON等多种数据格式，灵活导入您的数据</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon"><i class="ri-pie-chart-box-line"></i></div>
+                        <div class="feature-content">
+                            <h4>丰富图表类型</h4>
+                            <p>提供柱状图、折线图、饼图等多种图表类型，满足不同可视化需求</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon"><i class="ri-palette-line"></i></div>
+                        <div class="feature-content">
+                            <h4>自定义样式</h4>
+                            <p>灵活调整图表颜色、字体、标签等样式，打造专业视觉效果</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon"><i class="ri-download-cloud-2-line"></i></div>
+                        <div class="feature-content">
+                            <h4>多格式导出</h4>
+                            <p>支持PNG、JPEG、SVG、PDF等多种格式导出，方便分享与使用</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 工具箱Pro. 保留所有权利。</p>
+        </div>
+    </footer>
+
+    <!-- 数据编辑模态框 -->
+    <div class="modal" id="dataEditModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>编辑数据</h3>
+                <button class="close-btn" id="closeDataEditModal"><i class="ri-close-line"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="edit-data-container">
+                    <textarea id="editDataTextarea" placeholder="编辑您的数据..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelEditBtn" class="btn btn-secondary">取消</button>
+                <button id="applyEditBtn" class="btn btn-primary">应用修改</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主题选择器 -->
+    <div class="theme-selector">
+        <button class="theme-selector-btn" id="themeToggleBtn">
+            <i class="ri-palette-line"></i>
+            <span>主题</span>
+        </button>
+        <div class="theme-dropdown" id="themeDropdown">
+            <div class="theme-dropdown-header">选择主题样式</div>
+            <div class="theme-items-container">
+                <div class="theme-item" id="simpleTheme">
+                    <div class="theme-item-icon simple-preview"></div>
+                    <span>极简</span>
+                </div>
+                <div class="theme-item" id="neomorphicTheme">
+                    <div class="theme-item-icon neo-preview"></div>
+                    <span>拟态</span>
+                </div>
+                <div class="theme-item" id="vscodeTheme">
+                    <div class="theme-item-icon vscode-preview"></div>
+                    <span>VSCode</span>
+                </div>
+                <div class="theme-item" id="darkTheme">
+                    <div class="theme-item-icon dark-preview"></div>
+                    <span>暗黑</span>
+                </div>
+                <div class="theme-item" id="eyeCareTheme">
+                    <div class="theme-item-icon eye-care-preview"></div>
+                    <span>护眼</span>
+                </div>
+                <div class="theme-item" id="oceanTheme">
+                    <div class="theme-item-icon ocean-preview"></div>
+                    <span>海洋</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 脚本 -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1/dist/chartjs-plugin-zoom.min.js"></script>
+    <script src="../js/theme.js"></script>
+    <script src="../js/data-visualization.js"></script>
+</body>
+</html> 

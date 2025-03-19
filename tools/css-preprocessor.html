@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS预处理工具 | 工具箱Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/navigation.css">
+    <link rel="stylesheet" href="../css/css-preprocessor.css">
+    <script src="../js/i18n.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html"><h1>工具箱<span>Pro</span></h1></a>
+            </div>
+            <nav class="main-nav">
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="nav-list" id="navList">
+                    <li><a href="../index.html">首页</a></li>
+                    <li><a href="../index.html#tools">工具</a></li>
+                    <li><a href="../index.html#about">关于</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="tool-container">
+        <div class="container">
+            <div class="tool-header">
+                <h1 class="tool-title">CSS预处理工具</h1>
+                <p class="tool-description">将SCSS/LESS代码转换为标准CSS，实时预览样式效果</p>
+            </div>
+            
+            <div class="tool-content">
+                <div class="processor-container">
+                    <div class="options-panel">
+                        <div class="option-groups-container">
+                            <div class="option-group">
+                                <h3>预处理器类型</h3>
+                                <div class="mode-selector">
+                                    <button id="scss-mode" class="mode-btn active">SCSS</button>
+                                    <button id="less-mode" class="mode-btn">LESS</button>
+                                </div>
+                            </div>
+                            
+                            <div class="option-group">
+                                <h3>输出选项</h3>
+                                <div class="form-group">
+                                    <label for="output-style">输出样式</label>
+                                    <select id="output-style" class="form-control">
+                                        <option value="expanded">展开 (Expanded)</option>
+                                        <option value="compressed">压缩 (Compressed)</option>
+                                    </select>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" id="source-map" checked>
+                                    <label for="source-map">生成Source Map</label>
+                                </div>
+                                <div class="form-check scss-option">
+                                    <input type="checkbox" id="include-path" checked>
+                                    <label for="include-path">包含默认路径</label>
+                                </div>
+                            </div>
+                            
+                            <div class="option-group">
+                                <h3>文件操作</h3>
+                                <div class="file-actions">
+                                    <button id="load-file-btn" class="tool-btn secondary">
+                                        <i class="ri-upload-line"></i> 从文件加载
+                                    </button>
+                                    <input type="file" id="file-input" accept=".scss,.less,.css" style="display: none">
+                                    <button id="download-btn" class="tool-btn secondary">
+                                        <i class="ri-download-line"></i> 下载结果
+                                    </button>
+                                    <button id="copy-css-btn" class="tool-btn secondary">
+                                        <i class="ri-file-copy-line"></i> 复制CSS
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="option-group">
+                                <h3>示例模板</h3>
+                                <div class="templates">
+                                    <button id="scss-template-btn" class="template-btn scss-option">
+                                        <i class="ri-file-code-line"></i> SCSS示例
+                                    </button>
+                                    <button id="less-template-btn" class="template-btn less-option" style="display: none;">
+                                        <i class="ri-file-code-line"></i> LESS示例
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="code-panels">
+                        <div class="code-panel">
+                            <div class="panel-header">
+                                <h3 id="input-label">SCSS代码</h3>
+                                <div class="panel-actions">
+                                    <button id="paste-btn" class="tool-btn secondary">
+                                        <i class="ri-clipboard-line"></i> 粘贴
+                                    </button>
+                                    <button id="clear-input-btn" class="tool-btn secondary">
+                                        <i class="ri-delete-bin-line"></i> 清空
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="code-input-wrapper">
+                                <div class="line-numbers" id="line-numbers"></div>
+                                <div class="code-input-container">
+                                    <textarea id="preprocessor-input" class="code-input" 
+                                        placeholder="在此输入SCSS代码..." spellcheck="false"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="action-panel">
+                            <button id="convert-btn" class="tool-btn primary">
+                                <i class="ri-arrow-right-line"></i> 转换为CSS
+                            </button>
+                            <div class="auto-convert">
+                                <input type="checkbox" id="auto-convert-checkbox" checked>
+                                <label for="auto-convert-checkbox">自动转换</label>
+                            </div>
+                        </div>
+                        
+                        <div class="code-panel">
+                            <div class="panel-header">
+                                <h3>CSS输出</h3>
+                                <div class="panel-actions">
+                                    <button id="beautify-css-btn" class="tool-btn secondary">
+                                        <i class="ri-brush-line"></i> 美化
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="code-output-container">
+                                <pre><code id="css-output" class="code-output language-css"></code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="preview-panel">
+                            <div class="panel-header">
+                                <h3>实时预览</h3>
+                                <div class="panel-actions">
+                                    <button id="toggle-preview-btn" class="tool-btn secondary">
+                                        <i class="ri-eye-line"></i> 显示/隐藏
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="preview-container">
+                                <div class="preview-frame-container">
+                                    <iframe id="preview-frame" class="preview-frame"></iframe>
+                                </div>
+                                <div class="preview-html-container">
+                                    <h4>HTML元素 (用于预览)</h4>
+                                    <div class="preview-html-editor">
+                                        <textarea id="preview-html" class="preview-html-input" rows="5">
+<div class="container">
+  <h1>样式预览</h1>
+  <p>这是一个段落文本，用于预览你的CSS样式效果。</p>
+  <button class="button">示例按钮</button>
+</div></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <div class="info-card">
+                        <h3><i class="ri-information-line"></i> 关于CSS预处理器</h3>
+                        <p>CSS预处理器是一种脚本语言，可以扩展CSS语言，添加诸如变量、嵌套规则、混合(mixins)等功能，使CSS更易于维护。本工具支持将SCSS和LESS代码转换为标准CSS。</p>
+                    </div>
+                    <div class="info-card">
+                        <h3><i class="ri-book-open-line"></i> 语法指南</h3>
+                        <div class="tabs">
+                            <div class="tab active" data-tab="scss">SCSS</div>
+                            <div class="tab" data-tab="less">LESS</div>
+                        </div>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="scss-guide">
+                                <h4>SCSS基本语法:</h4>
+                                <pre><code>// 变量
+$primary-color: #3498db;
+
+// 嵌套
+.container {
+  width: 100%;
+  
+  .header {
+    background-color: $primary-color;
+  }
+}
+
+// Mixins
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  border-radius: $radius;
+}
+
+.button {
+  @include border-radius(5px);
+}</code></pre>
+                            </div>
+                            <div class="tab-pane" id="less-guide">
+                                <h4>LESS基本语法:</h4>
+                                <pre><code>// 变量
+@primary-color: #3498db;
+
+// 嵌套
+.container {
+  width: 100%;
+  
+  .header {
+    background-color: @primary-color;
+  }
+}
+
+// Mixins
+.border-radius(@radius) {
+  -webkit-border-radius: @radius;
+  -moz-border-radius: @radius;
+  border-radius: @radius;
+}
+
+.button {
+  .border-radius(5px);
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2024 工具箱Pro. 版权所有.</p>
+            <div class="footer-links">
+                <a href="#">使用条款</a>
+                <a href="#">隐私政策</a>
+                <a href="#">联系我们</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 引入必要的JavaScript库 -->
+    <script src="https://cdn.jsdelivr.net/npm/sass.js@0.11.1/dist/sass.sync.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/less@4.1.1/dist/less.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-beautify@1.14.9/js/lib/beautify-css.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/lib/languages/scss.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/lib/languages/less.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/lib/languages/css.min.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="./js/css-preprocessor.js"></script>
+</body>
+</html> 

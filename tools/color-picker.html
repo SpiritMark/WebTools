@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="colorPicker.title">颜色选择器 | 工具箱Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/navigation.css">
+    <link rel="stylesheet" href="../css/color-picker.css">
+    <script src="../js/i18n.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html"><h1>工具箱<span>Pro</span></h1></a>
+            </div>
+            <nav class="main-nav">
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="nav-list" id="navList">
+                    <li><a href="../index.html" data-i18n="common.home">首页</a></li>
+                    <li><a href="../index.html#tools" data-i18n="common.tools">工具</a></li>
+                    <li><a href="../index.html#about" data-i18n="common.about">关于</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="tool-container">
+        <div class="container">
+            <div class="tool-header">
+                <h1 class="tool-title" data-i18n="colorPicker.title">颜色选择器</h1>
+                <p class="tool-description" data-i18n="colorPicker.description">轻松选择、比较和生成配色方案，获取不同格式的颜色代码</p>
+            </div>
+            
+            <div class="tool-content">
+                <div class="color-picker-container">
+                    <!-- 颜色选择器主区域 -->
+                    <div class="color-picker-main">
+                        <!-- 左侧颜色选择区域 -->
+                        <div class="color-picker-left">
+                            <!-- 主色选择器 -->
+                            <div class="color-picker-panel">
+                                <div class="picker-canvas-container">
+                                    <canvas id="color-field" class="color-field"></canvas>
+                                    <div class="color-cursor" id="color-cursor"></div>
+                                </div>
+                                <div class="hue-container">
+                                    <canvas id="hue-slider" class="hue-slider"></canvas>
+                                    <div class="hue-cursor" id="hue-cursor"></div>
+                                </div>
+                                <div class="alpha-container">
+                                    <canvas id="alpha-slider" class="alpha-slider"></canvas>
+                                    <div class="alpha-cursor" id="alpha-cursor"></div>
+                                </div>
+                            </div>
+
+                            <!-- 输入区域 -->
+                            <div class="color-inputs">
+                                <div class="input-group">
+                                    <label>HEX</label>
+                                    <div class="input-with-copy">
+                                        <input type="text" id="hex-input" class="color-input" value="#FF0000">
+                                        <button class="copy-btn" data-target="hex-input">
+                                            <i class="ri-file-copy-line"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label>RGB</label>
+                                    <div class="input-with-copy">
+                                        <input type="text" id="rgb-input" class="color-input" value="rgb(255, 0, 0)">
+                                        <button class="copy-btn" data-target="rgb-input">
+                                            <i class="ri-file-copy-line"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label>HSL</label>
+                                    <div class="input-with-copy">
+                                        <input type="text" id="hsl-input" class="color-input" value="hsl(0, 100%, 50%)">
+                                        <button class="copy-btn" data-target="hsl-input">
+                                            <i class="ri-file-copy-line"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label>RGBA</label>
+                                    <div class="input-with-copy">
+                                        <input type="text" id="rgba-input" class="color-input" value="rgba(255, 0, 0, 1)">
+                                        <button class="copy-btn" data-target="rgba-input">
+                                            <i class="ri-file-copy-line"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label>HSLA</label>
+                                    <div class="input-with-copy">
+                                        <input type="text" id="hsla-input" class="color-input" value="hsla(0, 100%, 50%, 1)">
+                                        <button class="copy-btn" data-target="hsla-input">
+                                            <i class="ri-file-copy-line"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 右侧功能区域 -->
+                        <div class="color-picker-right">
+                            <!-- 色彩历史记录 -->
+                            <div class="color-section">
+                                <h3 class="section-title" data-i18n="colorPicker.history">历史记录</h3>
+                                <div class="color-history" id="color-history">
+                                    <!-- 历史颜色将通过JS动态生成 -->
+                                </div>
+                            </div>
+                            
+                            <!-- 色彩预设 -->
+                            <div class="color-section">
+                                <h3 class="section-title" data-i18n="colorPicker.presets">预设颜色</h3>
+                                <div class="color-presets" id="color-presets">
+                                    <!-- 预设颜色将通过JS动态生成 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 颜色选择器扩展功能区域 -->
+                    <div class="color-picker-extensions">
+                        <div class="tabs">
+                            <button class="tab-btn active" data-tab="harmonies" data-i18n="colorPicker.harmonies">色彩和谐</button>
+                            <button class="tab-btn" data-tab="gradients" data-i18n="colorPicker.gradients">渐变生成</button>
+                            <button class="tab-btn" data-tab="palettes" data-i18n="colorPicker.palettes">配色方案</button>
+                            <button class="tab-btn" data-tab="contrast" data-i18n="colorPicker.contrast">对比度检查</button>
+                        </div>
+                        
+                        <!-- 和谐色彩面板 -->
+                        <div class="tab-content active" id="harmonies-tab">
+                            <div class="harmony-options">
+                                <button class="harmony-btn active" data-harmony="analogous" data-i18n="colorPicker.analogous">类似色</button>
+                                <button class="harmony-btn" data-harmony="complementary" data-i18n="colorPicker.complementary">互补色</button>
+                                <button class="harmony-btn" data-harmony="triadic" data-i18n="colorPicker.triadic">三分色</button>
+                                <button class="harmony-btn" data-harmony="tetradic" data-i18n="colorPicker.tetradic">四分色</button>
+                                <button class="harmony-btn" data-harmony="split-complementary" data-i18n="colorPicker.splitComplementary">分裂互补</button>
+                                <button class="harmony-btn" data-harmony="monochromatic" data-i18n="colorPicker.monochromatic">单色调</button>
+                            </div>
+                            <div class="harmony-colors" id="harmony-colors">
+                                <!-- 和谐配色方案将通过JS动态生成 -->
+                            </div>
+                        </div>
+                        
+                        <!-- 渐变生成面板 -->
+                        <div class="tab-content" id="gradients-tab">
+                            <div class="gradient-options">
+                                <div class="gradient-types">
+                                    <button class="gradient-type-btn active" data-gradient="linear" data-i18n="colorPicker.linear">线性渐变</button>
+                                    <button class="gradient-type-btn" data-gradient="radial" data-i18n="colorPicker.radial">径向渐变</button>
+                                    <button class="gradient-type-btn" data-gradient="conic" data-i18n="colorPicker.conic">锥形渐变</button>
+                                </div>
+                                
+                                <div class="gradient-controls">
+                                    <div class="gradient-direction" id="linear-controls">
+                                        <label data-i18n="colorPicker.direction">方向:</label>
+                                        <select id="gradient-direction">
+                                            <option value="to right">→ 向右</option>
+                                            <option value="to bottom">↓ 向下</option>
+                                            <option value="to left">← 向左</option>
+                                            <option value="to top">↑ 向上</option>
+                                            <option value="to bottom right">↘ 右下</option>
+                                            <option value="to bottom left">↙ 左下</option>
+                                            <option value="to top right">↗ 右上</option>
+                                            <option value="to top left">↖ 左上</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="gradient-center" id="radial-controls" style="display: none;">
+                                        <label data-i18n="colorPicker.center">中心点:</label>
+                                        <select id="gradient-position">
+                                            <option value="center">中心</option>
+                                            <option value="top">顶部</option>
+                                            <option value="right">右侧</option>
+                                            <option value="bottom">底部</option>
+                                            <option value="left">左侧</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="gradient-angle" id="conic-controls" style="display: none;">
+                                        <label data-i18n="colorPicker.angle">角度:</label>
+                                        <input type="range" id="gradient-angle" min="0" max="360" value="0">
+                                        <span id="angle-value">0°</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="gradient-colors">
+                                    <div class="gradient-stops" id="gradient-stops">
+                                        <!-- 渐变色标将通过JS动态生成 -->
+                                    </div>
+                                    <button id="add-stop" class="btn btn-small" data-i18n="colorPicker.addColor">添加颜色</button>
+                                </div>
+                            </div>
+                            
+                            <div class="gradient-preview">
+                                <div id="gradient-result" class="gradient-result"></div>
+                                <div class="gradient-code">
+                                    <div class="input-with-copy gradient-code-input">
+                                        <input type="text" id="gradient-code" class="code-input" readonly>
+                                        <button class="copy-btn" data-target="gradient-code">
+                                            <i class="ri-file-copy-line"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 配色方案面板 -->
+                        <div class="tab-content" id="palettes-tab">
+                            <div class="palette-options">
+                                <button class="palette-btn active" data-palette="professional" data-i18n="colorPicker.professional">专业</button>
+                                <button class="palette-btn" data-palette="pastel" data-i18n="colorPicker.pastel">柔和</button>
+                                <button class="palette-btn" data-palette="vibrant" data-i18n="colorPicker.vibrant">鲜艳</button>
+                                <button class="palette-btn" data-palette="earthy" data-i18n="colorPicker.earthy">大地色</button>
+                                <button class="palette-btn" data-palette="retro" data-i18n="colorPicker.retro">复古</button>
+                                <button class="btn btn-small" id="generate-palette" data-i18n="colorPicker.generate">随机生成</button>
+                            </div>
+                            
+                            <div class="palette-colors" id="palette-colors">
+                                <!-- 配色方案将通过JS动态生成 -->
+                            </div>
+                            
+                            <div class="palette-actions">
+                                <button class="btn btn-primary" id="export-palette" data-i18n="colorPicker.export">导出配色方案</button>
+                                <button class="btn" id="save-palette" data-i18n="colorPicker.save">保存到收藏</button>
+                            </div>
+                        </div>
+                        
+                        <!-- 对比度检查面板 -->
+                        <div class="tab-content" id="contrast-tab">
+                            <div class="contrast-checker">
+                                <div class="contrast-colors">
+                                    <div class="color-selection">
+                                        <label data-i18n="colorPicker.foreground">前景色:</label>
+                                        <div class="color-preview" id="foreground-preview"></div>
+                                        <input type="text" id="foreground-color" class="color-input" value="#000000">
+                                    </div>
+                                    
+                                    <div class="color-selection">
+                                        <label data-i18n="colorPicker.background">背景色:</label>
+                                        <div class="color-preview" id="background-preview"></div>
+                                        <input type="text" id="background-color" class="color-input" value="#FFFFFF">
+                                    </div>
+                                    
+                                    <button class="btn btn-small" id="swap-colors" data-i18n="colorPicker.swap">交换颜色</button>
+                                </div>
+                                
+                                <div class="contrast-preview">
+                                    <div class="text-preview" id="text-preview">
+                                        <h2>大标题文本示例</h2>
+                                        <p>这是正文文本示例，用于展示颜色对比度效果。</p>
+                                    </div>
+                                    
+                                    <div class="contrast-result">
+                                        <div class="contrast-ratio">
+                                            <span data-i18n="colorPicker.contrastRatio">对比度:</span>
+                                            <span id="contrast-value">21:1</span>
+                                        </div>
+                                        
+                                        <div class="wcag-results">
+                                            <div class="wcag-item">
+                                                <span data-i18n="colorPicker.wcagAA">WCAG AA:</span>
+                                                <span id="wcag-aa" class="pass">通过</span>
+                                            </div>
+                                            <div class="wcag-item">
+                                                <span data-i18n="colorPicker.wcagAAA">WCAG AAA:</span>
+                                                <span id="wcag-aaa" class="pass">通过</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2024 工具箱Pro. <span data-i18n="common.allRightsReserved">版权所有</span>.</p>
+            <div class="footer-links">
+                <a href="#" data-i18n="common.termsOfUse">使用条款</a>
+                <a href="#" data-i18n="common.privacyPolicy">隐私政策</a>
+                <a href="#" data-i18n="common.contactUs">联系我们</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="./js/color-picker.js"></script>
+</body>
+</html> 

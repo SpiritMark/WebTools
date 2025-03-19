@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML压缩工具 | 工具箱Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/navigation.css">
+    <link rel="stylesheet" href="../css/html-minifier.css">
+    <script src="../js/i18n.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html"><h1>工具箱<span>Pro</span></h1></a>
+            </div>
+            <nav class="main-nav">
+                <button class="mobile-menu-btn" id="menuToggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+                <ul class="nav-list" id="navList">
+                    <li><a href="../index.html">首页</a></li>
+                    <li><a href="../index.html#tools">工具</a></li>
+                    <li><a href="../index.html#about">关于</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="tool-container">
+        <div class="container">
+            <div class="tool-header">
+                <h1 class="tool-title">HTML压缩工具</h1>
+                <p class="tool-description">压缩和美化HTML代码，减小文件体积，提高加载速度</p>
+            </div>
+            
+            <div class="tool-content">
+                <div class="minifier-container">
+                    <div class="options-panel">
+                        <div class="option-groups-container">
+                            <div class="option-group">
+                                <h3>操作模式</h3>
+                                <div class="mode-selector">
+                                    <button id="minify-mode" class="mode-btn active">压缩模式</button>
+                                    <button id="beautify-mode" class="mode-btn">美化模式</button>
+                                </div>
+                            </div>
+                            
+                            <div class="option-group">
+                                <h3>压缩选项</h3>
+                                <div class="form-check">
+                                    <input type="checkbox" id="remove-comments" checked>
+                                    <label for="remove-comments">移除注释</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" id="remove-tag-whitespace" checked>
+                                    <label for="remove-tag-whitespace">移除标签间空白</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" id="collapse-whitespace" checked>
+                                    <label for="collapse-whitespace">折叠空白</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" id="collapse-boolean-attributes" checked>
+                                    <label for="collapse-boolean-attributes">折叠布尔属性</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" id="remove-redundant-attributes" checked>
+                                    <label for="remove-redundant-attributes">移除冗余属性</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" id="remove-empty-attributes">
+                                    <label for="remove-empty-attributes">移除空属性</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" id="remove-optional-tags">
+                                    <label for="remove-optional-tags">移除可选标签</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" id="minify-css" checked>
+                                    <label for="minify-css">压缩内联CSS</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" id="minify-js" checked>
+                                    <label for="minify-js">压缩内联JS</label>
+                                </div>
+                            </div>
+                            
+                            <div class="option-group beautify-options" style="display: none;">
+                                <h3>美化选项</h3>
+                                <div class="form-group">
+                                    <label for="indent-size">缩进大小</label>
+                                    <select id="indent-size" class="form-control">
+                                        <option value="2">2 空格</option>
+                                        <option value="4" selected>4 空格</option>
+                                        <option value="8">8 空格</option>
+                                    </select>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" id="use-tabs">
+                                    <label for="use-tabs">使用制表符代替空格</label>
+                                </div>
+                                <div class="form-group">
+                                    <label for="max-line-length">每行最大字符数</label>
+                                    <select id="max-line-length" class="form-control">
+                                        <option value="0">不限制</option>
+                                        <option value="80" selected>80</option>
+                                        <option value="100">100</option>
+                                        <option value="120">120</option>
+                                    </select>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" id="wrap-attributes" checked>
+                                    <label for="wrap-attributes">属性换行</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" id="preserve-newlines" checked>
+                                    <label for="preserve-newlines">保留原有换行</label>
+                                </div>
+                            </div>
+                            
+                            <div class="option-group">
+                                <h3>文件操作</h3>
+                                <div class="file-actions">
+                                    <button id="load-file-btn" class="tool-btn secondary">
+                                        <i class="ri-upload-line"></i> 从文件加载
+                                    </button>
+                                    <input type="file" id="file-input" accept=".html,.htm" style="display: none">
+                                    <button id="download-btn" class="tool-btn secondary">
+                                        <i class="ri-download-line"></i> 下载结果
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="stats-panel">
+                                <div class="stat-item">
+                                    <span class="stat-label">原始大小：</span>
+                                    <span id="original-size">0 字节</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">处理后大小：</span>
+                                    <span id="result-size">0 字节</span>
+                                </div>
+                                <div class="stat-item highlight">
+                                    <span class="stat-label">压缩率：</span>
+                                    <span id="compression-ratio">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="code-panels">
+                        <div class="code-panel">
+                            <div class="panel-header">
+                                <h3>HTML源代码</h3>
+                                <div class="panel-actions">
+                                    <button id="paste-btn" class="tool-btn secondary">
+                                        <i class="ri-clipboard-line"></i> 粘贴
+                                    </button>
+                                    <button id="clear-input-btn" class="tool-btn secondary">
+                                        <i class="ri-delete-bin-line"></i> 清空
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="code-input-wrapper">
+                                <div class="line-numbers" id="line-numbers"></div>
+                                <div class="code-input-container">
+                                    <textarea id="html-input" class="code-input" placeholder="在此粘贴你的HTML代码..." spellcheck="false"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="action-panel">
+                            <button id="process-btn" class="tool-btn primary">
+                                <i class="ri-code-line"></i> <span id="process-btn-text">压缩HTML</span>
+                            </button>
+                        </div>
+                        
+                        <div class="code-panel">
+                            <div class="panel-header">
+                                <h3>处理结果</h3>
+                                <div class="panel-actions">
+                                    <button id="copy-output-btn" class="tool-btn secondary">
+                                        <i class="ri-file-copy-line"></i> 复制
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="code-output-container">
+                                <pre><code id="html-output" class="code-output"></code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <div class="info-card">
+                        <h3><i class="ri-information-line"></i> 关于HTML压缩</h3>
+                        <p>HTML压缩通过移除不必要的空白字符、注释和优化HTML标签，来减小HTML文件的大小。这有助于提高网页加载速度，特别是在移动网络环境下。</p>
+                    </div>
+                    <div class="info-card">
+                        <h3><i class="ri-lightbulb-line"></i> 最佳实践</h3>
+                        <ul>
+                            <li>在开发阶段使用格式良好的HTML代码以提高可读性</li>
+                            <li>在部署生产环境前压缩HTML代码以提升性能</li>
+                            <li>将HTML压缩与CSS和JavaScript压缩结合使用，获得最佳性能</li>
+                            <li>对于大型网站，考虑使用构建工具自动化压缩流程</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2024 工具箱Pro. 版权所有.</p>
+            <div class="footer-links">
+                <a href="#">使用条款</a>
+                <a href="#">隐私政策</a>
+                <a href="#">联系我们</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 引入必要的JavaScript库 -->
+    <script src="https://cdn.jsdelivr.net/npm/html-minifier@4.0.0/dist/htmlminifier.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-beautify@1.14.9/js/lib/beautify-html.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/lib/languages/xml.min.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="./js/html-minifier.js"></script>
+</body>
+</html> 

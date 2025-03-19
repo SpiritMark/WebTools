@@ -1,0 +1,684 @@
+/* IP地址查询样式 */
+.tool-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* 查询区域 */
+.lookup-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.query-section {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.query-box {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.input-with-icon {
+    flex: 1;
+    position: relative;
+}
+
+.input-with-icon i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-medium);
+}
+
+.ip-input {
+    width: 100%;
+    padding: 0.85rem 1rem 0.85rem 2.75rem;
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    transition: border-color 0.2s;
+}
+
+.ip-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.lookup-btn {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0 1.75rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.lookup-btn:hover {
+    background-color: var(--primary-dark);
+}
+
+.query-options {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.option-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.option-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.my-ip-btn {
+    margin-left: auto;
+    background-color: var(--bg-light);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.my-ip-btn:hover {
+    background-color: var(--primary-light);
+}
+
+/* 加载状态 */
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background-color: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--bg-light);
+    border-bottom-color: var(--primary);
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* 结果区域 */
+.result-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.result-summary {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.ip-badge {
+    background-color: var(--primary);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.location-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-dark);
+    font-size: 1rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.action-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-light);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-medium);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.action-btn:hover {
+    background-color: var(--primary-light);
+    color: var(--primary);
+}
+
+/* 结果卡片 */
+.result-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.result-card {
+    background-color: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    background-color: var(--bg-light);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-header i {
+    font-size: 1.25rem;
+    color: var(--primary);
+}
+
+.card-header h3 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.card-content {
+    padding: 1.25rem;
+}
+
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.info-table tr:not(:last-child) {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.info-table td {
+    padding: 0.75rem 0;
+}
+
+.info-table td:first-child {
+    color: var(--text-medium);
+    width: 40%;
+}
+
+.info-table td:last-child {
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+/* 安全信息标签 */
+.security-badge {
+    display: inline-block;
+    padding: 0.3rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.security-badge.safe {
+    background-color: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+.security-badge.warning {
+    background-color: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+}
+
+.security-badge.danger {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.security-badge.neutral {
+    background-color: rgba(107, 114, 128, 0.15);
+    color: #6b7280;
+}
+
+.security-badge.info {
+    background-color: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+}
+
+/* 地图区域 */
+.map-section {
+    background-color: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.section-header h3 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.view-options {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.view-option {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.85rem;
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.view-option:hover {
+    background-color: var(--bg-light);
+}
+
+.view-option.active {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.map-container {
+    height: 400px;
+    width: 100%;
+}
+
+.map-error {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-medium);
+    font-style: italic;
+    text-align: center;
+    padding: 1rem;
+}
+
+/* WHOIS区域 */
+.whois-section {
+    background-color: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.copy-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.85rem;
+    background-color: var(--bg-light);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.copy-btn:hover {
+    background-color: var(--primary-light);
+}
+
+.whois-container {
+    padding: 1.25rem;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.whois-data {
+    font-family: monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--text-medium);
+    white-space: pre-wrap;
+    margin: 0;
+}
+
+/* 相关工具 */
+.related-tools {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.related-tools h3 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+}
+
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.tool-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    text-decoration: none;
+    background-color: var(--bg-light);
+    border-radius: 8px;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.tool-link:hover {
+    background-color: var(--primary-light);
+    transform: translateY(-2px);
+}
+
+.tool-link i {
+    font-size: 1.5rem;
+    color: var(--primary);
+}
+
+.tool-link span {
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+/* 查询历史 */
+.lookup-history {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.history-header h3 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.clear-btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.85rem;
+    background-color: var(--bg-light);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.clear-btn:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.history-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background-color: var(--bg-light);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.history-item:hover {
+    background-color: var(--primary-light);
+}
+
+.history-item-ip {
+    font-family: monospace;
+    font-weight: 500;
+}
+
+.history-item-location {
+    color: var(--text-medium);
+    font-size: 0.85rem;
+}
+
+.history-empty {
+    color: var(--text-medium);
+    font-style: italic;
+    padding: 0.5rem 0;
+}
+
+/* IP知识库 */
+.ip-knowledge {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.ip-knowledge h2 {
+    font-size: 1.35rem;
+    color: var(--text-dark);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.knowledge-section {
+    margin-bottom: 2rem;
+}
+
+.knowledge-section h3 {
+    font-size: 1.2rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.knowledge-section p {
+    line-height: 1.6;
+    color: var(--text-medium);
+}
+
+.version-comparison {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.version-card {
+    background-color: var(--bg-light);
+    border-radius: 8px;
+    padding: 1.25rem;
+}
+
+.version-card h4 {
+    color: var(--primary);
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+}
+
+.version-card p {
+    margin-bottom: 1rem;
+}
+
+.version-card ul {
+    padding-left: 1.25rem;
+}
+
+.version-card li {
+    margin-bottom: 0.5rem;
+    color: var(--text-medium);
+}
+
+.knowledge-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.knowledge-table th,
+.knowledge-table td {
+    padding: 0.85rem;
+    text-align: left;
+    border: 1px solid var(--border-color);
+}
+
+.knowledge-table th {
+    background-color: var(--bg-light);
+    font-weight: 500;
+}
+
+.knowledge-table tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.knowledge-list {
+    padding-left: 1.25rem;
+    margin-top: 1rem;
+}
+
+.knowledge-list li {
+    margin-bottom: 0.75rem;
+    color: var(--text-medium);
+}
+
+/* 通知样式 */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    background-color: white;
+    color: var(--text-dark);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s, transform 0.3s;
+    max-width: 320px;
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.notification.success {
+    background-color: rgba(34, 197, 94, 0.95);
+    color: white;
+}
+
+.notification.error {
+    background-color: rgba(239, 68, 68, 0.95);
+    color: white;
+}
+
+.notification.warning {
+    background-color: rgba(245, 158, 11, 0.95);
+    color: white;
+}
+
+.notification.info {
+    background-color: rgba(59, 130, 246, 0.95);
+    color: white;
+}
+
+/* 响应式样式 */
+@media (max-width: 768px) {
+    .query-box {
+        flex-direction: column;
+    }
+    
+    .my-ip-btn {
+        margin-left: 0;
+    }
+    
+    .result-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    
+    .action-buttons {
+        align-self: flex-end;
+    }
+    
+    .tools-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+} 

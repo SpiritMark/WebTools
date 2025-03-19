@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图标库 - 在线工具箱</title>
+    <meta name="description" content="免费在线图标库，提供Font Awesome、Material Icons、Bootstrap Icons等多种图标，支持搜索、复制和下载">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/icon-library.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Bootstrap Icons (CDN) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html">
+                    <span class="logo-icon"><i class="fas fa-tools"></i></span>
+                    <span class="logo-text">工具箱</span>
+                </a>
+            </div>
+            
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="../index.html">首页</a></li>
+                    <li><a href="../tools.html" class="active">工具</a></li>
+                    <li><a href="../about.html">关于</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1>图标库工具</h1>
+                <p>浏览、搜索和使用多种流行的开源图标集合</p>
+            </div>
+
+            <div class="tool-content">
+                <div class="icon-controls">
+                    <div class="search-container">
+                        <input type="text" id="icon-search" class="search-input" placeholder="搜索图标...">
+                        <button id="search-btn" class="search-btn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="icon-filters">
+                        <div class="filter-group">
+                            <label class="filter-label">图标库：</label>
+                            <div class="filter-options">
+                                <label class="filter-option">
+                                    <input type="checkbox" name="icon-library" value="fa" checked>
+                                    <span>Font Awesome</span>
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox" name="icon-library" value="mi" checked>
+                                    <span>Material Icons</span>
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox" name="icon-library" value="bi" checked>
+                                    <span>Bootstrap Icons</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label class="filter-label">分类：</label>
+                            <select id="category-filter" class="filter-select">
+                                <option value="all">全部分类</option>
+                                <option value="common">常用图标</option>
+                                <option value="business">商业与金融</option>
+                                <option value="communication">通信与社交</option>
+                                <option value="devices">设备与技术</option>
+                                <option value="health">健康与医疗</option>
+                                <option value="transport">交通与旅行</option>
+                                <option value="nature">自然与环境</option>
+                                <option value="arrows">箭头与方向</option>
+                                <option value="symbols">符号与标志</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label class="filter-label">排序：</label>
+                            <select id="sort-filter" class="filter-select">
+                                <option value="popular">热门程度</option>
+                                <option value="name-asc">名称（A-Z）</option>
+                                <option value="name-desc">名称（Z-A）</option>
+                                <option value="newest">最新添加</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-info">
+                    <span id="result-count">显示全部图标</span>
+                    <div class="view-options">
+                        <button id="grid-view" class="view-btn active"><i class="fas fa-th"></i></button>
+                        <button id="list-view" class="view-btn"><i class="fas fa-list"></i></button>
+                    </div>
+                </div>
+
+                <div class="icons-container grid-view" id="icons-container">
+                    <!-- 图标将通过JavaScript动态生成 -->
+                    <div class="loader" id="icons-loader">
+                        <div class="spinner"></div>
+                        <p>加载图标中...</p>
+                    </div>
+                </div>
+
+                <div class="pagination" id="pagination">
+                    <!-- 分页控件将通过JavaScript动态生成 -->
+                </div>
+                
+                <div class="icon-details-panel" id="icon-details">
+                    <div class="details-header">
+                        <h2>图标详情</h2>
+                        <button id="close-details" class="close-btn"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="details-content">
+                        <div class="icon-preview">
+                            <div class="preview-sizes">
+                                <div class="preview-size xs">xs</div>
+                                <div class="preview-size sm">sm</div>
+                                <div class="preview-size md">md</div>
+                                <div class="preview-size lg">lg</div>
+                                <div class="preview-size xl">xl</div>
+                            </div>
+                            <div class="preview-icons">
+                                <div class="preview-icon-size xs" id="preview-xs"></div>
+                                <div class="preview-icon-size sm" id="preview-sm"></div>
+                                <div class="preview-icon-size md" id="preview-md"></div>
+                                <div class="preview-icon-size lg" id="preview-lg"></div>
+                                <div class="preview-icon-size xl" id="preview-xl"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="icon-info">
+                            <div class="info-item">
+                                <label>名称:</label>
+                                <span id="icon-name"></span>
+                            </div>
+                            <div class="info-item">
+                                <label>库:</label>
+                                <span id="icon-library"></span>
+                            </div>
+                            <div class="info-item">
+                                <label>分类:</label>
+                                <span id="icon-category"></span>
+                            </div>
+                            <div class="info-item">
+                                <label>标签:</label>
+                                <div id="icon-tags" class="tag-list"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="code-snippets">
+                            <div class="code-snippet">
+                                <div class="snippet-header">
+                                    <h3>HTML</h3>
+                                    <button class="copy-btn" data-target="html-code">复制</button>
+                                </div>
+                                <pre><code id="html-code" class="language-html"></code></pre>
+                            </div>
+                            
+                            <div class="code-snippet">
+                                <div class="snippet-header">
+                                    <h3>CSS</h3>
+                                    <button class="copy-btn" data-target="css-code">复制</button>
+                                </div>
+                                <pre><code id="css-code" class="language-css"></code></pre>
+                            </div>
+                            
+                            <div class="code-snippet">
+                                <div class="snippet-header">
+                                    <h3>React</h3>
+                                    <button class="copy-btn" data-target="react-code">复制</button>
+                                </div>
+                                <pre><code id="react-code" class="language-jsx"></code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="download-options">
+                            <h3>下载选项</h3>
+                            <div class="download-btns">
+                                <button id="download-svg" class="download-btn"><i class="fas fa-download"></i> SVG</button>
+                                <button id="download-png" class="download-btn"><i class="fas fa-download"></i> PNG</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-section">
+                <div class="info-card">
+                    <h3><i class="fas fa-info-circle"></i> 关于图标库</h3>
+                    <p>图标库工具提供了流行的开源图标集合，让您能够轻松浏览、搜索和使用各种图标。所有图标都是免费的，可用于个人和商业项目。</p>
+                    <p>我们目前提供以下图标库：</p>
+                    <ul>
+                        <li><strong>Font Awesome</strong> - 包含1,600多个图标的流行图标集</li>
+                        <li><strong>Material Icons</strong> - 谷歌Material Design的官方图标</li>
+                        <li><strong>Bootstrap Icons</strong> - Bootstrap框架的开源图标库</li>
+                    </ul>
+                </div>
+                
+                <div class="info-card">
+                    <h3><i class="fas fa-lightbulb"></i> 使用指南</h3>
+                    <p>如何使用图标库工具：</p>
+                    <ol>
+                        <li>使用搜索框查找特定图标，或浏览分类</li>
+                        <li>点击任何图标查看详细信息和使用选项</li>
+                        <li>复制HTML、CSS或React代码直接使用图标</li>
+                        <li>下载SVG或PNG格式的图标文件</li>
+                        <li>使用过滤器选择特定图标库或分类</li>
+                    </ol>
+                    <p>您可以根据项目需求选择最适合的图标和使用方式。</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="copyright">
+                    <p>&copy; 2023 在线工具箱. 保留所有权利.</p>
+                </div>
+                
+                <div class="footer-links">
+                    <a href="../terms.html">使用条款</a>
+                    <a href="../privacy.html">隐私政策</a>
+                    <a href="../contact.html">联系我们</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 通知模块 -->
+    <div id="notification" class="notification">
+        <p id="notification-message"></p>
+        <button id="notification-close"><i class="fas fa-times"></i></button>
+    </div>
+
+    <!-- 模态对话框 -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title"></h2>
+                <button id="modal-close" class="close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="modal-body" class="modal-body"></div>
+            <div class="modal-footer">
+                <button id="modal-confirm" class="btn primary">确认</button>
+                <button id="modal-cancel" class="btn secondary">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PrismJS 代码高亮 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-jsx.min.js"></script>
+    
+    <!-- 自定义JS -->
+    <script src="js/icon-library.js"></script>
+</body>
+</html> 
