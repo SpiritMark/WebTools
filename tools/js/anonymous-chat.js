@@ -57,7 +57,8 @@ const chatState = {
     messageExpiryTime: 24 * 60 * 60 * 1000, // 24小时
     emojiPickerVisible: false,
     storage: null,
-    storageRef: null
+    storageRef: null,
+    replyingTo: null // 添加回复状态
 };
 
 // 表情符号数组
@@ -174,6 +175,13 @@ function setupEventListeners() {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             sendMessage();
+        }
+    });
+    
+    // ESC键取消回复
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && chatState.replyingTo) {
+            clearReplyState();
         }
     });
     
@@ -347,16 +355,18 @@ function joinRoom() {
 
 // 添加欢迎消息
 function addWelcomeMessage() {
-    elements.messagesContainer.innerHTML = `
-        <div class="welcome-message">
-            <div class="welcome-icon">
-                <i class="ri-lock-line"></i>
-            </div>
-            <h3 data-i18n="anonymousChat.welcomeTitle">欢迎来到加密聊天室</h3>
-            <p data-i18n="anonymousChat.welcomeMessage">此聊天室中的所有消息均已加密，刷新页面或关闭浏览器后聊天记录将被清除。</p>
-            <p style="margin-top: 10px; color: #ef4444;"><i class="ri-information-line"></i> 聊天室最多支持10人同时在线</p>
+    const systemMessage = document.createElement('div');
+    systemMessage.className = 'system-message';
+    systemMessage.innerHTML = `
+        欢迎加入自律特种兵战术通讯频道
+        <div class="system-message-details">
+            <p>战术频道ID: <strong>${chatState.roomId}</strong></p>
+            <p>您的代号: <strong>${chatState.nickname}</strong></p>
+            <p>任务目标: 高效沟通，自律协作，共同攻克难关</p>
+            <p class="tech-quote">「纪律源于自我，强大始于自律」</p>
         </div>
     `;
+    elements.messagesContainer.appendChild(systemMessage);
 }
 
 // 连接到聊天服务器
@@ -401,6 +411,28 @@ function connectToServer() {
                     
                     // 设置断开连接时自动移除用户
                     chatState.membersRef.child(chatState.clientId).onDisconnect().remove();
+                    
+                    // 监听成员列表变化
+                    chatState.roomRef.child('members').on('value', (membersSnapshot) => {
+                        if (membersSnapshot.exists()) {
+                            const members = membersSnapshot.val();
+                            // 清空当前成员列表
+                            chatState.members = {};
+                            // 更新成员列表
+                            Object.keys(members).forEach(memberId => {
+                                const member = members[memberId];
+                                addMember({
+                                    id: memberId,
+                                    nickname: member.nickname,
+                                    isSelf: memberId === chatState.clientId
+                                });
+                            });
+                        } else {
+                            // 如果没有成员，清空列表
+                            chatState.members = {};
+                            updateMemberList();
+                        }
+                    });
                 } else {
                     console.log('Firebase连接断开');
                     chatState.connected = false;
@@ -659,6 +691,18 @@ function updateRoomDataInLocalStorage(eventType, data) {
 // 更新连接状态
 function updateConnectionStatus(status, text) {
     elements.connectionStatus.className = 'status-indicator ' + status;
+    
+    // 修改状态文本，添加科技感和自律特种兵风格
+    if (text === '已连接') {
+        text = '战术链路已建立';
+    } else if (text === '正在连接...') {
+        text = '建立战术链路中...';
+    } else if (text === '已断开连接') {
+        text = '战术链路已断开';
+    } else if (text === '连接失败') {
+        text = '战术链路连接失败';
+    }
+    
     elements.statusText.textContent = text;
 }
 
@@ -681,14 +725,16 @@ function sendMessage() {
             nickname: chatState.nickname,
             text: messageText,
             timestamp: new Date().toISOString(),
-            isSelf: true
+            isSelf: true,
+            replyTo: chatState.replyingTo // 添加回复信息
         });
         
         // 显示错误提示
         showNotification('网络连接问题，消息可能未发送至服务器', 'warning');
         
-        // 清空输入框
+        // 清空输入框和回复状态
         elements.messageInput.value = '';
+        clearReplyState();
         elements.sendMessageBtn.disabled = true;
         
         return;
@@ -705,9 +751,22 @@ function sendMessage() {
             encrypted: chatState.encryptionEnabled
         };
         
+        // 如果是回复消息，添加回复信息
+        if (chatState.replyingTo) {
+            message.replyTo = {
+                id: chatState.replyingTo.id,
+                nickname: chatState.replyingTo.nickname,
+                text: chatState.replyingTo.text
+            };
+        }
+        
         // 如果启用了加密，加密消息
         if (chatState.encryptionEnabled) {
             message.text = encryptMessage(messageText);
+            // 如果有回复，也需要保存加密前的回复信息
+            if (message.replyTo) {
+                message.replyTo.originalText = message.replyTo.text;
+            }
         }
         
         // 存储消息到Firebase
@@ -726,11 +785,13 @@ function sendMessage() {
             nickname: chatState.nickname,
             text: messageText, // 使用原始文本显示
             timestamp: new Date().toISOString(),
-            isSelf: true
+            isSelf: true,
+            replyTo: chatState.replyingTo // 添加回复信息
         });
         
-        // 清空输入框
+        // 清空输入框和回复状态
         elements.messageInput.value = '';
+        clearReplyState();
         elements.sendMessageBtn.disabled = true;
         
         // 自动滚动到底部
@@ -791,22 +852,71 @@ function addMessage(message) {
     
     const messageElement = document.createElement('div');
     messageElement.className = `message ${message.isSelf ? 'outgoing' : ''}`;
+    messageElement.dataset.messageId = message.id; // 添加消息ID用于回复引用
     
     // 添加状态指示类 - 如果消息因为解密失败而含有特定文本
     if (message.text === '[无法解密的消息]' || message.text === '[无法解密的历史消息]') {
         messageElement.classList.add('encryption-error');
     }
     
+    // 构建回复信息HTML (如果有回复)
+    let replyHtml = '';
+    if (message.replyTo) {
+        const replyToMessage = findMessageById(message.replyTo.id);
+        const replyText = replyToMessage ? replyToMessage.text : message.replyTo.text;
+        const replyNickname = replyToMessage ? replyToMessage.nickname : message.replyTo.nickname;
+        
+        replyHtml = `
+            <div class="reply-container">
+                <div class="reply-info">
+                    <i class="ri-reply-line"></i>
+                    <span class="reply-to">回复 ${replyNickname}：</span>
+                </div>
+                <div class="reply-text">${formatMessageText(replyText.substring(0, 50) + (replyText.length > 50 ? '...' : ''))}</div>
+            </div>
+        `;
+    }
+    
     messageElement.innerHTML = `
         <div class="message-avatar">${message.nickname.charAt(0).toUpperCase()}</div>
         <div class="message-content">
             <div class="message-sender">${message.nickname}</div>
+            ${replyHtml}
             <div class="message-text">${formatMessageText(message.text)}</div>
-            <div class="message-time">${messageTime}</div>
+            <div class="message-actions">
+                <div class="message-time">${messageTime}</div>
+                <div class="message-buttons">
+                    <button class="reply-button" title="回复此消息">
+                        <i class="ri-reply-line"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     `;
     
     elements.messagesContainer.appendChild(messageElement);
+    
+    // 添加回复按钮事件处理
+    const replyButton = messageElement.querySelector('.reply-button');
+    replyButton.addEventListener('click', () => {
+        startReplyToMessage(message);
+    });
+}
+
+// 查找消息通过ID
+function findMessageById(messageId) {
+    // 简单方法：遍历DOM查找消息
+    const messageElement = document.querySelector(`.message[data-message-id="${messageId}"]`);
+    if (!messageElement) return null;
+    
+    const nickname = messageElement.querySelector('.message-sender').textContent;
+    const text = messageElement.querySelector('.message-text').textContent;
+    
+    return {
+        id: messageId,
+        nickname: nickname,
+        text: text
+    };
 }
 
 // 格式化消息文本（处理链接、表情等）
@@ -838,11 +948,33 @@ function formatMessageText(text) {
 
 // 添加系统消息
 function addSystemMessage(text) {
-    const messageElement = document.createElement('div');
-    messageElement.className = 'system-message';
-    messageElement.textContent = text;
+    const systemMessage = document.createElement('div');
+    systemMessage.className = 'system-message';
     
-    elements.messagesContainer.appendChild(messageElement);
+    // 添加自律特种兵相关专属文字
+    if (text.includes('加入了聊天室')) {
+        text = text.replace('加入了聊天室', '加入了战术行动');
+    } else if (text.includes('离开了聊天室')) {
+        text = text.replace('离开了聊天室', '撤离了战术行动');
+    } else if (text.includes('您已加入聊天室')) {
+        text = text.replace('您已加入聊天室', '您已部署至战术频道');
+    }
+    
+    let messageContent = text;
+    
+    // 为不同类型的系统消息添加不同的前缀
+    if (text.includes('部署至战术频道')) {
+        messageContent = `<span class="tech-badge">战术部署</span> ${text}`;
+    } else if (text.includes('加入了战术行动')) {
+        messageContent = `<span class="tech-badge">战力增援</span> ${text}`;
+    } else if (text.includes('撤离了战术行动')) {
+        messageContent = `<span class="tech-badge">战力撤离</span> ${text}`;
+    } else {
+        messageContent = `<span class="tech-badge">系统通知</span> ${text}`;
+    }
+    
+    systemMessage.innerHTML = messageContent;
+    elements.messagesContainer.appendChild(systemMessage);
     
     // 自动滚动到底部
     scrollToBottom();
@@ -872,13 +1004,17 @@ function updateMemberList() {
             <div class="member-name">
                 ${member.nickname}
                 ${member.isSelf ? '<span class="self-indicator">你</span>' : ''}
+                <div class="member-status">
+                    <span class="status-dot"></span>
+                    <span class="status-text">${member.isSelf ? '战术指挥' : '行动中'}</span>
+                </div>
             </div>
         `;
         elements.memberList.appendChild(memberElement);
     });
     
     // 更新成员计数并显示限制
-    elements.memberCount.textContent = `${members.length}/10`;
+    elements.memberCount.textContent = `${members.length}/10 战力`;
 }
 
 // 自动滚动到底部
@@ -1221,7 +1357,8 @@ function setupFirebaseReferences() {
                         imageUrl: message.imageUrl,
                         imageName: message.imageName,
                         timestamp: message.timestamp || new Date().toISOString(),
-                        isSelf: false
+                        isSelf: false,
+                        replyTo: message.replyTo // 添加回复信息
                     });
                 } else if (message.type === 'base64Image') {
                     // 处理Base64图片消息
@@ -1231,7 +1368,8 @@ function setupFirebaseReferences() {
                         base64Image: message.base64Image,
                         imageName: message.imageName,
                         timestamp: message.timestamp || new Date().toISOString(),
-                        isSelf: false
+                        isSelf: false,
+                        replyTo: message.replyTo // 添加回复信息
                     });
                 } else {
                     // 处理文本消息
@@ -1246,13 +1384,33 @@ function setupFirebaseReferences() {
                         }
                     }
                     
+                    // 处理回复信息
+                    let replyTo = null;
+                    if (message.replyTo) {
+                        replyTo = {
+                            id: message.replyTo.id,
+                            nickname: message.replyTo.nickname,
+                            text: message.replyTo.text
+                        };
+                        
+                        // 如果回复内容是加密的，尝试解密
+                        if (message.encrypted && message.replyTo.originalText) {
+                            try {
+                                replyTo.text = message.replyTo.originalText;
+                            } catch (error) {
+                                console.error('解密回复内容失败:', error);
+                            }
+                        }
+                    }
+                    
                     // 接收消息
                     receiveMessage({
                         id: message.id,
                         nickname: message.nickname,
                         text: messageText,
                         timestamp: message.timestamp || new Date().toISOString(),
-                        isSelf: false
+                        isSelf: false,
+                        replyTo: replyTo // 添加回复信息
                     });
                 }
             } catch (error) {
@@ -1418,21 +1576,119 @@ function sendImageMessage(imageUrl, imageName) {
     scrollToBottom();
 }
 
+// 添加URL图片消息到聊天界面
+function addImageMessage(message) {
+    const messageTime = new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    const messageElement = document.createElement('div');
+    messageElement.className = `message ${message.isSelf ? 'outgoing' : ''}`;
+    messageElement.dataset.messageId = message.id; // 添加消息ID用于回复引用
+    
+    // 构建回复信息HTML (如果有回复)
+    let replyHtml = '';
+    if (message.replyTo) {
+        const replyToMessage = findMessageById(message.replyTo.id);
+        const replyText = replyToMessage ? replyToMessage.text : message.replyTo.text;
+        const replyNickname = replyToMessage ? replyToMessage.nickname : message.replyTo.nickname;
+        
+        replyHtml = `
+            <div class="reply-container">
+                <div class="reply-info">
+                    <i class="ri-reply-line"></i>
+                    <span class="reply-to">回复 ${replyNickname}：</span>
+                </div>
+                <div class="reply-text">${formatMessageText(replyText.substring(0, 50) + (replyText.length > 50 ? '...' : ''))}</div>
+            </div>
+        `;
+    }
+    
+    messageElement.innerHTML = `
+        <div class="message-avatar">${message.nickname.charAt(0).toUpperCase()}</div>
+        <div class="message-content">
+            <div class="message-sender">${message.nickname}</div>
+            ${replyHtml}
+            <div class="message-image-container">
+                <img src="${message.imageUrl}" alt="${message.imageName}" class="message-image" loading="lazy">
+                <div class="image-name">${message.imageName}</div>
+            </div>
+            <div class="message-actions">
+                <div class="message-time">${messageTime}</div>
+                <div class="message-buttons">
+                    <button class="reply-button" title="回复此消息">
+                        <i class="ri-reply-line"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    elements.messagesContainer.appendChild(messageElement);
+    
+    // 图片加载完成后滚动到底部
+    const imgElement = messageElement.querySelector('img');
+    imgElement.onload = scrollToBottom;
+    
+    // 添加图片点击事件
+    imgElement.addEventListener('click', () => {
+        const overlay = document.getElementById('imagePreviewOverlay');
+        const previewImage = document.getElementById('previewImage');
+        
+        previewImage.src = message.imageUrl;
+        previewImage.alt = message.imageName;
+        
+        overlay.classList.add('active');
+    });
+    
+    // 添加回复按钮事件处理
+    const replyButton = messageElement.querySelector('.reply-button');
+    replyButton.addEventListener('click', () => {
+        startReplyToMessage(message);
+    });
+}
+
 // 添加Base64图片消息到聊天界面
 function addBase64ImageMessage(message) {
     const messageTime = new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     
     const messageElement = document.createElement('div');
     messageElement.className = `message ${message.isSelf ? 'outgoing' : ''}`;
+    messageElement.dataset.messageId = message.id; // 添加消息ID用于回复引用
+    
+    // 构建回复信息HTML (如果有回复)
+    let replyHtml = '';
+    if (message.replyTo) {
+        const replyToMessage = findMessageById(message.replyTo.id);
+        const replyText = replyToMessage ? replyToMessage.text : message.replyTo.text;
+        const replyNickname = replyToMessage ? replyToMessage.nickname : message.replyTo.nickname;
+        
+        replyHtml = `
+            <div class="reply-container">
+                <div class="reply-info">
+                    <i class="ri-reply-line"></i>
+                    <span class="reply-to">回复 ${replyNickname}：</span>
+                </div>
+                <div class="reply-text">${formatMessageText(replyText.substring(0, 50) + (replyText.length > 50 ? '...' : ''))}</div>
+            </div>
+        `;
+    }
+    
     messageElement.innerHTML = `
         <div class="message-avatar">${message.nickname.charAt(0).toUpperCase()}</div>
         <div class="message-content">
             <div class="message-sender">${message.nickname}</div>
+            ${replyHtml}
             <div class="message-image-container">
                 <img src="${message.base64Image}" alt="${message.imageName}" class="message-image" loading="lazy">
                 <div class="image-name">${message.imageName}</div>
             </div>
-            <div class="message-time">${messageTime}</div>
+            <div class="message-actions">
+                <div class="message-time">${messageTime}</div>
+                <div class="message-buttons">
+                    <button class="reply-button" title="回复此消息">
+                        <i class="ri-reply-line"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     `;
     
@@ -1452,41 +1708,15 @@ function addBase64ImageMessage(message) {
         
         overlay.classList.add('active');
     });
-}
-
-// 添加URL图片消息到聊天界面
-function addImageMessage(message) {
-    const messageTime = new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     
-    const messageElement = document.createElement('div');
-    messageElement.className = `message ${message.isSelf ? 'outgoing' : ''}`;
-    messageElement.innerHTML = `
-        <div class="message-avatar">${message.nickname.charAt(0).toUpperCase()}</div>
-        <div class="message-content">
-            <div class="message-sender">${message.nickname}</div>
-            <div class="message-image-container">
-                <img src="${message.imageUrl}" alt="${message.imageName}" class="message-image" loading="lazy">
-                <div class="image-name">${message.imageName}</div>
-            </div>
-            <div class="message-time">${messageTime}</div>
-        </div>
-    `;
-    
-    elements.messagesContainer.appendChild(messageElement);
-    
-    // 图片加载完成后滚动到底部
-    const imgElement = messageElement.querySelector('img');
-    imgElement.onload = scrollToBottom;
-    
-    // 添加图片点击事件
-    imgElement.addEventListener('click', () => {
-        const overlay = document.getElementById('imagePreviewOverlay');
-        const previewImage = document.getElementById('previewImage');
-        
-        previewImage.src = message.imageUrl;
-        previewImage.alt = message.imageName;
-        
-        overlay.classList.add('active');
+    // 添加回复按钮事件处理
+    const replyButton = messageElement.querySelector('.reply-button');
+    replyButton.addEventListener('click', () => {
+        startReplyToMessage({
+            id: message.id,
+            nickname: message.nickname,
+            text: `[图片: ${message.imageName}]`
+        });
     });
 }
 
@@ -1772,6 +2002,70 @@ function shareToWeibo(url) {
 function isWeixinBrowser(){
     const ua = navigator.userAgent.toLowerCase();
     return ua.indexOf('micromessenger') !== -1;
+}
+
+// 启动回复消息逻辑
+function startReplyToMessage(message) {
+    // 保存当前正在回复的消息信息
+    chatState.replyingTo = {
+        id: message.id,
+        nickname: message.nickname,
+        text: message.text
+    };
+    
+    // 创建或更新回复指示器UI
+    updateReplyIndicator();
+    
+    // 聚焦到输入框
+    elements.messageInput.focus();
+}
+
+// 更新回复指示器UI
+function updateReplyIndicator() {
+    // 移除任何现有的回复指示器
+    const existingIndicator = document.querySelector('.reply-indicator');
+    if (existingIndicator) {
+        existingIndicator.remove();
+    }
+    
+    if (!chatState.replyingTo) return;
+    
+    // 创建新的回复指示器
+    const replyIndicator = document.createElement('div');
+    replyIndicator.className = 'reply-indicator';
+    replyIndicator.innerHTML = `
+        <div class="reply-indicator-content">
+            <i class="ri-reply-line"></i>
+            <div class="reply-info">
+                <div class="reply-to">回复 ${chatState.replyingTo.nickname}：</div>
+                <div class="reply-preview">${chatState.replyingTo.text.substring(0, 50) + (chatState.replyingTo.text.length > 50 ? '...' : '')}</div>
+            </div>
+        </div>
+        <button class="cancel-reply">
+            <i class="ri-close-line"></i>
+        </button>
+    `;
+    
+    // 添加到界面
+    const composerWrapper = document.querySelector('.composer-wrapper');
+    if (!composerWrapper) {
+        const messageInputContainer = document.querySelector('.message-input-container');
+        messageInputContainer.insertBefore(replyIndicator, messageInputContainer.firstChild);
+    } else {
+        composerWrapper.insertBefore(replyIndicator, composerWrapper.firstChild);
+    }
+    
+    // 添加取消回复按钮事件
+    replyIndicator.querySelector('.cancel-reply').addEventListener('click', clearReplyState);
+}
+
+// 清除回复状态
+function clearReplyState() {
+    chatState.replyingTo = null;
+    const replyIndicator = document.querySelector('.reply-indicator');
+    if (replyIndicator) {
+        replyIndicator.remove();
+    }
 }
 
 // 初始化应用
