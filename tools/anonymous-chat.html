@@ -102,15 +102,23 @@
                 <div id="chat-room" class="chat-room" style="display: none;">
                     <div class="chat-container">
                         <div class="chat-sidebar">
-                            <div class="room-info">
-                                <h3 class="room-id">聊天室: <span id="display-room-id"></span></h3>
-                                <button id="copy-room-id" class="btn btn-icon" title="复制聊天室ID">
-                                    <i class="ri-file-copy-line"></i>
-                                </button>
+                            <div class="sidebar-header">
+                                <h3 class="sidebar-title">密级聊天室</h3>
+                                <div class="room-info">
+                                    <h3 class="room-id">频道代码: <span id="display-room-id"></span></h3>
+                                    <button id="copy-room-id" class="btn-icon" title="复制聊天室ID">
+                                        <i class="ri-file-copy-line"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="discipline-banner">
+                                <div class="discipline-title">内部自律特种兵</div>
+                                <p class="discipline-text">所有消息密级加密传输，保持警惕，注意信息安全</p>
                             </div>
                             
                             <div class="member-list-header">
-                                <h4 data-i18n="anonymousChat.members">成员</h4>
+                                <h4>行动成员</h4>
                                 <span id="member-count" class="member-count">0</span>
                             </div>
                             
@@ -120,7 +128,7 @@
                             
                             <div class="chat-actions">
                                 <button id="leave-room" class="btn btn-danger btn-sm btn-block">
-                                    <i class="ri-logout-box-line"></i> <span data-i18n="anonymousChat.leaveRoom">离开聊天室</span>
+                                    <i class="ri-logout-box-line"></i> <span data-i18n="anonymousChat.leaveRoom">终止会话</span>
                                 </button>
                             </div>
                         </div>
@@ -129,7 +137,7 @@
                             <div class="chat-header">
                                 <div class="room-status">
                                     <span id="connection-status" class="status-indicator connected"></span>
-                                    <span id="status-text" data-i18n="anonymousChat.connected">已连接</span>
+                                    <span id="status-text" data-i18n="anonymousChat.connected">已建立安全连接</span>
                                 </div>
                                 
                                 <div class="chat-controls">
@@ -142,10 +150,10 @@
                             <div id="messages-container" class="messages-container">
                                 <div class="welcome-message">
                                     <div class="welcome-icon">
-                                        <i class="ri-lock-line"></i>
+                                        <i class="ri-shield-keyhole-line"></i>
                                     </div>
-                                    <h3 data-i18n="anonymousChat.welcomeTitle">欢迎来到加密聊天室</h3>
-                                    <p data-i18n="anonymousChat.welcomeMessage">此聊天室中的所有消息均已加密，刷新页面或关闭浏览器后聊天记录将被清除。</p>
+                                    <h3 data-i18n="anonymousChat.welcomeTitle">内部特种兵加密通讯已启动</h3>
+                                    <p data-i18n="anonymousChat.welcomeMessage">自律特种兵通讯频道已激活，所有消息均采用军用级别加密。会话结束后所有记录将被完全销毁。</p>
                                 </div>
                                 <!-- 消息将通过JS动态添加 -->
                             </div>
@@ -161,10 +169,22 @@
                                 </div>
                                 
                                 <div class="message-input-container">
-                                    <textarea id="message-input" class="message-input" placeholder="输入消息..." data-i18n="anonymousChat.messagePlaceholder"></textarea>
+                                    <textarea id="message-input" class="message-input" placeholder="输入密级通讯..." data-i18n="anonymousChat.messagePlaceholder"></textarea>
                                     <button id="send-message" class="send-btn" disabled>
+                                        <span>发送</span>
                                         <i class="ri-send-plane-fill"></i>
                                     </button>
+                                </div>
+                                
+                                <div class="message-composer-footer">
+                                    <div class="encryption-status">
+                                        <i class="ri-shield-keyhole-line"></i>
+                                        <span>自律特种兵加密通讯，勿随意共享信息</span>
+                                    </div>
+                                    <div class="connection-info">
+                                        <div class="connection-dot"></div>
+                                        通讯加密中
+                                    </div>
                                 </div>
                             </div>
                         </div>
