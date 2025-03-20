@@ -136,6 +136,9 @@ function init() {
     
     // 添加图片预览遮罩
     createImagePreviewOverlay();
+    
+    // 设置分享功能
+    setupShareFeatures();
 }
 
 // 设置事件监听器
@@ -217,6 +220,72 @@ function setupEventListeners() {
     elements.messageExpiryCheckbox.addEventListener('change', (e) => {
         chatState.messageExpiryEnabled = e.target.checked;
     });
+    
+    // 添加粘贴事件监听
+    elements.messageInput.addEventListener('paste', handlePaste);
+    
+    // 添加拖放文件事件监听
+    elements.messageInput.addEventListener('dragover', handleDragOver);
+    elements.messageInput.addEventListener('dragleave', handleDragLeave);
+    elements.messageInput.addEventListener('drop', handleDrop);
+}
+
+// 处理粘贴事件
+function handlePaste(e) {
+    // 检查剪贴板中是否有图片
+    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+    let hasImage = false;
+    
+    for (const item of items) {
+        if (item.type.indexOf('image') === 0) {
+            hasImage = true;
+            e.preventDefault(); // 阻止默认粘贴行为
+            
+            // 获取图片文件
+            const blob = item.getAsFile();
+            
+            // 在UI上显示粘贴状态
+            showNotification('正在处理粘贴的图片...', 'info');
+            
+            // 处理图片
+            handlePastedImage(blob);
+            break;
+        }
+    }
+    
+    // 如果没有图片，则按默认行为处理（粘贴文本）
+    if (!hasImage) {
+        return;
+    }
+}
+
+// 处理粘贴的图片
+function handlePastedImage(blob) {
+    // 检查文件大小 (限制为2MB，因为Base64会增加约33%的大小)
+    if (blob.size > 2 * 1024 * 1024) {
+        showError('图片大小不能超过2MB');
+        return;
+    }
+    
+    // 生成一个随机的文件名
+    const timestamp = new Date().getTime();
+    const filename = `粘贴的图片_${timestamp}.png`;
+    
+    // 使用FileReader将图片转换为Base64
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        const base64Image = e.target.result;
+        // 发送包含base64图片的消息
+        sendBase64ImageMessage(base64Image, filename);
+    };
+    
+    reader.onerror = function() {
+        showError('图片读取失败');
+    };
+    
+    // 开始读取图片文件
+    reader.readAsDataURL(blob);
 }
 
 // 生成随机聊天室ID
@@ -597,45 +666,79 @@ function updateConnectionStatus(status, text) {
 function sendMessage() {
     const messageText = elements.messageInput.value.trim();
     
-    if (!messageText || !chatState.connected) {
+    if (!messageText) {
         return;
     }
     
     const messageId = generateMessageId();
     
-    // 创建消息对象
-    const message = {
-        id: messageId,
-        sender: chatState.clientId,
-        nickname: chatState.nickname,
-        text: messageText,
-        timestamp: firebase.database.ServerValue.TIMESTAMP,
-        encrypted: chatState.encryptionEnabled
-    };
-    
-    // 如果启用了加密，加密消息
-    if (chatState.encryptionEnabled) {
-        message.text = encryptMessage(messageText);
+    // 检查Firebase是否已初始化
+    if (!chatState.messagesRef) {
+        console.warn('Firebase引用未初始化，无法发送消息到服务器');
+        // 仍然在UI上显示消息，但提示用户连接问题
+        addMessage({
+            id: messageId,
+            nickname: chatState.nickname,
+            text: messageText,
+            timestamp: new Date().toISOString(),
+            isSelf: true
+        });
+        
+        // 显示错误提示
+        showNotification('网络连接问题，消息可能未发送至服务器', 'warning');
+        
+        // 清空输入框
+        elements.messageInput.value = '';
+        elements.sendMessageBtn.disabled = true;
+        
+        return;
     }
     
-    // 存储消息到Firebase
-    chatState.messagesRef.push().set(message);
-    
-    // 显示自己发送的消息
-    addMessage({
-        id: messageId,
-        nickname: chatState.nickname,
-        text: messageText, // 使用原始文本显示
-        timestamp: new Date().toISOString(),
-        isSelf: true
-    });
-    
-    // 清空输入框
-    elements.messageInput.value = '';
-    elements.sendMessageBtn.disabled = true;
-    
-    // 自动滚动到底部
-    scrollToBottom();
+    try {
+        // 创建消息对象
+        const message = {
+            id: messageId,
+            sender: chatState.clientId,
+            nickname: chatState.nickname,
+            text: messageText,
+            timestamp: firebase.database.ServerValue.TIMESTAMP,
+            encrypted: chatState.encryptionEnabled
+        };
+        
+        // 如果启用了加密，加密消息
+        if (chatState.encryptionEnabled) {
+            message.text = encryptMessage(messageText);
+        }
+        
+        // 存储消息到Firebase
+        chatState.messagesRef.push().set(message)
+            .then(() => {
+                console.log('消息发送成功');
+            })
+            .catch(error => {
+                console.error('发送消息到Firebase失败:', error);
+                showNotification('消息发送失败，请稍后重试', 'error');
+            });
+        
+        // 显示自己发送的消息
+        addMessage({
+            id: messageId,
+            nickname: chatState.nickname,
+            text: messageText, // 使用原始文本显示
+            timestamp: new Date().toISOString(),
+            isSelf: true
+        });
+        
+        // 清空输入框
+        elements.messageInput.value = '';
+        elements.sendMessageBtn.disabled = true;
+        
+        // 自动滚动到底部
+        scrollToBottom();
+    } catch (error) {
+        console.error('发送消息时发生错误:', error);
+        showNotification('发送消息失败，请检查网络连接', 'error');
+    }
 }
 
 // 生成消息ID
@@ -812,20 +915,24 @@ function showError(message) {
 }
 
 // 显示通知
-function showNotification(message) {
+function showNotification(message, type = 'info') {
     // 实现简单的通知
     const notification = document.createElement('div');
-    notification.className = 'notification';
+    notification.className = `notification ${type}`;
     notification.textContent = message;
     
     document.body.appendChild(notification);
     
+    // 显示通知
     setTimeout(() => {
         notification.classList.add('show');
     }, 10);
     
+    // 自动关闭通知
     setTimeout(() => {
         notification.classList.remove('show');
+        
+        // 移除DOM元素
         setTimeout(() => {
             document.body.removeChild(notification);
         }, 300);
@@ -834,15 +941,24 @@ function showNotification(message) {
 
 // 切换表情选择器
 function toggleEmojiPicker() {
+    const emojiBtn = elements.emojiPickerBtn;
+    
     if (chatState.emojiPickerVisible) {
         const emojiPicker = document.querySelector('.emoji-picker');
         if (emojiPicker) {
             emojiPicker.remove();
+            emojiBtn.classList.remove('active');
         }
         chatState.emojiPickerVisible = false;
+        document.removeEventListener('click', closeEmojiPickerOnClickOutside);
     } else {
         showEmojiPicker();
+        emojiBtn.classList.add('active');
         chatState.emojiPickerVisible = true;
+        // 延迟添加点击外部关闭事件，避免立即触发
+        setTimeout(() => {
+            document.addEventListener('click', closeEmojiPickerOnClickOutside);
+        }, 100);
     }
 }
 
@@ -850,14 +966,6 @@ function toggleEmojiPicker() {
 function showEmojiPicker() {
     const emojiPicker = document.createElement('div');
     emojiPicker.className = 'emoji-picker';
-    
-    // 创建表情分类标签
-    const emojiTabs = document.createElement('div');
-    emojiTabs.className = 'emoji-tabs';
-    
-    // 创建表情内容容器
-    const emojiContent = document.createElement('div');
-    emojiContent.className = 'emoji-content';
     
     // 创建搜索栏
     const searchContainer = document.createElement('div');
@@ -868,27 +976,31 @@ function showEmojiPicker() {
             <input type="text" class="emoji-search" placeholder="搜索表情...">
         </div>
         <div class="frequent-emojis">
-            ${frequentEmojis.map(emoji => `<span class="freq-emoji">${emoji}</span>`).join('')}
+            ${frequentEmojis.map(emoji => `<span class="freq-emoji" title="点击插入表情">${emoji}</span>`).join('')}
         </div>
     `;
     
-    // 将搜索栏添加到选择器
-    emojiPicker.appendChild(searchContainer);
+    // 创建表情分类标签
+    const emojiTabs = document.createElement('div');
+    emojiTabs.className = 'emoji-tabs';
+    
+    // 创建表情内容容器
+    const emojiContent = document.createElement('div');
+    emojiContent.className = 'emoji-content';
     
     // 添加表情分类标签
-    let isFirst = true;
-    Object.keys(emojiCategories).forEach(category => {
+    Object.keys(emojiCategories).forEach((category, index) => {
         const categoryData = emojiCategories[category];
         
         // 创建分类标签按钮
         const tabButton = document.createElement('button');
-        tabButton.className = `emoji-tab ${isFirst ? 'active' : ''}`;
+        tabButton.className = `emoji-tab ${index === 0 ? 'active' : ''}`;
         tabButton.setAttribute('data-category', category);
-        tabButton.innerHTML = `<i class="${categoryData.icon}"></i>`;
-        tabButton.title = categoryData.name;
+        tabButton.innerHTML = `<i class="${categoryData.icon}" title="${categoryData.name}"></i>`;
         
         // 点击分类标签时切换内容
-        tabButton.addEventListener('click', () => {
+        tabButton.addEventListener('click', (e) => {
+            e.stopPropagation(); // 阻止事件冒泡
             // 更新标签状态
             document.querySelectorAll('.emoji-tab').forEach(tab => tab.classList.remove('active'));
             tabButton.classList.add('active');
@@ -900,19 +1012,20 @@ function showEmojiPicker() {
         emojiTabs.appendChild(tabButton);
         
         // 如果是第一个分类，加载其内容
-        if (isFirst) {
+        if (index === 0) {
             loadEmojiCategory(emojiContent, category);
-            isFirst = false;
         }
     });
     
-    // 添加分类标签和内容到选择器
+    // 将所有元素添加到选择器中
+    emojiPicker.appendChild(searchContainer);
     emojiPicker.appendChild(emojiTabs);
     emojiPicker.appendChild(emojiContent);
     
-    // 搜索功能
+    // 添加搜索功能
     const searchInput = emojiPicker.querySelector('.emoji-search');
-    searchInput.addEventListener('input', () => {
+    searchInput.addEventListener('input', (e) => {
+        e.stopPropagation(); // 阻止事件冒泡
         const searchValue = searchInput.value.trim().toLowerCase();
         
         if (searchValue) {
@@ -925,19 +1038,23 @@ function showEmojiPicker() {
         }
     });
     
-    // 常用表情点击
+    // 添加常用表情点击事件
     const freqEmojis = emojiPicker.querySelectorAll('.freq-emoji');
     freqEmojis.forEach(emoji => {
-        emoji.addEventListener('click', () => {
+        emoji.addEventListener('click', (e) => {
+            e.stopPropagation(); // 阻止事件冒泡
             insertEmoji(emoji.textContent);
         });
     });
     
+    // 阻止表情选择器内的点击事件冒泡
+    emojiPicker.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+    
+    // 添加到composer-actions
     const composerActions = document.querySelector('.composer-actions');
     composerActions.appendChild(emojiPicker);
-    
-    // 点击外部关闭表情选择器
-    document.addEventListener('click', closeEmojiPickerOnClickOutside);
 }
 
 // 加载特定分类的表情
@@ -949,7 +1066,10 @@ function loadEmojiCategory(container, category) {
         const emojiItem = document.createElement('div');
         emojiItem.className = 'emoji-item';
         emojiItem.textContent = emoji;
-        emojiItem.addEventListener('click', () => {
+        emojiItem.title = '点击插入表情';
+        
+        emojiItem.addEventListener('click', (e) => {
+            e.stopPropagation(); // 阻止事件冒泡
             insertEmoji(emoji);
         });
         
@@ -963,18 +1083,15 @@ function searchEmojis(container, searchText) {
     let results = [];
     
     // 在所有分类中搜索
-    Object.keys(emojiCategories).forEach(category => {
-        const emojis = emojiCategories[category].emojis;
-        
-        // 简单的模糊匹配（实际应用中可以使用更复杂的搜索算法）
-        emojis.forEach(emoji => {
-            if (results.includes(emoji)) return; // 避免重复
-            results.push(emoji);
-        });
+    Object.values(emojiCategories).forEach(category => {
+        results = results.concat(category.emojis);
     });
     
+    // 去重
+    results = [...new Set(results)];
+    
     // 限制结果数量
-    results = results.slice(0, 30);
+    results = results.slice(0, 32);
     
     if (results.length === 0) {
         container.innerHTML = '<div class="emoji-no-results">没有找到相关表情</div>';
@@ -986,7 +1103,10 @@ function searchEmojis(container, searchText) {
         const emojiItem = document.createElement('div');
         emojiItem.className = 'emoji-item';
         emojiItem.textContent = emoji;
-        emojiItem.addEventListener('click', () => {
+        emojiItem.title = '点击插入表情';
+        
+        emojiItem.addEventListener('click', (e) => {
+            e.stopPropagation(); // 阻止事件冒泡
             insertEmoji(emoji);
         });
         
@@ -996,10 +1116,26 @@ function searchEmojis(container, searchText) {
 
 // 插入表情到输入框
 function insertEmoji(emoji) {
-    elements.messageInput.value += emoji;
-    elements.messageInput.focus();
-    elements.sendMessageBtn.disabled = false;
+    const input = elements.messageInput;
+    const start = input.selectionStart;
+    const end = input.selectionEnd;
+    const text = input.value;
+    
+    // 在光标位置插入表情
+    input.value = text.substring(0, start) + emoji + text.substring(end);
+    
+    // 更新光标位置
+    const newPosition = start + emoji.length;
+    input.setSelectionRange(newPosition, newPosition);
+    
+    // 触发输入事件以更新发送按钮状态
+    input.dispatchEvent(new Event('input'));
+    
+    // 关闭表情选择器
     toggleEmojiPicker();
+    
+    // 聚焦输入框
+    input.focus();
 }
 
 // 点击外部关闭表情选择器
@@ -1009,6 +1145,7 @@ function closeEmojiPickerOnClickOutside(e) {
     
     if (emojiPicker && !emojiPicker.contains(e.target) && e.target !== emojiBtn) {
         emojiPicker.remove();
+        emojiBtn.classList.remove('active');
         chatState.emojiPickerVisible = false;
         document.removeEventListener('click', closeEmojiPickerOnClickOutside);
     }
@@ -1086,6 +1223,16 @@ function setupFirebaseReferences() {
                         timestamp: message.timestamp || new Date().toISOString(),
                         isSelf: false
                     });
+                } else if (message.type === 'base64Image') {
+                    // 处理Base64图片消息
+                    addBase64ImageMessage({
+                        id: message.id,
+                        nickname: message.nickname,
+                        base64Image: message.base64Image,
+                        imageName: message.imageName,
+                        timestamp: message.timestamp || new Date().toISOString(),
+                        isSelf: false
+                    });
                 } else {
                     // 处理文本消息
                     let messageText = message.text;
@@ -1154,46 +1301,81 @@ function openFileUploader() {
 
 // 上传图片函数
 function uploadImage(file) {
-    if (!chatState.connected || !chatState.storageRef) {
+    if (!chatState.connected) {
         showError('连接状态异常，无法上传图片');
         return;
     }
     
     // 显示上传中的消息
-    const loadingMessageId = Date.now().toString();
-    addSystemMessage(`正在上传图片...`);
+    addSystemMessage(`正在处理图片...`);
     
-    // 创建一个唯一文件名
-    const fileName = `${Date.now()}_${chatState.clientId}_${file.name}`;
-    const fileRef = chatState.storageRef.child(fileName);
+    // 检查文件大小 (限制为2MB，因为Base64会增加约33%的大小)
+    if (file.size > 2 * 1024 * 1024) {
+        showError('图片大小不能超过2MB');
+        return;
+    }
     
-    // 上传文件
-    const uploadTask = fileRef.put(file);
+    // 使用FileReader将图片转换为Base64
+    const reader = new FileReader();
     
-    // 监听上传状态
-    uploadTask.on('state_changed', 
-        // 进度处理
-        (snapshot) => {
-            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log('上传进度: ' + progress.toFixed(2) + '%');
-        },
-        // 错误处理
-        (error) => {
-            console.error('图片上传失败:', error);
-            showError('图片上传失败');
-        },
-        // 上传完成处理
-        () => {
-            // 获取图片URL
-            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                // 发送图片消息
-                sendImageMessage(downloadURL, file.name);
-            });
-        }
-    );
+    reader.onload = function(e) {
+        const base64Image = e.target.result;
+        // 发送包含base64图片的消息
+        sendBase64ImageMessage(base64Image, file.name);
+    };
+    
+    reader.onerror = function() {
+        showError('图片读取失败');
+    };
+    
+    // 开始读取图片文件
+    reader.readAsDataURL(file);
 }
 
-// 发送图片消息
+// 发送Base64图片消息
+function sendBase64ImageMessage(base64Image, imageName) {
+    if (!chatState.connected) return;
+    
+    const messageId = generateMessageId();
+    
+    // 创建消息对象
+    const message = {
+        id: messageId,
+        sender: chatState.clientId,
+        nickname: chatState.nickname,
+        type: 'base64Image',
+        text: `[图片: ${imageName}]`, // 备用文本，用于不支持图片的客户端
+        base64Image: base64Image,
+        imageName: imageName,
+        timestamp: firebase.database.ServerValue.TIMESTAMP,
+        encrypted: false // 图片不加密
+    };
+    
+    // 存储消息到Firebase
+    chatState.messagesRef.push().set(message)
+        .then(() => {
+            console.log('Base64图片消息发送成功');
+        })
+        .catch(error => {
+            console.error('发送图片消息失败:', error);
+            showNotification('图片发送失败，请稍后重试', 'error');
+        });
+    
+    // 显示自己发送的图片消息
+    addBase64ImageMessage({
+        id: messageId,
+        nickname: chatState.nickname,
+        base64Image: base64Image,
+        imageName: imageName,
+        timestamp: new Date().toISOString(),
+        isSelf: true
+    });
+    
+    // 自动滚动到底部
+    scrollToBottom();
+}
+
+// 发送图片URL消息
 function sendImageMessage(imageUrl, imageName) {
     if (!chatState.connected) return;
     
@@ -1213,7 +1395,14 @@ function sendImageMessage(imageUrl, imageName) {
     };
     
     // 存储消息到Firebase
-    chatState.messagesRef.push().set(message);
+    chatState.messagesRef.push().set(message)
+        .then(() => {
+            console.log('图片URL消息发送成功');
+        })
+        .catch(error => {
+            console.error('发送图片消息失败:', error);
+            showNotification('图片发送失败，请稍后重试', 'error');
+        });
     
     // 显示自己发送的图片消息
     addImageMessage({
@@ -1229,7 +1418,43 @@ function sendImageMessage(imageUrl, imageName) {
     scrollToBottom();
 }
 
-// 添加图片消息到聊天界面
+// 添加Base64图片消息到聊天界面
+function addBase64ImageMessage(message) {
+    const messageTime = new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    const messageElement = document.createElement('div');
+    messageElement.className = `message ${message.isSelf ? 'outgoing' : ''}`;
+    messageElement.innerHTML = `
+        <div class="message-avatar">${message.nickname.charAt(0).toUpperCase()}</div>
+        <div class="message-content">
+            <div class="message-sender">${message.nickname}</div>
+            <div class="message-image-container">
+                <img src="${message.base64Image}" alt="${message.imageName}" class="message-image" loading="lazy">
+                <div class="image-name">${message.imageName}</div>
+            </div>
+            <div class="message-time">${messageTime}</div>
+        </div>
+    `;
+    
+    elements.messagesContainer.appendChild(messageElement);
+    
+    // 图片加载完成后滚动到底部
+    const imgElement = messageElement.querySelector('img');
+    imgElement.onload = scrollToBottom;
+    
+    // 添加图片点击事件
+    imgElement.addEventListener('click', () => {
+        const overlay = document.getElementById('imagePreviewOverlay');
+        const previewImage = document.getElementById('previewImage');
+        
+        previewImage.src = message.base64Image;
+        previewImage.alt = message.imageName;
+        
+        overlay.classList.add('active');
+    });
+}
+
+// 添加URL图片消息到聊天界面
 function addImageMessage(message) {
     const messageTime = new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     
@@ -1300,6 +1525,253 @@ function createImagePreviewOverlay() {
             overlay.classList.remove('active');
         }
     });
+}
+
+// 处理拖动文件悬停事件
+function handleDragOver(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    // 添加拖动悬停视觉效果
+    elements.messageInput.classList.add('drag-over');
+}
+
+// 处理拖动文件离开事件
+function handleDragLeave(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    // 移除拖动悬停视觉效果
+    elements.messageInput.classList.remove('drag-over');
+}
+
+// 处理拖放文件事件
+function handleDrop(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // 移除拖动悬停视觉效果
+    elements.messageInput.classList.remove('drag-over');
+    
+    // 获取拖放的文件
+    const files = e.dataTransfer.files;
+    
+    if (files.length > 0) {
+        // 只处理第一个文件
+        const file = files[0];
+        
+        // 检查是否为图片
+        if (file.type.startsWith('image/')) {
+            // 显示处理状态
+            showNotification('正在处理拖放的图片...', 'info');
+            
+            // 处理图片上传
+            uploadImage(file);
+        } else {
+            showError('只支持上传图片文件');
+        }
+    }
+}
+
+// 添加分享功能
+function setupShareFeatures() {
+    const shareBtn = document.createElement('button');
+    shareBtn.className = 'header-btn share-btn';
+    shareBtn.innerHTML = '<i class="ri-share-line"></i>分享';
+    
+    shareBtn.addEventListener('click', toggleShareMenu);
+    
+    // 将分享按钮添加到房间操作区
+    const roomActions = document.querySelector('.room-actions');
+    roomActions.appendChild(shareBtn);
+    
+    // 创建分享菜单
+    createShareMenu();
+}
+
+// 创建分享菜单
+function createShareMenu() {
+    const shareMenu = document.createElement('div');
+    shareMenu.className = 'share-menu';
+    shareMenu.style.display = 'none';
+    
+    shareMenu.innerHTML = `
+        <div class="share-option" data-type="copy">
+            <i class="ri-file-copy-line"></i>
+            <span>复制聊天室链接</span>
+        </div>
+        <div class="share-option" data-type="qr">
+            <i class="ri-qr-code-line"></i>
+            <span>显示二维码</span>
+        </div>
+        <div class="share-option" data-type="wechat">
+            <i class="ri-wechat-line"></i>
+            <span>分享到微信</span>
+        </div>
+        <div class="share-option" data-type="weibo">
+            <i class="ri-weibo-line"></i>
+            <span>分享到微博</span>
+        </div>
+    `;
+    
+    // 添加点击事件处理
+    shareMenu.querySelectorAll('.share-option').forEach(option => {
+        option.addEventListener('click', handleShareOption);
+    });
+    
+    document.querySelector('.chat-header').appendChild(shareMenu);
+}
+
+// 切换分享菜单显示状态
+function toggleShareMenu(e) {
+    e.stopPropagation();
+    const shareMenu = document.querySelector('.share-menu');
+    const isVisible = shareMenu.style.display === 'block';
+    
+    if (isVisible) {
+        shareMenu.style.display = 'none';
+    } else {
+        shareMenu.style.display = 'block';
+        // 点击外部关闭菜单
+        document.addEventListener('click', closeShareMenu);
+    }
+}
+
+// 关闭分享菜单
+function closeShareMenu(e) {
+    const shareMenu = document.querySelector('.share-menu');
+    const shareBtn = document.querySelector('.share-btn');
+    
+    if (!shareMenu.contains(e.target) && !shareBtn.contains(e.target)) {
+        shareMenu.style.display = 'none';
+        document.removeEventListener('click', closeShareMenu);
+    }
+}
+
+// 处理分享选项点击
+function handleShareOption(e) {
+    const type = e.currentTarget.dataset.type;
+    const roomUrl = generateRoomUrl();
+    
+    switch (type) {
+        case 'copy':
+            copyToClipboard(roomUrl);
+            break;
+        case 'qr':
+            showQRCode(roomUrl);
+            break;
+        case 'wechat':
+            shareToWechat(roomUrl);
+            break;
+        case 'weibo':
+            shareToWeibo(roomUrl);
+            break;
+    }
+    
+    // 关闭分享菜单
+    document.querySelector('.share-menu').style.display = 'none';
+}
+
+// 生成聊天室URL
+function generateRoomUrl() {
+    const url = new URL(window.location.href);
+    url.searchParams.set('room', chatState.roomId);
+    return url.toString();
+}
+
+// 复制到剪贴板
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text)
+        .then(() => {
+            showNotification('链接已复制到剪贴板', 'success');
+        })
+        .catch(err => {
+            console.error('复制失败:', err);
+            showNotification('复制失败，请手动复制', 'error');
+        });
+}
+
+// 显示二维码
+function showQRCode(url) {
+    // 创建二维码遮罩
+    const overlay = document.createElement('div');
+    overlay.className = 'qr-overlay';
+    overlay.innerHTML = `
+        <div class="qr-container">
+            <div class="qr-header">
+                <h3>扫描二维码加入聊天室</h3>
+                <button class="close-qr"><i class="ri-close-line"></i></button>
+            </div>
+            <div id="qrcode"></div>
+            <div class="qr-footer">
+                <p>或复制链接分享：</p>
+                <div class="qr-link">
+                    <input type="text" value="${url}" readonly>
+                    <button class="copy-btn"><i class="ri-file-copy-line"></i></button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(overlay);
+    
+    // 生成二维码
+    new QRCode(document.getElementById('qrcode'), {
+        text: url,
+        width: 200,
+        height: 200
+    });
+    
+    // 添加关闭事件
+    const closeBtn = overlay.querySelector('.close-qr');
+    closeBtn.addEventListener('click', () => {
+        document.body.removeChild(overlay);
+    });
+    
+    // 添加复制按钮事件
+    const copyBtn = overlay.querySelector('.copy-btn');
+    copyBtn.addEventListener('click', () => {
+        copyToClipboard(url);
+    });
+    
+    // 点击遮罩关闭
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            document.body.removeChild(overlay);
+        }
+    });
+}
+
+// 分享到微信
+function shareToWechat(url) {
+    // 如果在微信浏览器中，调用微信API
+    if (isWeixinBrowser()) {
+        wx.ready(function() {
+            wx.updateAppMessageShareData({ 
+                title: '加入匿名聊天室', 
+                desc: '点击加入私密聊天室进行交谈', 
+                link: url, 
+                imgUrl: 'path/to/your/logo.png',
+                success: function () {
+                    showNotification('分享设置成功', 'success');
+                }
+            });
+        });
+    } else {
+        // 如果不在微信中，显示二维码
+        showQRCode(url);
+    }
+}
+
+// 分享到微博
+function shareToWeibo(url) {
+    const title = encodeURIComponent('加入匿名聊天室 - 点击加入私密聊天室进行交谈');
+    const shareUrl = `http://service.weibo.com/share/share.php?url=${encodeURIComponent(url)}&title=${title}`;
+    window.open(shareUrl, '_blank');
+}
+
+// 检查是否在微信浏览器中
+function isWeixinBrowser(){
+    const ua = navigator.userAgent.toLowerCase();
+    return ua.indexOf('micromessenger') !== -1;
 }
 
 // 初始化应用
